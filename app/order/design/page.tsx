@@ -1,0 +1,277 @@
+'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+import { Field } from '@/components/FormField'
+import { ImageUpload, type UploadedFile } from '@/components/ImageUpload'
+import {
+  ContactInfoBlock,
+  EMPTY_CONTACT,
+  type ContactInfoFields,
+  type ContactErrors,
+} from '@/components/ContactInfoBlock'
+import {
+  SharingPreferencesBlock,
+  EMPTY_SHARING,
+  type SharingPrefsFields,
+} from '@/components/SharingPreferencesBlock'
+
+interface FormState {
+  images: UploadedFile[]
+  description: string
+  contact: ContactInfoFields
+  sharing: SharingPrefsFields
+}
+
+const EMPTY: FormState = {
+  images: [],
+  description: '',
+  contact: EMPTY_CONTACT,
+  sharing: EMPTY_SHARING,
+}
+
+interface Errors {
+  description?: string
+  contact?: ContactErrors
+}
+
+function validate(form: FormState): Errors {
+  const errs: Errors = {}
+  if (form.description.trim().length < 10) {
+    errs.description = 'Please describe your vision (at least 10 characters).'
+  }
+  const contactErrs: ContactErrors = {}
+  if (!form.contact.firstName.trim()) contactErrs.firstName = 'First name is required.'
+  if (!form.contact.lastName.trim()) contactErrs.lastName = 'Last name is required.'
+  if (!form.contact.contactValue.trim()) contactErrs.contactValue = 'Contact info is required.'
+  if (Object.keys(contactErrs).length) errs.contact = contactErrs
+  return errs
+}
+
+function buildTagUsername(sharing: SharingPrefsFields): string | undefined {
+  const parts: string[] = []
+  if (sharing.instagramTag && sharing.instagramHandle)
+    parts.push(`Instagram: ${sharing.instagramHandle}`)
+  if (sharing.tikTokTag && sharing.tikTokHandle)
+    parts.push(`TikTok: ${sharing.tikTokHandle}`)
+  return parts.length > 0 ? parts.join(', ') : undefined
+}
+
+export default function DesignOrderPage() {
+  const [form, setForm] = useState<FormState>(EMPTY)
+  const [errors, setErrors] = useState<Errors>({})
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    'idle'
+  )
+  const [warnNoImages, setWarnNoImages] = useState(false)
+
+  function clearContactError(key: keyof ContactInfoFields) {
+    setErrors((prev) => ({ ...prev, contact: { ...prev.contact, [key]: undefined } }))
+  }
+
+  async function doSubmit() {
+    setWarnNoImages(false)
+    setSubmitStatus('loading')
+    const tagUsername = buildTagUsername(form.sharing)
+    const details = [
+      `Descriptions / preferences: ${form.description}`,
+      form.images.length > 0 &&
+        `Inspiration images: ${form.images.length} uploaded — TODO: wire to file storage`,
+      form.sharing.platforms.length > 0 && `Sharing: ${form.sharing.platforms.join(', ')}`,
+      tagUsername && `Tag: ${tagUsername}`,
+    ]
+      .filter(Boolean)
+      .join('\n')
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: form.contact.firstName,
+          lastName: form.contact.lastName,
+          contactMethod: form.contact.contactMethod,
+          contactValue: form.contact.contactValue,
+          orderType: 'design',
+          details,
+          sharingPlatforms: form.sharing.platforms,
+          tagUsername,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      setSubmitStatus('success')
+    } catch {
+      setSubmitStatus('error')
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const errs = validate(form)
+    if (Object.keys(errs).length) {
+      setErrors(errs)
+      return
+    }
+    if (form.images.length === 0) {
+      setWarnNoImages(true)
+      return
+    }
+    await doSubmit()
+  }
+
+  if (submitStatus === 'success') {
+    return (
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
+        <p className="font-serif text-3xl text-emerald-900 mb-3">Order received!</p>
+        <p className="text-stone-500 text-sm mb-8">
+          Your new costume design request has been added to the waitlist. I will be in touch soon!
+        </p>
+        <Link
+          href="/waitlist"
+          className="inline-block bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
+        >
+          View Waitlist
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+      <Breadcrumb />
+      <h1 className="font-serif text-4xl font-semibold text-emerald-900 mb-2 mt-4">
+        New Costume Design
+      </h1>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 text-sm text-stone-600 leading-relaxed">
+        <p className="font-medium text-stone-700 mb-1">About this service</p>
+        <p>
+          Starting from scratch? I&apos;ll design a completely original costume concept just for
+          you — from silhouette and embroidery style to color palette and overall mood. Share any
+          inspiration images below, then describe your dream look in as much detail as you like.
+          We&apos;ll work together to refine the design until it&apos;s exactly right.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+        <form onSubmit={handleSubmit} noValidate className="space-y-8">
+          <ImageUpload
+            files={form.images}
+            onChange={(images) => {
+              setForm((prev) => ({ ...prev, images }))
+              if (warnNoImages && images.length > 0) setWarnNoImages(false)
+            }}
+            label="Inspiration Images"
+            helperText="Uploading inspiration images is highly recommended — costumes, colors, embroidery styles, or anything that captures your vision."
+          />
+
+          <Field
+            label="Descriptions, Comments & Preferences"
+            required
+            error={errors.description}
+          >
+            <textarea
+              value={form.description}
+              onChange={(e) => {
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+                if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }))
+              }}
+              rows={6}
+              className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition resize-y ${
+                errors.description ? 'border-red-400' : 'border-stone-300'
+              }`}
+              placeholder="Describe your dream costume — silhouette, embroidery style, era, mood, color preferences, intended use (Worlds, Oireachtas, etc.)…"
+            />
+          </Field>
+
+          <section className="space-y-4">
+            <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+              Contact Information
+            </h2>
+            <ContactInfoBlock
+              value={form.contact}
+              onChange={(contact) => setForm((prev) => ({ ...prev, contact }))}
+              errors={errors.contact ?? {}}
+              onClearError={clearContactError}
+            />
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+              Sharing Preferences
+            </h2>
+            <SharingPreferencesBlock
+              value={form.sharing}
+              onChange={(sharing) => setForm((prev) => ({ ...prev, sharing }))}
+            />
+          </section>
+
+          {submitStatus === 'error' && (
+            <p className="text-sm text-red-600">Something went wrong — please try again.</p>
+          )}
+
+          {warnNoImages ? (
+            <NoImagesWarning
+              onCancel={() => setWarnNoImages(false)}
+              onConfirm={doSubmit}
+            />
+          ) : (
+            <button
+              type="submit"
+              disabled={submitStatus === 'loading'}
+              className="w-full sm:w-auto bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
+            >
+              {submitStatus === 'loading' ? 'Submitting…' : 'Submit Order'}
+            </button>
+          )}
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function Breadcrumb() {
+  return (
+    <nav className="flex items-center gap-1.5 text-xs text-stone-400" aria-label="Breadcrumb">
+      <Link href="/order" className="hover:text-amber-600 transition-colors">Order</Link>
+      <span>/</span>
+      <Link href="/order/digital-image" className="hover:text-amber-600 transition-colors">
+        Digital Image
+      </Link>
+      <span>/</span>
+      <Link href="/order/costume" className="hover:text-amber-600 transition-colors">
+        Costume
+      </Link>
+      <span>/</span>
+      <span className="text-stone-600">Design</span>
+    </nav>
+  )
+}
+
+function NoImagesWarning({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 space-y-3">
+      <p className="font-medium text-amber-900 text-sm">No images uploaded</p>
+      <p className="text-amber-800 text-sm">
+        Inspiration images are highly recommended — they help ensure the final design matches your
+        vision. Are you sure you want to submit without any?
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-1.5 rounded-lg border border-amber-400 text-amber-900 text-sm font-medium hover:bg-amber-100 transition"
+        >
+          ← Go back and add images
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          className="px-4 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-sm font-medium transition"
+        >
+          Submit without images
+        </button>
+      </div>
+    </div>
+  )
+}
