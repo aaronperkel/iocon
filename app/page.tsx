@@ -1,21 +1,23 @@
 import ContactForm from '@/components/ContactForm'
+import CrownMark from '@/components/CrownMark'
 
 export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-emerald-950 text-white py-20 px-4 text-center">
-        <HeroCrown />
+      <section className="bg-gold-950 text-white py-20 px-4 text-center">
+        <CrownMark className="w-16 mx-auto text-gold" />
         {/* Literal string — no CSS transform on this element */}
-        <h1 className="font-display text-5xl sm:text-6xl mt-5 mb-3 tracking-wide">
+        {/* Gold crown + olive wordmark = Riley's stacked lockup, in live text */}
+        <h1 className="font-display text-5xl sm:text-6xl mt-5 mb-3 tracking-wide text-olive">
           Íocón
         </h1>
-        <p className="text-emerald-200 text-lg max-w-sm mx-auto leading-relaxed">
+        <p className="text-gold-100 text-lg max-w-sm mx-auto leading-relaxed">
           Custom Irish dance costume illustrations — bringing your vision to life.
         </p>
         <a
           href="/order"
-          className="inline-block mt-8 bg-amber-600 hover:bg-amber-500 text-white font-medium text-sm px-8 py-3 rounded-full transition-colors"
+          className="inline-block mt-8 bg-gold hover:bg-gold-400 text-gold-950 font-medium text-sm px-8 py-3 rounded-full transition-colors"
         >
           Start Your Order
         </a>
@@ -25,7 +27,7 @@ export default function HomePage() {
 
         {/* About Me */}
         <section>
-          <h2 className="font-serif text-4xl font-semibold text-emerald-900 mb-6">
+          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-6">
             About Me
           </h2>
           <div className="space-y-4 text-stone-600 leading-relaxed">
@@ -50,7 +52,7 @@ export default function HomePage() {
 
         {/* Contact Me — id="contact" lets /#contact anchor scrolling work */}
         <section id="contact" className="scroll-mt-20">
-          <h2 className="font-serif text-4xl font-semibold text-emerald-900 mb-2">
+          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-2">
             Contact Me
           </h2>
           <p className="text-stone-500 text-sm mb-8">
@@ -64,21 +66,5 @@ export default function HomePage() {
 
       </div>
     </>
-  )
-}
-
-function HeroCrown() {
-  return (
-    <svg
-      width="48"
-      height="40"
-      viewBox="0 0 22 18"
-      fill="currentColor"
-      className="mx-auto text-amber-400"
-      aria-hidden="true"
-    >
-      <path d="M1 16 L3.5 6 L8.5 12 L11 2 L13.5 12 L18.5 6 L21 16 Z" />
-      <rect x="1" y="16" width="20" height="2" rx="1" />
-    </svg>
   )
 }

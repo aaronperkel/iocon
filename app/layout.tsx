@@ -48,7 +48,7 @@ export default function RootLayout({
                 href="https://aaronperkel.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-stone-500 hover:text-amber-700 underline underline-offset-2 transition-colors"
+                className="text-stone-500 hover:text-gold-700 underline underline-offset-2 transition-colors"
               >
                 Aaron Perkel
               </a>

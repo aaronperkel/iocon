@@ -51,14 +51,14 @@ export function ImageUpload({
     <div>
       <label className="block text-sm font-medium text-stone-700 mb-1">
         {label}
-        {required && <span className="text-amber-600 ml-0.5">*</span>}
+        {required && <span className="text-gold-600 ml-0.5">*</span>}
       </label>
       {helperText && <p className="text-xs text-stone-500 mb-2">{helperText}</p>}
       <div
         role="button"
         tabIndex={0}
         className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition hover:bg-stone-50 ${
-          error ? 'border-red-400' : 'border-stone-300 hover:border-amber-400'
+          error ? 'border-red-400' : 'border-stone-300 hover:border-gold-400'
         }`}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}

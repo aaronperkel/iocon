@@ -72,8 +72,8 @@ export function SharingPreferencesBlock({ value, onChange }: Props) {
                 onClick={() => togglePlatform(p.value)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
                   selected
-                    ? 'bg-emerald-900 text-white border-emerald-900'
-                    : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                    ? 'bg-gold-900 text-white border-gold-900'
+                    : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
                 }`}
               >
                 {selected && (
@@ -140,7 +140,7 @@ function TagBlock({
   onHandle: (h: string) => void
 }) {
   return (
-    <div className="space-y-3 pl-4 border-l-2 border-amber-200">
+    <div className="space-y-3 pl-4 border-l-2 border-gold-200">
       <p className="text-sm font-medium text-stone-700">Tag you on {platform}?</p>
       <div className="flex gap-2">
         {[true, false].map((v) => (
@@ -150,8 +150,8 @@ function TagBlock({
             onClick={() => onWantTag(v)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
               wantTag === v
-                ? 'bg-emerald-900 text-white border-emerald-900'
-                : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                ? 'bg-gold-900 text-white border-gold-900'
+                : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
             }`}
           >
             {v ? 'Yes' : 'No'}
@@ -167,7 +167,7 @@ function TagBlock({
             type="text"
             value={handle}
             onChange={(e) => onHandle(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition"
             placeholder="@yourhandle"
           />
         </div>

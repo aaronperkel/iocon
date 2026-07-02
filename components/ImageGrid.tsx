@@ -16,7 +16,7 @@ export default function ImageGrid() {
       {sampleImages.map(({ id, caption }) => (
         <div
           key={id}
-          className="group relative rounded-xl overflow-hidden aspect-square bg-gradient-to-br from-emerald-50 to-amber-50 border border-stone-200"
+          className="group relative rounded-xl overflow-hidden aspect-square bg-gradient-to-br from-olive-50 to-gold-50 border border-stone-200"
         >
           {/* Placeholder art block */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
@@ -24,7 +24,7 @@ export default function ImageGrid() {
             <p className="text-stone-400 text-xs text-center leading-tight">{caption}</p>
           </div>
           {/* Hover overlay */}
-          <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/10 transition-colors" />
+          <div className="absolute inset-0 bg-gold-950/0 group-hover:bg-gold-950/10 transition-colors" />
         </div>
       ))}
     </div>

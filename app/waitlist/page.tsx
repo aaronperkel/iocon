@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Waitlist — Íocón' }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800',
+  pending: 'bg-gold-100 text-gold-800',
   'in-progress': 'bg-blue-100 text-blue-800',
-  completed: 'bg-emerald-100 text-emerald-800',
+  completed: 'bg-olive-100 text-olive-800',
 }
 
 export default function WaitlistPage() {
@@ -18,13 +18,13 @@ export default function WaitlistPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-serif text-4xl font-semibold text-emerald-900 mb-2">Waitlist</h1>
+      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2">Waitlist</h1>
       <p className="text-stone-500 text-sm mb-2">
         Info will come from completed order forms.
       </p>
       <p className="text-stone-700 text-sm font-medium mb-10">
         Current wait:{' '}
-        <span className="font-serif text-2xl text-emerald-900">{openCount}</span>{' '}
+        <span className="font-serif text-2xl text-gold-900">{openCount}</span>{' '}
         open order{openCount !== 1 ? 's' : ''}
       </p>
 

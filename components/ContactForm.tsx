@@ -56,12 +56,12 @@ export default function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-8 text-center">
-        <p className="font-serif text-2xl text-emerald-800 mb-2">Message sent!</p>
-        <p className="text-emerald-700 text-sm">Thanks for reaching out — I will be in touch soon.</p>
+      <div className="bg-olive-50 border border-olive-200 rounded-xl p-8 text-center">
+        <p className="font-serif text-2xl text-olive-800 mb-2">Message sent!</p>
+        <p className="text-olive-700 text-sm">Thanks for reaching out — I will be in touch soon.</p>
         <button
           onClick={() => setStatus('idle')}
-          className="mt-5 text-sm text-emerald-700 underline underline-offset-2"
+          className="mt-5 text-sm text-olive-700 underline underline-offset-2"
         >
           Send another message
         </button>
@@ -70,7 +70,7 @@ export default function ContactForm() {
   }
 
   const inputCls = (key: keyof Fields) =>
-    `w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition ${
+    `w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition ${
       errors[key] ? 'border-red-400' : 'border-stone-300'
     }`
 
@@ -126,7 +126,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
+        className="bg-gold hover:bg-gold-400 disabled:opacity-60 text-gold-950 font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
       >
         {status === 'loading' ? 'Sending…' : 'Send Message'}
       </button>
@@ -149,7 +149,7 @@ function Field({
     <div>
       <label className="block text-sm font-medium text-stone-700 mb-1">
         {label}
-        {required && <span className="text-amber-600 ml-0.5">*</span>}
+        {required && <span className="text-gold-600 ml-0.5">*</span>}
       </label>
       {children}
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}

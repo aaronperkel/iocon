@@ -51,7 +51,7 @@ export function ColorPicker({ value, onChange, swatches = [] }: Props) {
               }}
               className={`w-8 h-8 rounded-full border-2 transition ${
                 active
-                  ? 'border-emerald-900 ring-2 ring-emerald-900/30'
+                  ? 'border-stone-900 ring-2 ring-stone-900/30'
                   : 'border-stone-200 hover:border-stone-400'
               }`}
               style={{ backgroundColor: s.hex }}
@@ -68,7 +68,7 @@ export function ColorPicker({ value, onChange, swatches = [] }: Props) {
           title="Custom color"
           className={`inline-flex items-center gap-1.5 h-8 pl-1.5 pr-3 rounded-full border-2 text-xs font-medium transition ${
             showCustom || !isSwatch
-              ? 'border-emerald-900 ring-2 ring-emerald-900/30 text-emerald-900'
+              ? 'border-stone-900 ring-2 ring-stone-900/30 text-stone-900'
               : 'border-stone-200 text-stone-600 hover:border-stone-400'
           }`}
         >
@@ -95,7 +95,7 @@ export function ColorPicker({ value, onChange, swatches = [] }: Props) {
               onChange={onChange}
               prefixed
               aria-label="Hex color value"
-              className="w-28 rounded-lg border border-stone-300 px-2 py-1.5 text-sm uppercase bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+              className="w-28 rounded-lg border border-stone-300 px-2 py-1.5 text-sm uppercase bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition"
             />
           </div>
         </div>

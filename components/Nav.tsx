@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import CrownMark from '@/components/CrownMark'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -26,9 +27,9 @@ export default function Nav() {
             className="flex items-center gap-2.5 group"
             onClick={() => setOpen(false)}
           >
-            <CrownIcon />
+            <CrownMark className="w-7 text-gold flex-shrink-0" />
             {/* Do NOT add uppercase/capitalize here — preserves Í */}
-            <span className="font-display text-xl text-emerald-900 group-hover:text-amber-700 transition-colors">
+            <span className="font-display text-xl text-olive-600 group-hover:text-gold-600 transition-colors">
               Íocón
             </span>
           </Link>
@@ -43,8 +44,8 @@ export default function Nav() {
                   href={href}
                   className={`text-sm font-medium transition-colors ${
                     active
-                      ? 'text-amber-700 border-b-2 border-amber-600 pb-0.5'
-                      : 'text-stone-600 hover:text-amber-700'
+                      ? 'text-gold-700 border-b-2 border-gold-600 pb-0.5'
+                      : 'text-stone-600 hover:text-gold-700'
                   }`}
                 >
                   {label}
@@ -58,7 +59,7 @@ export default function Nav() {
             onClick={() => setOpen(!open)}
             aria-label="Toggle navigation menu"
             aria-expanded={open}
-            className="sm:hidden p-2 rounded-md text-stone-600 hover:text-amber-700 hover:bg-stone-50 transition-colors"
+            className="sm:hidden p-2 rounded-md text-stone-600 hover:text-gold-700 hover:bg-stone-50 transition-colors"
           >
             {open ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,8 +85,8 @@ export default function Nav() {
                   onClick={() => setOpen(false)}
                   className={`px-2 py-2.5 text-sm font-medium rounded-md transition-colors ${
                     active
-                      ? 'text-amber-700 bg-amber-50'
-                      : 'text-stone-600 hover:text-amber-700 hover:bg-stone-50'
+                      ? 'text-gold-700 bg-gold-50'
+                      : 'text-stone-600 hover:text-gold-700 hover:bg-stone-50'
                   }`}
                 >
                   {label}
@@ -96,22 +97,5 @@ export default function Nav() {
         )}
       </div>
     </nav>
-  )
-}
-
-function CrownIcon() {
-  return (
-    <svg
-      width="22"
-      height="18"
-      viewBox="0 0 22 18"
-      fill="currentColor"
-      className="text-amber-600 flex-shrink-0"
-      aria-hidden="true"
-    >
-      {/* Crown silhouette */}
-      <path d="M1 16 L3.5 6 L8.5 12 L11 2 L13.5 12 L18.5 6 L21 16 Z" />
-      <rect x="1" y="16" width="20" height="2" rx="1" />
-    </svg>
   )
 }

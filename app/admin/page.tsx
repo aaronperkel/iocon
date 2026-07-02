@@ -20,9 +20,9 @@ const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
 ]
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
-  pending: 'bg-amber-100 text-amber-800',
+  pending: 'bg-gold-100 text-gold-800',
   'in-progress': 'bg-blue-100 text-blue-800',
-  completed: 'bg-emerald-100 text-emerald-800',
+  completed: 'bg-olive-100 text-olive-800',
 }
 
 export default function AdminPage() {
@@ -80,8 +80,8 @@ export default function AdminPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-start justify-between mb-2">
-        <h1 className="font-serif text-4xl font-semibold text-emerald-900">Admin</h1>
-        <span className="mt-2 text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium">
+        <h1 className="font-serif text-4xl font-semibold text-gold-900">Admin</h1>
+        <span className="mt-2 text-xs bg-gold-100 text-gold-800 px-2.5 py-1 rounded-full font-medium">
           {openCount} open
         </span>
       </div>
@@ -96,7 +96,7 @@ export default function AdminPage() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="text-xs rounded-lg border border-stone-300 px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="text-xs rounded-lg border border-stone-300 px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
           >
             <option value="all">All</option>
             <option value="logo">Logo</option>
@@ -109,7 +109,7 @@ export default function AdminPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs rounded-lg border border-stone-300 px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="text-xs rounded-lg border border-stone-300 px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
           >
             <option value="all">All</option>
             <option value="pending">Pending</option>
@@ -224,8 +224,8 @@ function OrderCard({
                   onClick={() => onStatusChange(order.id, opt.value)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition disabled:opacity-50 ${
                     order.status === opt.value
-                      ? 'bg-emerald-900 text-white border-emerald-900 cursor-default'
-                      : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                      ? 'bg-gold-900 text-white border-gold-900 cursor-default'
+                      : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
                   }`}
                 >
                   {updating && order.status !== opt.value ? '…' : opt.label}

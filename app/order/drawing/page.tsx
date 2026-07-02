@@ -150,7 +150,7 @@ function syncSections(arr: DancerSection[], targetLen: number): DancerSection[] 
 // ---------------------------------------------------------------------------
 
 const SELECT_CLS =
-  'w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition'
+  'w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition'
 
 function ShoeSelect({ value, onChange }: { value: Shoe; onChange: (v: Shoe) => void }) {
   return (
@@ -438,14 +438,14 @@ export default function DrawingOrderPage() {
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-serif text-3xl text-emerald-900 mb-3">Order received!</p>
+        <p className="font-serif text-3xl text-gold-900 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your costume drawing request has been added to the waitlist. I will reach out to discuss
           details.
         </p>
         <Link
           href="/waitlist"
-          className="inline-block bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
+          className="inline-block bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
         >
           View Waitlist
         </Link>
@@ -459,7 +459,7 @@ export default function DrawingOrderPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
       <Breadcrumb />
-      <h1 className="font-serif text-4xl font-semibold text-emerald-900 mb-2 mt-4">
+      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">
         Existing Costume Drawing
       </h1>
       <p className="text-stone-500 text-sm mb-10">
@@ -472,7 +472,7 @@ export default function DrawingOrderPage() {
 
           {/* ---- Layout selection ---- */}
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
               Select a Layout
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -483,14 +483,14 @@ export default function DrawingOrderPage() {
                   onClick={() => selectLayout(l.id)}
                   className={`relative rounded-xl border-2 overflow-hidden text-left transition ${
                     form.layout === l.id
-                      ? 'border-emerald-900 ring-2 ring-emerald-900/20'
-                      : 'border-stone-200 hover:border-amber-400'
+                      ? 'border-gold-600 ring-2 ring-gold-600/30'
+                      : 'border-stone-200 hover:border-gold-400'
                   }`}
                 >
                   <div
                     className={`h-24 w-full flex items-center justify-center transition-colors ${
                       form.layout === l.id
-                        ? 'bg-emerald-50 text-emerald-800'
+                        ? 'bg-olive-50 text-olive-800'
                         : 'bg-stone-50 text-stone-500'
                     }`}
                     aria-hidden="true"
@@ -502,7 +502,7 @@ export default function DrawingOrderPage() {
                     <p className="text-xs text-stone-500 mt-0.5">{l.subtitle}</p>
                   </div>
                   {form.layout === l.id && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-900 rounded-full flex items-center justify-center">
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-gold-600 rounded-full flex items-center justify-center">
                       <svg
                         viewBox="0 0 12 10"
                         fill="none"
@@ -525,7 +525,7 @@ export default function DrawingOrderPage() {
           {/* ---- Single Dancer ---- */}
           {form.layout === 'single' && (
             <section className="space-y-5">
-              <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+              <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
                 Dancer Details
               </h2>
               <Field label="First name of dancer">
@@ -533,7 +533,7 @@ export default function DrawingOrderPage() {
                   type="text"
                   value={form.singleName}
                   onChange={(e) => setForm((prev) => ({ ...prev, singleName: e.target.value }))}
-                  className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                  className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition"
                   placeholder="Emma"
                 />
               </Field>
@@ -562,7 +562,7 @@ export default function DrawingOrderPage() {
           {/* ---- Multiple Dancers ---- */}
           {form.layout === 'multiple' && (
             <section className="space-y-5">
-              <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+              <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
                 Dancer Details
               </h2>
               <Field
@@ -574,7 +574,7 @@ export default function DrawingOrderPage() {
                   type="text"
                   value={form.multiNamesRaw}
                   onChange={(e) => setMultiNames(e.target.value)}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition ${
+                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition ${
                     errors.multiNames ? 'border-red-400' : 'border-stone-300'
                   }`}
                   placeholder="Emma, Sophie, Lily"
@@ -599,7 +599,7 @@ export default function DrawingOrderPage() {
           {/* ---- Through the Years ---- */}
           {form.layout === 'through-years' && (
             <section className="space-y-5">
-              <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+              <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
                 Dancer Details
               </h2>
               <Field label="First name of dancer" required error={errors.ttyName}>
@@ -610,7 +610,7 @@ export default function DrawingOrderPage() {
                     setForm((prev) => ({ ...prev, ttyName: e.target.value }))
                     if (errors.ttyName) setErrors((prev) => ({ ...prev, ttyName: undefined }))
                   }}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition ${
+                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition ${
                     errors.ttyName ? 'border-red-400' : 'border-stone-300'
                   }`}
                   placeholder="Emma"
@@ -625,7 +625,7 @@ export default function DrawingOrderPage() {
                   type="text"
                   value={form.ttyAgesRaw}
                   onChange={(e) => setTtyAges(e.target.value)}
-                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition ${
+                  className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition ${
                     errors.ttyAges ? 'border-red-400' : 'border-stone-300'
                   }`}
                   placeholder="8, 12, 16, 20"
@@ -654,7 +654,7 @@ export default function DrawingOrderPage() {
                 value={form.comments}
                 onChange={(e) => setForm((prev) => ({ ...prev, comments: e.target.value }))}
                 rows={3}
-                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition resize-y"
+                className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition resize-y"
                 placeholder="Pose preference, background ideas, anything else I should know…"
               />
             </Field>
@@ -664,7 +664,7 @@ export default function DrawingOrderPage() {
           {form.layout && (
             <section className="space-y-5">
               <div className="flex items-baseline gap-3 border-b border-stone-100 pb-2">
-                <h2 className="font-serif text-lg text-emerald-900">Extras</h2>
+                <h2 className="font-serif text-lg text-gold-900">Extras</h2>
                 <p className="text-xs text-stone-400">I will contact you about specifics</p>
               </div>
 
@@ -688,7 +688,7 @@ export default function DrawingOrderPage() {
                 onChange={(v) => setExtras({ addLogo: v })}
               />
               {form.extras.addLogo === 'yes' && (
-                <div className="pl-4 border-l-2 border-amber-200">
+                <div className="pl-4 border-l-2 border-gold-200">
                   <ImageUpload
                     files={form.extras.logoImages}
                     onChange={(logoImages) => setExtras({ logoImages })}
@@ -705,13 +705,13 @@ export default function DrawingOrderPage() {
                 onChange={(v) => setExtras({ addText: v })}
               />
               {form.extras.addText === 'yes' && (
-                <div className="pl-4 border-l-2 border-amber-200">
+                <div className="pl-4 border-l-2 border-gold-200">
                   <Field label="Text to include">
                     <input
                       type="text"
                       value={form.extras.textContent}
                       onChange={(e) => setExtras({ textContent: e.target.value })}
-                      className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                      className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition"
                       placeholder="Name, school, year…"
                     />
                   </Field>
@@ -738,8 +738,8 @@ export default function DrawingOrderPage() {
                       onClick={() => togglePrize(prize)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
                         form.extras.prizes.includes(prize)
-                          ? 'bg-emerald-900 text-white border-emerald-900'
-                          : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                          ? 'bg-gold-900 text-white border-gold-900'
+                          : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
                       }`}
                     >
                       {prize}
@@ -752,7 +752,7 @@ export default function DrawingOrderPage() {
 
           {/* ---- Contact ---- */}
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
               Contact Information
             </h2>
             <ContactInfoBlock
@@ -767,7 +767,7 @@ export default function DrawingOrderPage() {
 
           {/* ---- Sharing ---- */}
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-emerald-900 border-b border-stone-100 pb-2">
+            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
               Sharing Preferences
             </h2>
             <SharingPreferencesBlock
@@ -781,9 +781,9 @@ export default function DrawingOrderPage() {
           )}
 
           {warnNoImages ? (
-            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 space-y-3">
-              <p className="font-medium text-amber-900 text-sm">No costume photos uploaded</p>
-              <p className="text-amber-800 text-sm">
+            <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
+              <p className="font-medium text-gold-900 text-sm">No costume photos uploaded</p>
+              <p className="text-gold-800 text-sm">
                 Costume photos are highly recommended — they help ensure the illustration captures
                 every detail accurately. Are you sure you want to submit without any?
               </p>
@@ -791,14 +791,14 @@ export default function DrawingOrderPage() {
                 <button
                   type="button"
                   onClick={() => setWarnNoImages(false)}
-                  className="px-4 py-1.5 rounded-lg border border-amber-400 text-amber-900 text-sm font-medium hover:bg-amber-100 transition"
+                  className="px-4 py-1.5 rounded-lg border border-gold-400 text-gold-900 text-sm font-medium hover:bg-gold-100 transition"
                 >
                   ← Go back and add photos
                 </button>
                 <button
                   type="button"
                   onClick={doSubmit}
-                  className="px-4 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-sm font-medium transition"
+                  className="px-4 py-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium transition"
                 >
                   Submit without photos
                 </button>
@@ -808,7 +808,7 @@ export default function DrawingOrderPage() {
             <button
               type="submit"
               disabled={submitStatus === 'loading'}
-              className="w-full sm:w-auto bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
+              className="w-full sm:w-auto bg-gold hover:bg-gold-400 disabled:opacity-60 text-gold-950 font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
             >
               {submitStatus === 'loading' ? 'Submitting…' : 'Submit Order'}
             </button>
@@ -841,8 +841,8 @@ function YesNoField({
             onClick={() => onChange(value === v ? '' : v)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border capitalize transition ${
               value === v
-                ? 'bg-emerald-900 text-white border-emerald-900'
-                : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                ? 'bg-gold-900 text-white border-gold-900'
+                : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
             }`}
           >
             {v === 'yes' ? 'Yes' : 'No'}
@@ -856,13 +856,13 @@ function YesNoField({
 function Breadcrumb() {
   return (
     <nav className="flex items-center gap-1.5 text-xs text-stone-400" aria-label="Breadcrumb">
-      <Link href="/order" className="hover:text-amber-600 transition-colors">Order</Link>
+      <Link href="/order" className="hover:text-gold-600 transition-colors">Order</Link>
       <span>/</span>
-      <Link href="/order/digital-image" className="hover:text-amber-600 transition-colors">
+      <Link href="/order/digital-image" className="hover:text-gold-600 transition-colors">
         Digital Image
       </Link>
       <span>/</span>
-      <Link href="/order/costume" className="hover:text-amber-600 transition-colors">
+      <Link href="/order/costume" className="hover:text-gold-600 transition-colors">
         Costume
       </Link>
       <span>/</span>

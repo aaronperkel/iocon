@@ -43,7 +43,7 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
     CONTACT_OPTIONS.find((o) => o.value === value.contactMethod) ?? CONTACT_OPTIONS[1]
 
   const inputCls = (key: keyof ContactInfoFields) =>
-    `w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition ${
+    `w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition ${
       errors[key] ? 'border-red-400' : 'border-stone-300'
     }`
 
@@ -79,7 +79,7 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
 
       <div>
         <p className="block text-sm font-medium text-stone-700 mb-2">
-          Preferred Contact Method <span className="text-amber-600">*</span>
+          Preferred Contact Method <span className="text-gold-600">*</span>
         </p>
         <div className="flex flex-wrap gap-2">
           {CONTACT_OPTIONS.map((o) => (
@@ -89,8 +89,8 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
               onClick={() => set('contactMethod', o.value)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
                 value.contactMethod === o.value
-                  ? 'bg-emerald-900 text-white border-emerald-900'
-                  : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+                  ? 'bg-gold-900 text-white border-gold-900'
+                  : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
               }`}
             >
               {o.label}

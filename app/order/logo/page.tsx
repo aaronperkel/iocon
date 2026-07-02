@@ -212,13 +212,13 @@ export default function LogoOrderPage() {
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-serif text-3xl text-emerald-900 mb-3">Order received!</p>
+        <p className="font-serif text-3xl text-gold-900 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your logo order has been added to the waitlist. I will be in touch to confirm details.
         </p>
         <Link
           href="/waitlist"
-          className="inline-block bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
+          className="inline-block bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
         >
           View Waitlist
         </Link>
@@ -229,9 +229,9 @@ export default function LogoOrderPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
       <Breadcrumb />
-      <h1 className="font-serif text-4xl font-semibold text-emerald-900 mb-2 mt-4">Logo Order</h1>
+      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">Logo Order</h1>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 text-sm text-stone-600 leading-relaxed">
+      <div className="bg-gold-50 border border-gold-200 rounded-xl p-4 mb-8 text-sm text-stone-600 leading-relaxed">
         <p className="font-medium text-stone-700 mb-1">About this service</p>
         <p>
           I design custom digital logos for Irish dance schools, academies, and competitions. Each
@@ -314,7 +314,7 @@ export default function LogoOrderPage() {
                   if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }))
                 }}
                 rows={5}
-                className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition resize-y ${
+                className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition resize-y ${
                   errors.description ? 'border-red-400' : 'border-stone-300'
                 }`}
                 placeholder="Describe your logo vision — style, symbols, colors, vibe, intended use…"
@@ -360,7 +360,7 @@ export default function LogoOrderPage() {
             <button
               type="submit"
               disabled={submitStatus === 'loading'}
-              className="mt-6 w-full sm:w-auto bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
+              className="mt-6 w-full sm:w-auto bg-gold hover:bg-gold-400 disabled:opacity-60 text-gold-950 font-medium text-sm px-8 py-2.5 rounded-lg transition-colors"
             >
               {submitStatus === 'loading' ? 'Submitting…' : 'Submit Order'}
             </button>
@@ -378,8 +378,8 @@ export default function LogoOrderPage() {
 const chipClass = (active: boolean) =>
   `px-4 py-2 rounded-lg text-sm font-medium border transition ${
     active
-      ? 'bg-emerald-900 text-white border-emerald-900'
-      : 'bg-white text-stone-600 border-stone-300 hover:border-amber-400'
+      ? 'bg-gold-900 text-white border-gold-900'
+      : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
   }`
 
 function ProgressBar({ active, total }: { active: number; total: number }) {
@@ -388,7 +388,7 @@ function ProgressBar({ active, total }: { active: number; total: number }) {
     <div className="mb-6">
       <div className="h-1.5 w-full rounded-full bg-stone-200 overflow-hidden">
         <div
-          className="h-full rounded-full bg-amber-600 transition-all duration-500"
+          className="h-full rounded-full bg-gold-600 transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -399,10 +399,10 @@ function ProgressBar({ active, total }: { active: number; total: number }) {
 function StepHeading({ n, title, optional }: { n: number; title: string; optional?: boolean }) {
   return (
     <div className="mb-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-amber-700 mb-1">
+      <p className="text-xs font-medium uppercase tracking-wide text-gold-700 mb-1">
         Question {n} of {TOTAL_STEPS}
       </p>
-      <h2 className="font-serif text-2xl text-emerald-900">
+      <h2 className="font-serif text-2xl text-gold-900">
         {title}
         {optional && (
           <span className="text-stone-400 text-base font-sans font-normal"> · optional</span>
@@ -417,7 +417,7 @@ function ContinueButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-emerald-900 hover:bg-emerald-800 text-white text-sm font-medium px-6 py-2.5 transition-colors"
+      className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium px-6 py-2.5 transition-colors"
     >
       Continue
       <svg
@@ -444,9 +444,9 @@ function ContinueWithoutImages({
   onConfirm: () => void
 }) {
   return (
-    <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 space-y-3">
-      <p className="font-medium text-amber-900 text-sm">No images added</p>
-      <p className="text-amber-800 text-sm">
+    <div className="mt-5 rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
+      <p className="font-medium text-gold-900 text-sm">No images added</p>
+      <p className="text-gold-800 text-sm">
         Reference images are highly recommended — they help ensure the final logo matches your
         vision. Continue without any?
       </p>
@@ -454,14 +454,14 @@ function ContinueWithoutImages({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-1.5 rounded-lg border border-amber-400 text-amber-900 text-sm font-medium hover:bg-amber-100 transition"
+          className="px-4 py-1.5 rounded-lg border border-gold-400 text-gold-900 text-sm font-medium hover:bg-gold-100 transition"
         >
           ← Go back and add images
         </button>
         <button
           type="button"
           onClick={onConfirm}
-          className="px-4 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-sm font-medium transition"
+          className="px-4 py-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium transition"
         >
           Continue without images
         </button>
@@ -473,11 +473,11 @@ function ContinueWithoutImages({
 function Breadcrumb() {
   return (
     <nav className="flex items-center gap-1.5 text-xs text-stone-400" aria-label="Breadcrumb">
-      <Link href="/order" className="hover:text-amber-600 transition-colors">
+      <Link href="/order" className="hover:text-gold-600 transition-colors">
         Order
       </Link>
       <span>/</span>
-      <Link href="/order/digital-image" className="hover:text-amber-600 transition-colors">
+      <Link href="/order/digital-image" className="hover:text-gold-600 transition-colors">
         Digital Image
       </Link>
       <span>/</span>

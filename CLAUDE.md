@@ -67,6 +67,16 @@ Reusable components used by the order forms live in `components/`:
 ### Branding constraint
 The brand name **Íocón** must always be a literal string. Never apply a Tailwind `uppercase`, `capitalize`, or `lowercase` class — or any CSS `text-transform` — to any element that contains it, as these mangle the accented Í.
 
+### Brand assets & palette
+Riley's master mockup sheets live in `design/` (not served). Individual lockups were traced to SVG in `public/brand/`: `wordmark-crowned`, `logo-horizontal`, `logo-stacked`, `crown`, `monogram` — each in color and `-black` variants. The favicon set (`app/icon.png`, `app/apple-icon.png`, `app/favicon.ico`) is generated from the crown; Next.js serves these by file convention. `components/CrownMark.tsx` is the crown as an inline SVG (`fill="currentColor"`, size via width class) — use it instead of embedding crown paths.
+
+Colors are custom Tailwind scales in `tailwind.config.ts`: **gold** (`#FFB101` at `gold`/`gold-500`) and **olive** (`#ACAB00` at `olive`/`olive-500`) — Riley's exact picks sit at 500; other shades are derived. Rules:
+- **Riley does not love dark green** — never use `olive-700`+ for headings, buttons, or surfaces. Dark UI roles use the warm dark end of the gold scale instead: headings/labels `text-gold-900` (bronze), selected chips `bg-gold-900`, dark surfaces (hero) `bg-gold-950` (espresso).
+- Olive is a mid/light accent only: nav wordmark `text-olive-600`, hero wordmark `text-olive`, light washes/badges `olive-50/100/800`. Gold crown + olive wordmark together = Riley's lockup.
+- Primary buttons/CTAs are `bg-gold hover:bg-gold-400 text-gold-950` — never white text on gold (fails contrast).
+- Do not reintroduce Tailwind `amber-*`/`emerald-*` — they were globally replaced by these scales.
+- The wordmark font in Riley's mockups **is** Uncial Antiqua (she traced the rendered text on her iPad) — live text in nav/hero is canonical; the SVG lockups match it.
+
 ### Order flow
 ```
 /order → Digital Image
