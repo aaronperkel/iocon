@@ -8,6 +8,6 @@ html {
 
 @layer base {
   body {
-    background-color: #FDFAF6; /* warm cream — matches tailwind `cream` extension */
+    background-color: #FCFCF4; /* almost-white olive tint — matches tailwind `olive-25` */
   }
 }

@@ -8,7 +8,7 @@ import CrownMark from '@/components/CrownMark'
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'Order', href: '/order' },
+  { label: 'Shop', href: '/shop' },
   { label: 'Waitlist', href: '/waitlist' },
 ]
 

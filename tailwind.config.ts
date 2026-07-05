@@ -32,6 +32,7 @@ const config: Config = {
         },
         olive: {
           DEFAULT: '#ACAB00',
+          25: '#FCFCF4', // page background — almost-white olive tint (Riley)
           50: '#FAFAEB',
           100: '#F2F2CE',
           200: '#E5E59B',

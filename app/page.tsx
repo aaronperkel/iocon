@@ -1,22 +1,23 @@
 import ContactForm from '@/components/ContactForm'
 import CrownMark from '@/components/CrownMark'
+import ReviewForm from '@/components/ReviewForm'
 
 export default function HomePage() {
   return (
     <>
-      {/* Hero */}
-      <section className="bg-gold-950 text-white py-20 px-4 text-center">
+      {/* Hero — light olive banner; the rest of the page sits on olive-25 (body) */}
+      <section className="bg-olive-100 border-b border-olive-200 py-20 px-4 text-center">
         <CrownMark className="w-16 mx-auto text-gold" />
         {/* Literal string — no CSS transform on this element */}
         {/* Gold crown + olive wordmark = Riley's stacked lockup, in live text */}
-        <h1 className="font-display text-5xl sm:text-6xl mt-5 mb-3 tracking-wide text-olive">
+        <h1 className="font-display text-5xl sm:text-6xl mt-5 mb-3 tracking-wide text-olive-600">
           Íocón
         </h1>
-        <p className="text-gold-100 text-lg max-w-sm mx-auto leading-relaxed">
-          Custom Irish dance costume illustrations — bringing your vision to life.
+        <p className="text-gold-900 text-lg max-w-sm mx-auto leading-relaxed">
+          Real, human-designed graphics for the Irish dance world.
         </p>
         <a
-          href="/order"
+          href="/shop"
           className="inline-block mt-8 bg-gold hover:bg-gold-400 text-gold-950 font-medium text-sm px-8 py-3 rounded-full transition-colors"
         >
           Start Your Order
@@ -32,20 +33,26 @@ export default function HomePage() {
           </h2>
           <div className="space-y-4 text-stone-600 leading-relaxed">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              I&apos;m Riley and I&apos;ve been an Irish dancer in the Mid-Atlantic region for 10
+              years. During the pandemic, I started creating free drawings for dancers using only
+              my iPhone and pointer finger under the Instagram name of{' '}
+              <a
+                href="https://www.instagram.com/irish.dance.costumes/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-olive-800 underline underline-offset-2 hover:text-gold-700 transition-colors"
+              >
+                @irish.dance.costumes
+              </a>
+              . The years of support since then, and the growth of generative AI, have motivated me
+              to increase my efforts and presence in the Irish dance community.
             </p>
             <p>
-              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-              qui officia deserunt mollit anim id est laborum. Irish dance has been a passion of
-              mine for over a decade, and I love capturing the beauty and detail of every costume.
-            </p>
-            <p>
-              Whether you need a logo for your school, a portrait of a beloved dress, or a
-              completely original costume design, I work closely with each client to make sure the
-              final piece exceeds expectations.
+              Íocón was developed to be a multi-purpose small business for Irish dance art,
+              graphics, design, and gifts. The name comes from the Irish word for Icon, inspired by
+              the strong, basic, and upright form that my original dancer drawings take. The
+              graphics that I offer are highly customizable and I always welcome collaboration
+              until the design is just right.
             </p>
           </div>
         </section>
@@ -56,11 +63,27 @@ export default function HomePage() {
             Contact Me
           </h2>
           <p className="text-stone-500 text-sm mb-8">
-            Have a question or a project in mind? Fill out the form below and I will get back to
-            you as soon as possible.
+            Have a question or a project in mind? If you are looking to order a logo, custom
+            graphic, or have any other ideas for a custom design, I welcome you to reach out and
+            describe in detail what you are looking for. I will get back to you so we can
+            brainstorm together!
           </p>
           <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
             <ContactForm />
+          </div>
+        </section>
+
+        {/* Leave a Review */}
+        <section id="review" className="scroll-mt-20">
+          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-2">
+            Leave a Review
+          </h2>
+          <p className="text-stone-500 text-sm mb-8">
+            Ordered from Íocón before? Rate your experience out of five crowns and tell others how
+            it went.
+          </p>
+          <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+            <ReviewForm />
           </div>
         </section>
 

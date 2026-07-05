@@ -8,7 +8,16 @@
 //   delete the array below.
 // ---------------------------------------------------------------------------
 
-export type OrderType = 'logo' | 'drawing' | 'design'
+import type { ProductFormat } from './products'
+
+// Shop subjects that go through an order form. Logo / custom graphic / bulk
+// requests skip the order flow entirely and arrive via the contact form.
+export type OrderType =
+  | 'solo-icon' // Flow B, one dancer (existing costume)
+  | 'solo-icon-new' // Flow A, new costume designed from scratch
+  | 'group-icons'
+  | 'through-the-years'
+  | 'walking-duo'
 export type OrderStatus = 'pending' | 'in-progress' | 'completed'
 export type ContactMethod = 'text' | 'email' | 'whatsapp' | 'instagram'
 export type SharingPlatform = 'instagram' | 'tiktok' | 'website' | 'none'
@@ -20,6 +29,7 @@ export interface Order {
   contactMethod: ContactMethod
   contactValue: string
   orderType: OrderType
+  product?: ProductFormat
   status: OrderStatus
   details?: string
   sharingPlatforms?: SharingPlatform[]
@@ -35,9 +45,10 @@ const seedOrders: Order[] = [
     name: 'Sample McSample',
     contactMethod: 'email',
     contactValue: 'sample@example.com',
-    orderType: 'logo',
+    orderType: 'group-icons',
+    product: 'digital-download',
     status: 'completed',
-    details: 'School logo for Aoife Academy of Irish Dance.',
+    details: 'Group icon — three dancers from Aoife Academy of Irish Dance.',
     sharingPlatforms: ['website'],
     createdAt: new Date('2024-05-01').toISOString(),
   },
@@ -47,9 +58,10 @@ const seedOrders: Order[] = [
     name: 'Casey Reilly',
     contactMethod: 'instagram',
     contactValue: '@caseyreilly',
-    orderType: 'drawing',
+    orderType: 'solo-icon',
+    product: 'digital-download',
     status: 'in-progress',
-    details: 'Layout: Single Dancer\nDancer: Casey\nShoe: Hard\nTan: Medium\nComments: Blue velvet solo dress with gold Celtic trim.',
+    details: 'Dancer: Casey\nShoe: Hard\nTan: Medium\nComments: Blue velvet solo dress with gold Celtic trim.',
     sharingPlatforms: ['instagram', 'tiktok'],
     tagUsername: '@caseyreilly',
     createdAt: new Date('2024-06-10').toISOString(),
@@ -60,7 +72,8 @@ const seedOrders: Order[] = [
     name: 'Kate Lennon',
     contactMethod: 'text',
     contactValue: '555-0199',
-    orderType: 'design',
+    orderType: 'solo-icon-new',
+    product: 'digital-download',
     status: 'pending',
     details: 'New championship dress design — forest green with silver embroidery.',
     sharingPlatforms: ['none'],
@@ -106,9 +119,11 @@ export function getOpenOrderCount(): number {
 }
 
 export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
-  logo: 'Logo',
-  drawing: 'Costume Drawing',
-  design: 'Costume Design',
+  'solo-icon': 'Solo Icon',
+  'solo-icon-new': 'Solo Icon (New Design)',
+  'group-icons': 'Group Icons',
+  'through-the-years': 'Through the Years',
+  'walking-duo': 'Walking Duo',
 }
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {

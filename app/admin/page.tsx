@@ -12,6 +12,7 @@ import {
   type Order,
   type OrderStatus,
 } from '@/lib/orders'
+import { PRODUCT_FORMAT_LABELS } from '@/lib/products'
 
 const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: 'pending', label: 'Pending' },
@@ -99,9 +100,11 @@ export default function AdminPage() {
             className="text-xs rounded-lg border border-stone-300 px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
           >
             <option value="all">All</option>
-            <option value="logo">Logo</option>
-            <option value="drawing">Drawing</option>
-            <option value="design">Design</option>
+            {Object.entries(ORDER_TYPE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
         <div className="flex items-center gap-2">
@@ -187,6 +190,9 @@ function OrderCard({
           <div className="grid sm:grid-cols-2 gap-4">
             <DetailRow label="Order type" value={ORDER_TYPE_LABELS[order.orderType]} />
             <DetailRow label="Received" value={createdDate} />
+            {order.product && (
+              <DetailRow label="Product" value={PRODUCT_FORMAT_LABELS[order.product]} />
+            )}
             <DetailRow
               label="Contact"
               value={`${CONTACT_METHOD_LABELS[order.contactMethod]}: ${order.contactValue}`}

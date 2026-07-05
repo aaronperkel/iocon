@@ -4,34 +4,35 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Field } from '@/components/FormField'
 import { ImageUpload, type UploadedFile } from '@/components/ImageUpload'
+import { ProductSelectionBlock } from '@/components/ProductSelectionBlock'
 import {
   ContactInfoBlock,
   EMPTY_CONTACT,
   type ContactInfoFields,
   type ContactErrors,
 } from '@/components/ContactInfoBlock'
-import {
-  SharingPreferencesBlock,
-  EMPTY_SHARING,
-  type SharingPrefsFields,
-} from '@/components/SharingPreferencesBlock'
+import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
+
+// Flow A in Riley's ordering scheme — design a brand-new costume from scratch.
+// Solo Icon only; the other subjects always draw existing costumes.
 
 interface FormState {
   images: UploadedFile[]
   description: string
+  product: ProductFormat | null
   contact: ContactInfoFields
-  sharing: SharingPrefsFields
 }
 
 const EMPTY: FormState = {
   images: [],
   description: '',
+  product: 'digital-download',
   contact: EMPTY_CONTACT,
-  sharing: EMPTY_SHARING,
 }
 
 interface Errors {
   description?: string
+  product?: string
   contact?: ContactErrors
 }
 
@@ -40,6 +41,7 @@ function validate(form: FormState): Errors {
   if (form.description.trim().length < 10) {
     errs.description = 'Please describe your vision (at least 10 characters).'
   }
+  if (!form.product) errs.product = 'Please choose a product format.'
   const contactErrs: ContactErrors = {}
   if (!form.contact.firstName.trim()) contactErrs.firstName = 'First name is required.'
   if (!form.contact.lastName.trim()) contactErrs.lastName = 'Last name is required.'
@@ -48,16 +50,7 @@ function validate(form: FormState): Errors {
   return errs
 }
 
-function buildTagUsername(sharing: SharingPrefsFields): string | undefined {
-  const parts: string[] = []
-  if (sharing.instagramTag && sharing.instagramHandle)
-    parts.push(`Instagram: ${sharing.instagramHandle}`)
-  if (sharing.tikTokTag && sharing.tikTokHandle)
-    parts.push(`TikTok: ${sharing.tikTokHandle}`)
-  return parts.length > 0 ? parts.join(', ') : undefined
-}
-
-export default function DesignOrderPage() {
+export default function NewCostumeDesignPage() {
   const [form, setForm] = useState<FormState>(EMPTY)
   const [errors, setErrors] = useState<Errors>({})
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
@@ -72,13 +65,11 @@ export default function DesignOrderPage() {
   async function doSubmit() {
     setWarnNoImages(false)
     setSubmitStatus('loading')
-    const tagUsername = buildTagUsername(form.sharing)
     const details = [
       `Descriptions / preferences: ${form.description}`,
       form.images.length > 0 &&
         `Inspiration images: ${form.images.length} uploaded — TODO: wire to file storage`,
-      form.sharing.platforms.length > 0 && `Sharing: ${form.sharing.platforms.join(', ')}`,
-      tagUsername && `Tag: ${tagUsername}`,
+      form.product && `Product: ${PRODUCT_FORMAT_LABELS[form.product]}`,
     ]
       .filter(Boolean)
       .join('\n')
@@ -92,10 +83,9 @@ export default function DesignOrderPage() {
           lastName: form.contact.lastName,
           contactMethod: form.contact.contactMethod,
           contactValue: form.contact.contactValue,
-          orderType: 'design',
+          orderType: 'solo-icon-new',
+          product: form.product,
           details,
-          sharingPlatforms: form.sharing.platforms,
-          tagUsername,
         }),
       })
       if (!res.ok) throw new Error()
@@ -138,7 +128,18 @@ export default function DesignOrderPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-      <Breadcrumb />
+      <nav className="flex items-center gap-1.5 text-xs text-stone-400" aria-label="Breadcrumb">
+        <Link href="/shop" className="hover:text-gold-600 transition-colors">
+          Shop
+        </Link>
+        <span aria-hidden="true">/</span>
+        <Link href="/shop/solo-icon" className="hover:text-gold-600 transition-colors">
+          Solo Icon
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span className="text-stone-600">New Costume Design</span>
+      </nav>
+
       <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">
         New Costume Design
       </h1>
@@ -186,6 +187,20 @@ export default function DesignOrderPage() {
 
           <section className="space-y-4">
             <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+              Product Selection
+            </h2>
+            <ProductSelectionBlock
+              value={form.product}
+              onChange={(product) => {
+                setForm((prev) => ({ ...prev, product }))
+                if (errors.product) setErrors((prev) => ({ ...prev, product: undefined }))
+              }}
+              error={errors.product}
+            />
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
               Contact Information
             </h2>
             <ContactInfoBlock
@@ -196,25 +211,34 @@ export default function DesignOrderPage() {
             />
           </section>
 
-          <section className="space-y-4">
-            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
-              Sharing Preferences
-            </h2>
-            <SharingPreferencesBlock
-              value={form.sharing}
-              onChange={(sharing) => setForm((prev) => ({ ...prev, sharing }))}
-            />
-          </section>
-
           {submitStatus === 'error' && (
             <p className="text-sm text-red-600">Something went wrong — please try again.</p>
           )}
 
           {warnNoImages ? (
-            <NoImagesWarning
-              onCancel={() => setWarnNoImages(false)}
-              onConfirm={doSubmit}
-            />
+            <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
+              <p className="font-medium text-gold-900 text-sm">No images uploaded</p>
+              <p className="text-gold-800 text-sm">
+                Inspiration images are highly recommended — they help ensure the final design
+                matches your vision. Are you sure you want to submit without any?
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setWarnNoImages(false)}
+                  className="px-4 py-1.5 rounded-lg border border-gold-400 text-gold-900 text-sm font-medium hover:bg-gold-100 transition"
+                >
+                  ← Go back and add images
+                </button>
+                <button
+                  type="button"
+                  onClick={doSubmit}
+                  className="px-4 py-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium transition"
+                >
+                  Submit without images
+                </button>
+              </div>
+            </div>
           ) : (
             <button
               type="submit"
@@ -225,52 +249,6 @@ export default function DesignOrderPage() {
             </button>
           )}
         </form>
-      </div>
-    </div>
-  )
-}
-
-function Breadcrumb() {
-  return (
-    <nav className="flex items-center gap-1.5 text-xs text-stone-400" aria-label="Breadcrumb">
-      <Link href="/order" className="hover:text-gold-600 transition-colors">Order</Link>
-      <span>/</span>
-      <Link href="/order/digital-image" className="hover:text-gold-600 transition-colors">
-        Digital Image
-      </Link>
-      <span>/</span>
-      <Link href="/order/costume" className="hover:text-gold-600 transition-colors">
-        Costume
-      </Link>
-      <span>/</span>
-      <span className="text-stone-600">Design</span>
-    </nav>
-  )
-}
-
-function NoImagesWarning({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
-  return (
-    <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
-      <p className="font-medium text-gold-900 text-sm">No images uploaded</p>
-      <p className="text-gold-800 text-sm">
-        Inspiration images are highly recommended — they help ensure the final design matches your
-        vision. Are you sure you want to submit without any?
-      </p>
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-1.5 rounded-lg border border-gold-400 text-gold-900 text-sm font-medium hover:bg-gold-100 transition"
-        >
-          ← Go back and add images
-        </button>
-        <button
-          type="button"
-          onClick={onConfirm}
-          className="px-4 py-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium transition"
-        >
-          Submit without images
-        </button>
       </div>
     </div>
   )

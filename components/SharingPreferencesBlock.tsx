@@ -1,5 +1,12 @@
 'use client'
 
+// NOTE: Currently unused. The sharing/permission questions (platforms, tag
+// the dancer, tag the dance school) were removed from the order forms in
+// July 2026 — too confusing mid-order; Riley sorts sharing out with the
+// client directly. Kept intact in case a post-order permissions step comes
+// back. The dance-school tag question is grouped with the dancer-tag
+// questions here on purpose.
+
 import type { SharingPlatform } from '@/lib/orders'
 
 export interface SharingPrefsFields {
@@ -8,6 +15,8 @@ export interface SharingPrefsFields {
   instagramHandle: string
   tikTokTag: boolean | null
   tikTokHandle: string
+  schoolTag: boolean | null
+  schoolHandle: string
 }
 
 export const EMPTY_SHARING: SharingPrefsFields = {
@@ -16,6 +25,8 @@ export const EMPTY_SHARING: SharingPrefsFields = {
   instagramHandle: '',
   tikTokTag: null,
   tikTokHandle: '',
+  schoolTag: null,
+  schoolHandle: '',
 }
 
 const PLATFORM_OPTIONS: { value: SharingPlatform; label: string }[] = [
@@ -33,6 +44,7 @@ interface Props {
 export function SharingPreferencesBlock({ value, onChange }: Props) {
   const showInstagram = value.platforms.includes('instagram')
   const showTikTok = value.platforms.includes('tiktok')
+  const showSchool = value.platforms.some((p) => p !== 'none')
 
   function togglePlatform(platform: SharingPlatform) {
     let next: SharingPlatform[]
@@ -44,6 +56,7 @@ export function SharingPreferencesBlock({ value, onChange }: Props) {
         ? withoutNone.filter((p) => p !== platform)
         : [...withoutNone, platform]
     }
+    const anySharing = next.some((p) => p !== 'none')
     onChange({
       ...value,
       platforms: next,
@@ -51,6 +64,8 @@ export function SharingPreferencesBlock({ value, onChange }: Props) {
       instagramHandle: next.includes('instagram') ? value.instagramHandle : '',
       tikTokTag: next.includes('tiktok') ? value.tikTokTag : null,
       tikTokHandle: next.includes('tiktok') ? value.tikTokHandle : '',
+      schoolTag: anySharing ? value.schoolTag : null,
+      schoolHandle: anySharing ? value.schoolHandle : '',
     })
   }
 
@@ -121,6 +136,70 @@ export function SharingPreferencesBlock({ value, onChange }: Props) {
           }
           onHandle={(h) => onChange({ ...value, tikTokHandle: h })}
         />
+      )}
+
+      {/* Dance school tag */}
+      {showSchool && (
+        <DanceSchoolTagBlock
+          wantTag={value.schoolTag}
+          handle={value.schoolHandle}
+          onWantTag={(v) =>
+            onChange({ ...value, schoolTag: v, schoolHandle: v ? value.schoolHandle : '' })
+          }
+          onHandle={(h) => onChange({ ...value, schoolHandle: h })}
+        />
+      )}
+    </div>
+  )
+}
+
+// "Do I have permission to tag your dance school?" — sits directly below the
+// dancer-tag questions above.
+function DanceSchoolTagBlock({
+  wantTag,
+  handle,
+  onWantTag,
+  onHandle,
+}: {
+  wantTag: boolean | null
+  handle: string
+  onWantTag: (v: boolean) => void
+  onHandle: (h: string) => void
+}) {
+  return (
+    <div className="space-y-3 pl-4 border-l-2 border-gold-200">
+      <p className="text-sm font-medium text-stone-700">
+        Do I have permission to tag your dance school?
+      </p>
+      <div className="flex gap-2">
+        {[true, false].map((v) => (
+          <button
+            key={String(v)}
+            type="button"
+            onClick={() => onWantTag(v)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
+              wantTag === v
+                ? 'bg-gold-900 text-white border-gold-900'
+                : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
+            }`}
+          >
+            {v ? 'Yes' : 'No'}
+          </button>
+        ))}
+      </div>
+      {wantTag === true && (
+        <div>
+          <label className="block text-sm font-medium text-stone-700 mb-1">
+            Dance school handle
+          </label>
+          <input
+            type="text"
+            value={handle}
+            onChange={(e) => onHandle(e.target.value)}
+            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition"
+            placeholder="@schoolhandle"
+          />
+        </div>
       )}
     </div>
   )

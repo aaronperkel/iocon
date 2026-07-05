@@ -1,13 +1,12 @@
 // ---------------------------------------------------------------------------
-// Gallery — STUB ONLY
+// Gallery — filterable by product type and subject.
 //
-// This page will become an Instagram-style image feed.
-// TODO: Replace ImageGrid sample data with real images.
-//   Options: pull from Instagram Basic Display API, a CMS (Contentful,
-//   Sanity, etc.), or a static imports list in components/ImageGrid.tsx.
+// Image data lives in lib/gallery.ts; entries are placeholders until Riley's
+// real artwork is added (drop files in public/gallery/ and set `src`).
 // ---------------------------------------------------------------------------
 
-import ImageGrid from '@/components/ImageGrid'
+import { Suspense } from 'react'
+import GalleryGrid from '@/components/GalleryGrid'
 
 export const metadata = { title: 'Gallery — Íocón' }
 
@@ -16,14 +15,16 @@ export default function GalleryPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-10">
         <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-3">Gallery</h1>
-        <p className="text-stone-500 italic text-sm">
-          {/* Placeholder note — this section is intentionally left as a scaffold */}
-          Coming soon: an Instagram-style feed of custom designs, logos, and costume drawings.
-          Each tile will show a full image with a short description on hover.
+        <p className="text-stone-500 text-sm">
+          Browse past work by product or subject using the filters below.
         </p>
       </div>
 
-      <ImageGrid />
+      {/* GalleryGrid reads its filters from the URL query string, so it needs a
+          Suspense boundary for useSearchParams during static rendering. */}
+      <Suspense fallback={null}>
+        <GalleryGrid />
+      </Suspense>
     </div>
   )
 }
