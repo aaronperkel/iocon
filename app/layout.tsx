@@ -25,10 +25,29 @@ const uncialAntiqua = Uncial_Antiqua({
 
 // Title is set literally — no template suffix — so the accented Í is never
 // run through a CSS text-transform that could mangle it at the layout level.
+// Social preview images live at app/opengraph-image.png / app/twitter-image.png
+// (Next.js file convention); the source design is design/og-image.html.
 export const metadata: Metadata = {
+  // Base for absolute social-image URLs. Set NEXT_PUBLIC_SITE_URL to the
+  // production domain once one exists; until then Vercel's URL (or localhost
+  // in dev) is used.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'),
+  ),
   title: 'Íocón',
   description:
     'Custom Irish dance costume drawings, digital logos, and costume designs by Íocón.',
+  openGraph: {
+    siteName: 'Íocón',
+    type: 'website',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 export default function RootLayout({
