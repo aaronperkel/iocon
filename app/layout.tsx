@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
@@ -44,6 +44,14 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+}
+
+// Matches the two body backgrounds in globals.css (--olive-25 light/dark).
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FCFCF4' },
+    { media: '(prefers-color-scheme: dark)', color: '#16160C' },
+  ],
 }
 
 export default function RootLayout({

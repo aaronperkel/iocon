@@ -7,7 +7,113 @@ html {
 }
 
 @layer base {
+  /*
+   * Theme variables — consumed by tailwind.config.ts as rgb(var(--x) / alpha).
+   * Light values are canonical (hex equivalents in comments match the old
+   * literal palette exactly). The dark block below remaps only what the dark
+   * theme changes; anything not overridden keeps its light value on purpose:
+   *   - gold DEFAULT/300/400/500 + gold-950: the CTA pairing (bg-gold +
+   *     text-gold-950) must look identical in both modes.
+   *   - olive 300/400/500/950: mid olives already read fine on dark.
+   */
+  :root {
+    color-scheme: light;
+
+    --white: 255 255 255;
+    --cream: 253 250 246; /* #FDFAF6 */
+
+    --gold-50: 255 248 230;  /* #FFF8E6 */
+    --gold-100: 255 239 194; /* #FFEFC2 */
+    --gold-200: 255 225 138; /* #FFE18A */
+    --gold-300: 255 208 77;  /* #FFD04D */
+    --gold-400: 255 192 33;  /* #FFC021 */
+    --gold-500: 255 177 1;   /* #FFB101 — Riley's gold */
+    --gold-600: 198 138 0;   /* #C68A00 */
+    --gold-700: 143 100 0;   /* #8F6400 */
+    --gold-800: 112 80 0;    /* #705000 */
+    --gold-900: 81 58 0;     /* #513A00 — bronze headings */
+    --gold-950: 54 38 0;     /* #362600 — text on gold CTAs */
+
+    --olive-25: 252 252 244;  /* #FCFCF4 — page background (Riley) */
+    --olive-50: 250 250 235;  /* #FAFAEB */
+    --olive-100: 242 242 206; /* #F2F2CE — hero banner */
+    --olive-200: 229 229 155; /* #E5E59B */
+    --olive-300: 209 208 92;  /* #D1D05C */
+    --olive-400: 190 189 38;  /* #BEBD26 */
+    --olive-500: 172 171 0;   /* #ACAB00 — Riley's olive */
+    --olive-600: 139 138 0;   /* #8B8A00 — wordmark on light surfaces */
+    --olive-700: 110 109 0;   /* #6E6D00 */
+    --olive-800: 79 83 6;     /* #4F5306 */
+    --olive-900: 60 66 7;     /* #3C4207 */
+    --olive-950: 35 40 5;     /* #232805 */
+
+    /* Tailwind's stone scale, unchanged in light mode */
+    --stone-50: 250 250 249;
+    --stone-100: 245 245 244;
+    --stone-200: 231 229 228;
+    --stone-300: 214 211 209;
+    --stone-400: 168 162 158;
+    --stone-500: 120 113 108;
+    --stone-600: 87 83 78;
+    --stone-700: 68 64 60;
+    --stone-800: 41 37 36;
+    --stone-900: 28 25 23;
+    --stone-950: 12 10 9;
+
+    --red-400: 248 113 113; /* Tailwind red-400 */
+    --red-600: 220 38 38;   /* Tailwind red-600 */
+  }
+
+  /*
+   * Dark theme (experiment, 2026-07): follows the OS setting. Warm near-black
+   * surfaces with a faint olive tint — deliberately desaturated so it never
+   * reads as the dark green Riley dislikes. Text scales invert: bronze
+   * headings become champagne gold, dark olives become light olives, and
+   * "white" cards/chips become warm dark surfaces (which also flips the
+   * bg-gold-900 + text-white selected chips into light-gold chips with dark
+   * text — same pairing, inverted).
+   */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+
+      --white: 34 31 27;  /* #221F1B — card / input / nav surface */
+      --cream: 38 34 25;
+
+      --gold-50: 46 37 15;   /* washes darken */
+      --gold-100: 58 46 16;
+      --gold-200: 92 74 24;
+      --gold-600: 255 200 69;  /* text golds lighten */
+      --gold-700: 255 211 118;
+      --gold-800: 255 224 153;
+      --gold-900: 250 222 155; /* #FADE9B — champagne headings */
+
+      --olive-25: 22 22 12;  /* #16160C — page background */
+      --olive-50: 29 30 16;
+      --olive-100: 37 38 19; /* #252613 — hero banner */
+      --olive-200: 60 61 31;
+      --olive-600: 202 201 62; /* wordmark brightens on dark surfaces */
+      --olive-700: 213 212 92;
+      --olive-800: 223 222 138;
+      --olive-900: 232 231 168;
+
+      --stone-50: 43 39 35;   /* washes sit just above the card surface */
+      --stone-100: 48 44 40;
+      --stone-200: 62 57 52;  /* borders */
+      --stone-300: 78 72 66;  /* input borders */
+      --stone-400: 138 132 125; /* muted text */
+      --stone-500: 168 162 155;
+      --stone-600: 196 190 183; /* body text */
+      --stone-700: 214 209 203;
+      --stone-800: 231 228 224;
+      --stone-900: 240 238 235; /* primary text */
+      --stone-950: 250 250 249;
+
+      --red-600: 248 113 113; /* error text needs the lighter red on dark */
+    }
+  }
+
   body {
-    background-color: #FCFCF4; /* almost-white olive tint — matches tailwind `olive-25` */
+    background-color: rgb(var(--olive-25)); /* almost-white olive tint in light, warm near-black in dark */
   }
 }
