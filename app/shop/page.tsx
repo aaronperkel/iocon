@@ -119,13 +119,13 @@ const STEPS = [
   },
 ]
 
-// The gold crown from the logo with the step number seated in its base.
+// The gold crown from the logo with the step number seated in its body.
+// Solid silhouette (no glint) so nothing competes with the number.
 function CrownNumber({ number }: { number: number }) {
   return (
     <span className="relative inline-block w-16 text-gold mb-3">
-      <CrownMark className="w-full" />
-      {/* Seated low in the crown's solid band, clear of the diagonal glint cut-out */}
-      <span className="absolute inset-x-0 bottom-[6%] flex justify-center text-gold-950 text-xs font-bold leading-none">
+      <CrownMark className="w-full" glint={false} />
+      <span className="absolute inset-x-0 bottom-[8%] flex justify-center text-gold-950 text-sm font-bold leading-none">
         {number}
       </span>
     </span>
