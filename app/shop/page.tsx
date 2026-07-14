@@ -124,11 +124,14 @@ const STEPS = [
 // The numeral is text-white to match the tile surface behind the crown
 // (white in light mode, the dark card color in dark mode), so it reads
 // as a cutout of the crown in both themes (Riley).
+// top-[65%] centers the digit in the crown's solid band: the valleys between
+// the peaks bottom out ~29% down the viewBox, so the band below them is
+// centered at ~65% of the crown's height.
 function CrownNumber({ number }: { number: number }) {
   return (
     <span className="relative inline-block w-16 text-gold mb-3">
       <CrownMark className="w-full" glint={false} />
-      <span className="absolute inset-x-0 bottom-[8%] flex justify-center text-white text-sm font-bold leading-none">
+      <span className="absolute inset-x-0 top-[65%] -translate-y-1/2 flex justify-center text-white text-sm font-bold leading-none">
         {number}
       </span>
     </span>
