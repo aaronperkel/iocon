@@ -14,6 +14,7 @@ export type GallerySubject =
   | 'group-icons'
   | 'through-the-years'
   | 'walking-duo'
+  | 'bulk-drawings'
   | 'logo'
   | 'custom-graphic'
 
@@ -22,6 +23,7 @@ export const GALLERY_SUBJECT_LABELS: Record<GallerySubject, string> = {
   'group-icons': 'Group Icons',
   'through-the-years': 'Through the Years',
   'walking-duo': 'Walking Duo',
+  'bulk-drawings': 'Bulk Drawings',
   logo: 'Logo',
   'custom-graphic': 'Custom Graphic',
 }

@@ -18,7 +18,7 @@ There is no test suite or linter configured yet. TypeScript type errors surface 
 ### Stack
 Next.js 14 App Router · TypeScript · Tailwind CSS 3 · `next/font/google` (no external font CDN) · `react-colorful` (in-page color picker)
 
-Fonts: **Uncial Antiqua** (`font-display`) for the **Íocón brand wordmark only** (the hero title and the nav brand — the only two places it appears); **Cormorant Garamond** (`font-serif`) for all page/section headings and body serif text; **Inter** (`font-sans`) for UI copy. The Uncial face reads as cartoonish at heading sizes, so do NOT apply `font-display` to page titles, card titles, form labels, or body text — use `font-serif` for headings instead.
+Fonts: **Uncial Antiqua** (`font-display`) for the **Íocón brand wordmark only** (the hero title and the nav brand — the only two places it appears); **Alegreya Sans** (`font-heading`) for all page/section headings — a humanist sans with calligraphic roots, picked July 2026 when Riley asked for a less generic heading face ("a nice sans serif") that pairs with the uncial; it replaced Cormorant Garamond (`font-serif`, now removed). Alegreya Sans ships no 600 weight, so headings pair `font-heading` with `font-bold`, never `font-semibold`. **Inter** (`font-sans`) is for UI copy. The Uncial face reads as cartoonish at heading sizes, so do NOT apply `font-display` to page titles, card titles, form labels, or body text — use `font-heading` instead.
 
 ### Routing
 All routes live under `app/`. There are no `pages/` directory routes. `/order` and `/order/*` are redirected to `/shop` in `next.config.ts` (the nav item was renamed "Shop" per Riley).
@@ -26,7 +26,7 @@ All routes live under `app/`. There are no `pages/` directory routes. `/order` a
 ```
 /                                  app/page.tsx                     ← hero, about, contact, review sections
 /gallery                           app/gallery/page.tsx             ← filterable by product/subject via query params
-/shop                              app/shop/page.tsx                ← how-it-works steps + 6 subject buttons
+/shop                              app/shop/page.tsx                ← how-it-works steps (crown numerals) + 7 flip tiles
 /shop/solo-icon                    app/shop/solo-icon/page.tsx      ← fork: new design vs. existing costume
 /shop/solo-icon/new-costume        …/new-costume/page.tsx           ← 'use client', Flow A
 /shop/solo-icon/existing-costume   …/existing-costume/page.tsx      ← Flow B wrapper (1 dancer, fixed)
@@ -50,10 +50,11 @@ GET|POST /api/reviews              app/api/reviews/route.ts
   ├── Group Icons       → /shop/group-icons        (Flow B, one section per dancer, addable)
   ├── Through the Years → /shop/through-the-years  (Flow B, one section per age, addable)
   ├── Walking Duo       → /shop/walking-duo        (Flow B, exactly two dancer sections)
-  ├── Logo              → /#contact   (no order form — starts with a conversation)
-  └── Custom Graphic    → /#contact
-  Bulk/other requests   → /#contact   (text link under the grid)
+  ├── Bulk Drawings     → /#contact   (>5 drawings — no order form, starts with a conversation)
+  ├── Logo              → /#contact
+  └── Graphic           → /#contact   (tile renamed from "Custom Graphic" per Riley; id stays custom-graphic)
 ```
+Each subject is a **flip tile** (`components/SubjectCard.tsx`, Riley July 2026): front = artwork + title + "Learn more"; back = starting price + Riley's blurb + a carousel of gallery entries tagged with the matching subject. Starting prices are the `PRICE_TBD` placeholder (`Starting from $–`) until Riley supplies numbers.
 **Flow A** (`new-costume`): inspiration images → description → product selection → contact.
 **Flow B** (`components/CostumeOrderForm.tsx`, shared by four wrappers): repeating dancer/age sections — each with dancer details (first name *or* age, hard/soft shoe, tan, who designed the costume), costume+headpiece photos (wig-visibility note), extras (background color, logo, text, sash, prizes), and comments — then once per order: product selection and contact info.
 
@@ -81,6 +82,7 @@ Reusable components used by the order forms live in `components/`:
 - `ColorPicker.tsx` — in-page color picker (preset swatches + inline `react-colorful` saturation/hue picker + hex input). Used by the per-dancer background-color field. Deliberately avoids the native `<input type="color">` OS popup.
 - `ReviewForm.tsx` — crown rating (1–5 `CrownMark`s) + text review, POSTs to `/api/reviews`
 - `GalleryGrid.tsx` — filter chips + tile grid; filters live in the URL query string (`?product=…&subject=…`) so views are shareable/deep-linkable
+- `SubjectCard.tsx` — 'use client' flip tile for the shop subjects: 3D rotateY flip (hidden face is `inert`, focus is handed to the revealed face, `motion-reduce` disables the animation), example carousel fed by gallery entries, `imageFit: 'contain'` for drawings that must never crop (mats them on literal white, even in dark mode)
 - `FormStep.tsx` — wrapper for progressive (one-question-at-a-time) forms; renders a step as `active`, `preview` (blurred/greyed + `inert`), or `hidden`. **Currently unused** — the progressive-form prototype lived in the old `/order/logo` page, which was retired when logo orders moved to the contact form. Kept in case the pattern returns.
 - `icons.tsx` — line-icon set + `<Icon name="…" />` dispatcher. The shop subject cards use these as placeholders; when Riley supplies real artwork, drop files in `public/shop/` and set `image` on the `SUBJECTS` entries in `app/shop/page.tsx`.
 
@@ -105,7 +107,7 @@ Colors are custom Tailwind scales in `tailwind.config.ts`: **gold** (`#FFB101` a
 - The wordmark font in Riley's mockups **is** Uncial Antiqua (she traced the rendered text on her iPad) — live text in nav/hero is canonical; the SVG lockups match it.
 
 ### Adding a new shop subject or product format
-- **Subject** (what the art depicts): add an entry to the `SUBJECTS` array in `app/shop/page.tsx` (plus a form page if it needs one) and, if it should be filterable in the gallery, extend `GallerySubject` in `lib/gallery.ts` and `OrderType` in `lib/orders.ts` (+ API `VALID_TYPES`).
+- **Subject** (what the art depicts): add an entry to the `SUBJECTS` array in `app/shop/page.tsx` — title, `blurb` (+ `price` if it has an order form), `icon`/`image`, and a `gallerySubject` tag that feeds the tile's example carousel (plus a form page if it needs one). Extend `GallerySubject` in `lib/gallery.ts` (every tile needs one so the carousel can filter) and, if it takes orders, `OrderType` in `lib/orders.ts` (+ API `VALID_TYPES`).
 - **Product format** (what the art ships as): add to `ProductFormat`/labels and `AVAILABLE_PRODUCTS` in `lib/products.ts` — the product-selection step, API validation, and gallery filters pick it up from there.
 
 ### Stubbed integrations
@@ -114,4 +116,4 @@ Colors are custom Tailwind scales in `tailwind.config.ts`: **gold** (`#FFB101` a
 - **Review persistence / purchase check** — `lib/reviews.ts`. In-memory; nothing verifies the reviewer actually bought something yet.
 - **File uploads** — `ImageUpload` component renders client-side previews via object URLs. Actual upload is stubbed with a TODO comment; wire to S3/Cloudflare R2/Vercel Blob and store the returned URL when ready.
 - **Gallery content** — `lib/gallery.ts` holds placeholder entries. Real images go in `public/gallery/` with `src` set per entry.
-- **Shop subject images** — Riley will supply artwork for the six subject buttons; see the comment on `SUBJECTS` in `app/shop/page.tsx`.
+- **Shop subject images** — Riley has supplied Through the Years (`public/shop/through-the-years.png`, `imageFit: 'contain'`) and Bulk Drawings (`public/shop/bulk-drawings.jpeg`); the other five tiles still show line icons until her artwork arrives. See the comment on `SUBJECTS` in `app/shop/page.tsx`.

@@ -64,7 +64,7 @@ export default function ReviewForm() {
             <CrownMark key={i} className="w-7 text-gold" />
           ))}
         </div>
-        <p className="font-serif text-2xl text-olive-800 mb-2">Thank you for your review!</p>
+        <p className="font-heading text-2xl text-olive-800 mb-2">Thank you for your review!</p>
         <p className="text-olive-700 text-sm">
           Your feedback means a lot — thank you for supporting Íocón.
         </p>

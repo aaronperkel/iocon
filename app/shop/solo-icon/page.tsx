@@ -32,7 +32,7 @@ export default function SoloIconPage() {
         <span className="text-stone-600">Solo Icon</span>
       </nav>
 
-      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">Solo Icon</h1>
+      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">Solo Icon</h1>
       <p className="text-stone-500 text-sm mb-10">
         Would you like a brand-new costume design, or an icon of a costume you already own?
       </p>
@@ -44,7 +44,7 @@ export default function SoloIconPage() {
             href={opt.href}
             className="group flex flex-col gap-3 bg-white border border-stone-200 hover:border-gold-400 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all"
           >
-            <span className="font-serif text-xl font-semibold text-gold-900 group-hover:text-gold-700 transition-colors leading-tight">
+            <span className="font-heading text-xl font-bold text-gold-900 group-hover:text-gold-700 transition-colors leading-tight">
               {opt.label}
             </span>
             <span className="text-stone-500 text-sm leading-relaxed">{opt.description}</span>

@@ -323,7 +323,7 @@ export default function CostumeOrderForm({
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-serif text-3xl text-gold-900 mb-3">Order received!</p>
+        <p className="font-heading text-3xl text-gold-900 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your {title.toLowerCase()} request has been added to the waitlist. I will reach out to
           discuss details.
@@ -352,7 +352,7 @@ export default function CostumeOrderForm({
         <span className="text-stone-600">{title}</span>
       </nav>
 
-      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">{title}</h1>
+      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">{title}</h1>
       <p className="text-stone-500 text-sm mb-10">{intro}</p>
 
       <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
@@ -361,7 +361,7 @@ export default function CostumeOrderForm({
           {/* ---- One dancer across all ages (Through the Years) ---- */}
           {sectionNoun === 'age' && (
             <section className="space-y-4">
-              <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+              <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
                 Dancer
               </h2>
               <Field label="First name of dancer" required error={errors.dancerName}>
@@ -387,7 +387,7 @@ export default function CostumeOrderForm({
               className="rounded-xl border border-stone-200 bg-stone-50 p-5 space-y-6"
             >
               <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                <h2 className="font-serif text-lg text-gold-900">{sectionTitle(section, i)}</h2>
+                <h2 className="font-heading text-lg text-gold-900">{sectionTitle(section, i)}</h2>
                 {canRemove && (
                   <button
                     type="button"
@@ -474,7 +474,7 @@ export default function CostumeOrderForm({
               {/* Extras */}
               <div className="space-y-5">
                 <div className="flex items-baseline gap-3 border-b border-stone-200 pb-2">
-                  <h3 className="font-serif text-base text-gold-900">Extras</h3>
+                  <h3 className="font-heading text-base text-gold-900">Extras</h3>
                   <p className="text-xs text-stone-400">I will contact you about specifics</p>
                 </div>
 
@@ -580,7 +580,7 @@ export default function CostumeOrderForm({
 
           {/* ---- Product selection (once per order) ---- */}
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
               Product Selection
             </h2>
             <ProductSelectionBlock
@@ -595,7 +595,7 @@ export default function CostumeOrderForm({
 
           {/* ---- Contact (once per order) ---- */}
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
               Contact Information
             </h2>
             <ContactInfoBlock

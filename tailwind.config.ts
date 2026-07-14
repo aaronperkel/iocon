@@ -15,7 +15,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['var(--font-cormorant)', 'Georgia', 'Cambria', 'serif'],
+        heading: ['var(--font-heading)', 'system-ui', '-apple-system', 'sans-serif'],
         sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['var(--font-uncial)', 'Georgia', 'serif'],
       },

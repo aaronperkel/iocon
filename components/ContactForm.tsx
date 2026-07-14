@@ -57,7 +57,7 @@ export default function ContactForm() {
   if (status === 'success') {
     return (
       <div className="bg-olive-50 border border-olive-200 rounded-xl p-8 text-center">
-        <p className="font-serif text-2xl text-olive-800 mb-2">Message sent!</p>
+        <p className="font-heading text-2xl text-olive-800 mb-2">Message sent!</p>
         <p className="text-olive-700 text-sm">Thanks for reaching out — I will be in touch soon.</p>
         <button
           onClick={() => setStatus('idle')}

@@ -14,7 +14,7 @@ export default function HomePage() {
           Íocón
         </h1>
         <p className="text-gold-900 text-lg max-w-sm mx-auto leading-relaxed">
-          Real, human-designed graphics for the Irish dance world.
+          Hand made graphics for the Irish Dance world
         </p>
         <a
           href="/shop"
@@ -28,7 +28,7 @@ export default function HomePage() {
 
         {/* About Me */}
         <section>
-          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-6">
+          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-6">
             About Me
           </h2>
           <div className="space-y-4 text-stone-600 leading-relaxed">
@@ -59,7 +59,7 @@ export default function HomePage() {
 
         {/* Contact Me — id="contact" lets /#contact anchor scrolling work */}
         <section id="contact" className="scroll-mt-20">
-          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-2">
+          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-2">
             Contact Me
           </h2>
           <p className="text-stone-500 text-sm mb-8">
@@ -75,12 +75,11 @@ export default function HomePage() {
 
         {/* Leave a Review */}
         <section id="review" className="scroll-mt-20">
-          <h2 className="font-serif text-4xl font-semibold text-gold-900 mb-2">
+          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-2">
             Leave a Review
           </h2>
           <p className="text-stone-500 text-sm mb-8">
-            Ordered from Íocón before? Rate your experience out of five crowns and tell others how
-            it went.
+            Ordered from Íocón before? Rate your experience and tell others how it went.
           </p>
           <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
             <ReviewForm />

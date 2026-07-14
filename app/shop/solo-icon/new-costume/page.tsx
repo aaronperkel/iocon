@@ -112,7 +112,7 @@ export default function NewCostumeDesignPage() {
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-serif text-3xl text-gold-900 mb-3">Order received!</p>
+        <p className="font-heading text-3xl text-gold-900 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your new costume design request has been added to the waitlist. I will be in touch soon!
         </p>
@@ -140,7 +140,7 @@ export default function NewCostumeDesignPage() {
         <span className="text-stone-600">New Costume Design</span>
       </nav>
 
-      <h1 className="font-serif text-4xl font-semibold text-gold-900 mb-2 mt-4">
+      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">
         New Costume Design
       </h1>
 
@@ -186,7 +186,7 @@ export default function NewCostumeDesignPage() {
           </Field>
 
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
               Product Selection
             </h2>
             <ProductSelectionBlock
@@ -200,7 +200,7 @@ export default function NewCostumeDesignPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-serif text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
               Contact Information
             </h2>
             <ContactInfoBlock

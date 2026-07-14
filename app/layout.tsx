@@ -1,14 +1,18 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Inter, Uncial_Antiqua } from 'next/font/google'
+import { Alegreya_Sans, Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
 import { SITE_URL } from '@/lib/site'
 import { Analytics } from "@vercel/analytics/next";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-cormorant',
+// Heading face (font-heading). Humanist sans with calligraphic roots — its
+// pen-formed curves sit well next to the Uncial Antiqua wordmark (Riley asked
+// for a less generic heading font, ideally a sans). No 600 weight exists, so
+// headings use font-bold (700) rather than font-semibold.
+const alegreyaSans = Alegreya_Sans({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '700'],
+  variable: '--font-heading',
   display: 'swap',
 })
 
@@ -58,7 +62,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${uncialAntiqua.variable}`}>
+    <html lang="en" className={`${alegreyaSans.variable} ${inter.variable} ${uncialAntiqua.variable}`}>
       <body className="font-sans text-stone-900 min-h-screen flex flex-col">
         <Nav />
         <main className="flex-1">{children}</main>
