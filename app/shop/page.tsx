@@ -121,11 +121,14 @@ const STEPS = [
 
 // The gold crown from the logo with the step number seated in its body.
 // Solid silhouette (no glint) so nothing competes with the number.
+// The numeral is text-white to match the tile surface behind the crown
+// (white in light mode, the dark card color in dark mode), so it reads
+// as a cutout of the crown in both themes (Riley).
 function CrownNumber({ number }: { number: number }) {
   return (
     <span className="relative inline-block w-16 text-gold mb-3">
       <CrownMark className="w-full" glint={false} />
-      <span className="absolute inset-x-0 bottom-[8%] flex justify-center text-gold-950 text-sm font-bold leading-none">
+      <span className="absolute inset-x-0 bottom-[8%] flex justify-center text-white text-sm font-bold leading-none">
         {number}
       </span>
     </span>
