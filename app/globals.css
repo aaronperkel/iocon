@@ -31,7 +31,7 @@ html {
     --gold-600: 198 138 0;   /* #C68A00 */
     --gold-700: 143 100 0;   /* #8F6400 */
     --gold-800: 112 80 0;    /* #705000 */
-    --gold-900: 81 58 0;     /* #513A00 — bronze headings */
+    --gold-900: 81 58 0;     /* #513A00 — bronze; only warning text on gold washes since 2026-07 */
     --gold-950: 54 38 0;     /* #362600 — text on gold CTAs */
 
     --olive-25: 252 252 244;  /* #FCFCF4 — page background (Riley) */
@@ -43,7 +43,7 @@ html {
     --olive-500: 172 171 0;   /* #ACAB00 — Riley's olive */
     --olive-600: 139 138 0;   /* #8B8A00 — wordmark on light surfaces */
     --olive-700: 110 109 0;   /* #6E6D00 */
-    --olive-800: 79 83 6;     /* #4F5306 */
+    --olive-800: 79 83 6;     /* #4F5306 — dark-olive headings + selected chips (Riley 2026-07) */
     --olive-900: 60 66 7;     /* #3C4207 */
     --olive-950: 35 40 5;     /* #232805 */
 
@@ -66,11 +66,10 @@ html {
 
   /*
    * Dark theme (experiment, 2026-07): follows the OS setting. Warm near-black
-   * surfaces with a faint olive tint — deliberately desaturated so it never
-   * reads as the dark green Riley dislikes. Text scales invert: bronze
-   * headings become champagne gold, dark olives become light olives, and
+   * surfaces with a faint olive tint. Text scales invert: dark-olive headings
+   * become light olives, bronze warning text becomes champagne gold, and
    * "white" cards/chips become warm dark surfaces (which also flips the
-   * bg-gold-900 + text-white selected chips into light-gold chips with dark
+   * bg-olive-800 + text-white selected chips into light-olive chips with dark
    * text — same pairing, inverted).
    */
   @media (prefers-color-scheme: dark) {
@@ -86,7 +85,7 @@ html {
       --gold-600: 255 200 69;  /* text golds lighten */
       --gold-700: 255 211 118;
       --gold-800: 255 224 153;
-      --gold-900: 250 222 155; /* #FADE9B — champagne headings */
+      --gold-900: 250 222 155; /* #FADE9B — champagne warning text */
 
       --olive-25: 22 22 12;  /* #16160C — page background */
       --olive-50: 29 30 16;
@@ -94,7 +93,7 @@ html {
       --olive-200: 60 61 31;
       --olive-600: 202 201 62; /* wordmark brightens on dark surfaces */
       --olive-700: 213 212 92;
-      --olive-800: 223 222 138;
+      --olive-800: 223 222 138; /* #DFDE8A — headings lighten on dark */
       --olive-900: 232 231 168;
 
       --stone-50: 43 39 35;   /* washes sit just above the card surface */

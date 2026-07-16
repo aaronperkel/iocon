@@ -14,7 +14,7 @@ export default function GalleryPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-10">
-        <h1 className="font-heading text-4xl font-bold text-gold-900 mb-3">Gallery</h1>
+        <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Gallery</h1>
         <p className="text-stone-500 text-sm">
           Browse past work by product or subject using the filters below.
         </p>

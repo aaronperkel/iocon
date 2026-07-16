@@ -1,20 +1,15 @@
 import type { Metadata, Viewport } from 'next'
-import { Alegreya_Sans, Inter, Uncial_Antiqua } from 'next/font/google'
+import { Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
 import { SITE_URL } from '@/lib/site'
 import { Analytics } from "@vercel/analytics/next";
 
-// Heading face (font-heading). Humanist sans with calligraphic roots — its
-// pen-formed curves sit well next to the Uncial Antiqua wordmark (Riley asked
-// for a less generic heading font, ideally a sans). No 600 weight exists, so
-// headings use font-bold (700) rather than font-semibold.
-const alegreyaSans = Alegreya_Sans({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '700'],
-  variable: '--font-heading',
-  display: 'swap',
-})
+// Heading face (font-heading): Times New Roman, trial per Riley 2026-07. It is
+// a system font, so the stack lives directly in tailwind.config.ts — no
+// next/font import needed. (Replaced Alegreya Sans; to revert, restore the
+// Alegreya_Sans import + --font-heading variable and point the Tailwind
+// `heading` family back at it.)
 
 const inter = Inter({
   subsets: ['latin'],
@@ -62,7 +57,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${alegreyaSans.variable} ${inter.variable} ${uncialAntiqua.variable}`}>
+    <html lang="en" className={`${inter.variable} ${uncialAntiqua.variable}`}>
       <body className="font-sans text-stone-900 min-h-screen flex flex-col">
         <Nav />
         <main className="flex-1">{children}</main>

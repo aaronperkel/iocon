@@ -13,7 +13,7 @@ export default function HomePage() {
         <h1 className="font-display text-5xl sm:text-6xl mt-5 mb-3 tracking-wide text-olive-600">
           Íocón
         </h1>
-        <p className="text-gold-900 text-lg max-w-sm mx-auto leading-relaxed">
+        <p className="text-olive-800 text-lg max-w-sm mx-auto leading-relaxed">
           Hand made graphics for the Irish Dance world
         </p>
         <a
@@ -28,7 +28,7 @@ export default function HomePage() {
 
         {/* About Me */}
         <section>
-          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-6">
+          <h2 className="font-heading text-4xl font-bold text-olive-800 mb-6">
             About Me
           </h2>
           <div className="space-y-4 text-stone-600 leading-relaxed">
@@ -59,14 +59,13 @@ export default function HomePage() {
 
         {/* Contact Me — id="contact" lets /#contact anchor scrolling work */}
         <section id="contact" className="scroll-mt-20">
-          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-2">
+          <h2 className="font-heading text-4xl font-bold text-olive-800 mb-2">
             Contact Me
           </h2>
           <p className="text-stone-500 text-sm mb-8">
-            Have a question or a project in mind? If you are looking to order a logo, custom
-            graphic, or have any other ideas for a custom design, I welcome you to reach out and
-            describe in detail what you are looking for. I will get back to you so we can
-            brainstorm together!
+            Have a question or are looking to order bulk or custom? I welcome your input! Please
+            describe in detail what you are looking to achieve and I will get back to you with my
+            ideas and recommendations.
           </p>
           <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
             <ContactForm />
@@ -75,7 +74,7 @@ export default function HomePage() {
 
         {/* Leave a Review */}
         <section id="review" className="scroll-mt-20">
-          <h2 className="font-heading text-4xl font-bold text-gold-900 mb-2">
+          <h2 className="font-heading text-4xl font-bold text-olive-800 mb-2">
             Leave a Review
           </h2>
           <p className="text-stone-500 text-sm mb-8">

@@ -19,16 +19,17 @@ export const EMPTY_CONTACT: ContactInfoFields = {
 
 export type ContactErrors = Partial<Record<keyof ContactInfoFields, string>>
 
+// No placeholder/example text in the inputs — Riley wants the order forms
+// very simple (2026-07); the field labels carry the meaning.
 const CONTACT_OPTIONS: {
   value: ContactMethod
   label: string
-  placeholder: string
   inputType: string
 }[] = [
-  { value: 'text', label: 'Text', placeholder: 'Your phone number', inputType: 'tel' },
-  { value: 'email', label: 'Email', placeholder: 'your@email.com', inputType: 'email' },
-  { value: 'whatsapp', label: 'WhatsApp', placeholder: 'Your WhatsApp number', inputType: 'tel' },
-  { value: 'instagram', label: 'Instagram DM', placeholder: '@yourhandle', inputType: 'text' },
+  { value: 'text', label: 'Text', inputType: 'tel' },
+  { value: 'email', label: 'Email', inputType: 'email' },
+  { value: 'whatsapp', label: 'WhatsApp', inputType: 'tel' },
+  { value: 'instagram', label: 'Instagram DM', inputType: 'text' },
 ]
 
 interface Props {
@@ -61,7 +62,6 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
             value={value.firstName}
             onChange={(e) => set('firstName', e.target.value)}
             className={inputCls('firstName')}
-            placeholder="Jane"
             autoComplete="given-name"
           />
         </Field>
@@ -71,7 +71,6 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
             value={value.lastName}
             onChange={(e) => set('lastName', e.target.value)}
             className={inputCls('lastName')}
-            placeholder="Doe"
             autoComplete="family-name"
           />
         </Field>
@@ -89,7 +88,7 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
               onClick={() => set('contactMethod', o.value)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
                 value.contactMethod === o.value
-                  ? 'bg-gold-900 text-white border-gold-900'
+                  ? 'bg-olive-800 text-white border-olive-800'
                   : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
               }`}
             >
@@ -108,7 +107,6 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
           value={value.contactValue}
           onChange={(e) => set('contactValue', e.target.value)}
           className={inputCls('contactValue')}
-          placeholder={selected.placeholder}
           autoComplete={value.contactMethod === 'email' ? 'email' : 'off'}
         />
         <p className="mt-1 text-xs text-stone-400">

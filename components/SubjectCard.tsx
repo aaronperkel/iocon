@@ -93,7 +93,7 @@ export default function SubjectCard({
                 </div>
               )}
             </div>
-            <span className="block p-4 text-center font-heading text-lg sm:text-xl font-bold text-gold-900 group-hover:text-gold-700 transition-colors leading-tight">
+            <span className="block p-4 text-center font-heading text-lg sm:text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
               {subject.title}
             </span>
           </Link>

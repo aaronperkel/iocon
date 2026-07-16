@@ -7,8 +7,8 @@ export default function NotFound() {
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-24 text-center">
       <CrownMark className="w-14 mx-auto text-gold" />
-      <p className="font-heading text-7xl font-bold text-gold-900 mt-6">404</p>
-      <h1 className="font-heading text-3xl font-bold text-gold-900 mt-2">
+      <p className="font-heading text-7xl font-bold text-olive-800 mt-6">404</p>
+      <h1 className="font-heading text-3xl font-bold text-olive-800 mt-2">
         This page has danced away
       </h1>
       <p className="text-stone-500 mt-4 leading-relaxed">

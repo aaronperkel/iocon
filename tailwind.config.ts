@@ -15,7 +15,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['var(--font-heading)', 'system-ui', '-apple-system', 'sans-serif'],
+        // Times New Roman trial (Riley, 2026-07) — system serif, no webfont.
+        heading: ['"Times New Roman"', 'Times', 'Liberation Serif', 'serif'],
         sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['var(--font-uncial)', 'Georgia', 'serif'],
       },

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ColorPicker } from '@/components/ColorPicker'
 import { Field } from '@/components/FormField'
 import { ImageUpload, type UploadedFile } from '@/components/ImageUpload'
 import { ProductSelectionBlock } from '@/components/ProductSelectionBlock'
@@ -24,34 +23,37 @@ import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 //   Through the Years             — one dancer, one section per age
 //   Walking Duo                   — exactly two dancer sections
 //
-// Each dancer/age section carries its own details, photos, extras, and
-// comments. Product selection and contact info are asked once per order.
+// Structure per Riley (2026-07): the dancer section is the ONLY thing that
+// repeats. Layout (text / background / logo), product selection, and contact
+// info are each asked once per order. Inputs carry no placeholder text —
+// Riley wants the forms very simple.
 // Sharing/tagging permissions were deliberately removed from the order forms
 // (too confusing mid-order) — Riley sorts that out with the client directly.
 // ---------------------------------------------------------------------------
 
 type Shoe = '' | 'hard' | 'soft'
-type Tan = '' | 'light' | 'medium' | 'dark'
+type LegShade = '' | 'light' | 'medium-tan' | 'dark-tan' | 'black-tights' | 'black-pants'
+type Background = '' | 'white' | 'light-coordinating' | 'dark-coordinating' | 'other'
 type SectionNoun = 'dancer' | 'age'
-
-interface Extras {
-  backgroundColor: string
-  addLogo: '' | 'yes' | 'no'
-  logoImages: UploadedFile[]
-  addText: '' | 'yes' | 'no'
-  textContent: string
-  addSash: '' | 'yes' | 'no'
-  prizes: string[]
-}
 
 interface DancerSection {
   name: string // dancer first name (unused when sectionNoun is 'age')
   age: string // approximate age (only when sectionNoun is 'age')
   shoe: Shoe
-  tan: Tan
+  legShade: LegShade
   designer: string
+  school: string
+  extras: string[]
   images: UploadedFile[]
-  extras: Extras
+  comments: string
+}
+
+interface LayoutState {
+  addText: '' | 'yes' | 'no'
+  textContent: string
+  background: Background
+  addLogo: '' | 'yes' | 'no'
+  images: UploadedFile[]
   comments: string
 }
 
@@ -73,46 +75,57 @@ const emptySection = (): DancerSection => ({
   name: '',
   age: '',
   shoe: '',
-  tan: '',
+  legShade: '',
   designer: '',
+  school: '',
+  extras: [],
   images: [],
-  extras: {
-    backgroundColor: '#ffffff',
-    addLogo: '',
-    logoImages: [],
-    addText: '',
-    textContent: '',
-    addSash: '',
-    prizes: [],
-  },
   comments: '',
 })
 
-const BACKGROUND_SWATCHES = [
-  { hex: '#ffffff', label: 'White' },
-  { hex: '#f5f0e8', label: 'Cream' },
-  { hex: '#1a3c2b', label: 'Emerald' },
-  { hex: '#92400e', label: 'Amber' },
-  { hex: '#1e3a5f', label: 'Navy' },
-  { hex: '#7c3aed', label: 'Purple' },
-  { hex: '#be123c', label: 'Rose' },
-  { hex: '#000000', label: 'Black' },
+const EMPTY_LAYOUT: LayoutState = {
+  addText: '',
+  textContent: '',
+  background: '',
+  addLogo: '',
+  images: [],
+  comments: '',
+}
+
+const LEG_SHADE_OPTIONS: { value: LegShade; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'medium-tan', label: 'Medium tan' },
+  { value: 'dark-tan', label: 'Dark tan' },
+  { value: 'black-tights', label: 'Black tights' },
+  { value: 'black-pants', label: 'Black pants' },
 ]
 
-const PRIZE_OPTIONS = ['Trophy', 'Plaque', 'Prize', 'Globe']
+const EXTRA_OPTIONS = ['Sash', 'Belt', 'Prize held in hand']
 
-// Riley: "I need to see wig color/style (if applicable)"
-const COSTUME_HELPER =
-  'I need to see wig color/style (if applicable). Upload as many photos of the costume and headpiece as you like — the more detail the better.'
+const BACKGROUND_OPTIONS: { value: Background; label: string }[] = [
+  { value: 'white', label: 'White' },
+  { value: 'light-coordinating', label: 'A light shade that coordinates with the costume' },
+  { value: 'dark-coordinating', label: 'A dark shade that coordinates with the costume' },
+  { value: 'other', label: 'Other — please describe in the layout comments or attach an image' },
+]
+
+// Riley's copy (2026-07)
+const DANCER_IMAGES_HELPER =
+  'Clear, front facing images of the costume, headpiece, wig color and style, or anything else you think I’ll need to create an accurate drawing. Please include images of added extras if applicable.'
+
+const LAYOUT_IMAGES_HELPER =
+  'Logo files, background references, or anything else that helps with the layout.'
 
 const INPUT_CLS =
   'w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition'
 const SELECT_CLS =
   'w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition'
+const SECTION_H2_CLS = 'font-heading text-lg text-olive-800 border-b border-gold-200 pb-2'
 
 interface FormState {
   dancerName: string // 'age' forms only — one dancer across all sections
   sections: DancerSection[]
+  layout: LayoutState
   product: ProductFormat | null
   contact: ContactInfoFields
 }
@@ -137,6 +150,7 @@ export default function CostumeOrderForm({
   const [form, setForm] = useState<FormState>({
     dancerName: '',
     sections: Array.from({ length: minSections }, emptySection),
+    layout: EMPTY_LAYOUT,
     product: 'digital-download',
     contact: EMPTY_CONTACT,
   })
@@ -152,7 +166,8 @@ export default function CostumeOrderForm({
     if (sectionNoun === 'age') {
       return section.age ? `Age ${section.age}` : `Age ${i + 1}`
     }
-    return section.name || `Dancer ${i + 1}`
+    if (section.name) return section.name
+    return form.sections.length === 1 ? 'Dancer' : `Dancer ${i + 1}`
   }
 
   // ---- Section state helpers ----
@@ -170,30 +185,22 @@ export default function CostumeOrderForm({
     }
   }
 
-  function updateExtras(i: number, update: Partial<Extras>) {
-    setForm((prev) => ({
-      ...prev,
-      sections: prev.sections.map((s, idx) =>
-        idx === i ? { ...s, extras: { ...s.extras, ...update } } : s
-      ),
-    }))
-  }
-
-  function togglePrize(i: number, prize: string) {
+  function toggleExtra(i: number, extra: string) {
     setForm((prev) => ({
       ...prev,
       sections: prev.sections.map((s, idx) => {
         if (idx !== i) return s
-        const has = s.extras.prizes.includes(prize)
+        const has = s.extras.includes(extra)
         return {
           ...s,
-          extras: {
-            ...s.extras,
-            prizes: has ? s.extras.prizes.filter((p) => p !== prize) : [...s.extras.prizes, prize],
-          },
+          extras: has ? s.extras.filter((e) => e !== extra) : [...s.extras, extra],
         }
       }),
     }))
+  }
+
+  function updateLayout(update: Partial<LayoutState>) {
+    setForm((prev) => ({ ...prev, layout: { ...prev.layout, ...update } }))
   }
 
   function addSection() {
@@ -247,28 +254,33 @@ export default function CostumeOrderForm({
     form.sections.forEach((s, i) => {
       lines.push(`\n--- ${sectionTitle(s, i)} ---`)
       lines.push(`Shoe: ${s.shoe || 'not specified'}`)
-      lines.push(`Tan: ${s.tan || 'not specified'}`)
-      if (s.designer) lines.push(`Costume designed by: ${s.designer}`)
+      lines.push(
+        `Leg shade: ${
+          LEG_SHADE_OPTIONS.find((o) => o.value === s.legShade)?.label ?? 'not specified'
+        }`
+      )
+      if (s.designer) lines.push(`Costume designer: ${s.designer}`)
+      if (s.school) lines.push(`Dance school: ${s.school}`)
+      if (s.extras.length > 0) lines.push(`Extras: ${s.extras.join(', ')}`)
       if (s.images.length > 0)
-        lines.push(
-          `Costume/headpiece photos: ${s.images.length} uploaded — TODO: wire to storage`
-        )
-      lines.push(`Background color: ${s.extras.backgroundColor}`)
-      if (s.extras.addLogo === 'yes') {
-        lines.push(
-          `Logo: Yes${
-            s.extras.logoImages.length > 0
-              ? ` (${s.extras.logoImages.length} image uploaded — TODO: wire to storage)`
-              : ''
-          }`
-        )
-      }
-      if (s.extras.addText === 'yes' && s.extras.textContent)
-        lines.push(`Text: "${s.extras.textContent}"`)
-      if (s.extras.addSash === 'yes') lines.push('Sash: Yes')
-      if (s.extras.prizes.length > 0) lines.push(`Prizes: ${s.extras.prizes.join(', ')}`)
+        lines.push(`Dancer images: ${s.images.length} uploaded — TODO: wire to storage`)
       if (s.comments) lines.push(`Comments: ${s.comments}`)
     })
+
+    const layout = form.layout
+    lines.push('\n--- Layout ---')
+    if (layout.addText === 'yes' && layout.textContent)
+      lines.push(`Text: "${layout.textContent}"`)
+    lines.push(
+      `Background: ${
+        BACKGROUND_OPTIONS.find((o) => o.value === layout.background)?.label ?? 'not specified'
+      }`
+    )
+    if (layout.addLogo === 'yes')
+      lines.push('Logo: Yes — see layout images and comments for size/positioning')
+    if (layout.images.length > 0)
+      lines.push(`Layout images: ${layout.images.length} uploaded — TODO: wire to storage`)
+    if (layout.comments) lines.push(`Layout comments: ${layout.comments}`)
 
     if (form.product) lines.push(`\nProduct: ${PRODUCT_FORMAT_LABELS[form.product]}`)
 
@@ -323,7 +335,7 @@ export default function CostumeOrderForm({
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-heading text-3xl text-gold-900 mb-3">Order received!</p>
+        <p className="font-heading text-3xl text-olive-800 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your {title.toLowerCase()} request has been added to the waitlist. I will reach out to
           discuss details.
@@ -352,7 +364,7 @@ export default function CostumeOrderForm({
         <span className="text-stone-600">{title}</span>
       </nav>
 
-      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">{title}</h1>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2 mt-4">{title}</h1>
       <p className="text-stone-500 text-sm mb-10">{intro}</p>
 
       <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
@@ -361,9 +373,7 @@ export default function CostumeOrderForm({
           {/* ---- One dancer across all ages (Through the Years) ---- */}
           {sectionNoun === 'age' && (
             <section className="space-y-4">
-              <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
-                Dancer
-              </h2>
+              <h2 className={SECTION_H2_CLS}>Dancer</h2>
               <Field label="First name of dancer" required error={errors.dancerName}>
                 <input
                   type="text"
@@ -374,20 +384,19 @@ export default function CostumeOrderForm({
                       setErrors((prev) => ({ ...prev, dancerName: undefined }))
                   }}
                   className={INPUT_CLS}
-                  placeholder="Emma"
                 />
               </Field>
             </section>
           )}
 
-          {/* ---- Per-dancer / per-age sections ---- */}
+          {/* ---- Per-dancer / per-age sections (the only repeating part) ---- */}
           {form.sections.map((section, i) => (
             <section
               key={i}
               className="rounded-xl border border-stone-200 bg-stone-50 p-5 space-y-6"
             >
-              <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                <h2 className="font-heading text-lg text-gold-900">{sectionTitle(section, i)}</h2>
+              <div className="flex items-center justify-between border-b border-gold-200 pb-2">
+                <h2 className="font-heading text-lg text-olive-800">{sectionTitle(section, i)}</h2>
                 {canRemove && (
                   <button
                     type="button"
@@ -408,7 +417,6 @@ export default function CostumeOrderForm({
                       value={section.age}
                       onChange={(e) => updateSection(i, { age: e.target.value })}
                       className={INPUT_CLS}
-                      placeholder="8"
                     />
                   </Field>
                 ) : (
@@ -422,7 +430,6 @@ export default function CostumeOrderForm({
                       value={section.name}
                       onChange={(e) => updateSection(i, { name: e.target.value })}
                       className={INPUT_CLS}
-                      placeholder="Emma"
                     />
                   </Field>
                 )}
@@ -437,27 +444,57 @@ export default function CostumeOrderForm({
                     <option value="soft">Soft shoe</option>
                   </select>
                 </Field>
-                <Field label="Tan" required>
+                <Field label="Leg shade" required>
                   <select
-                    value={section.tan}
-                    onChange={(e) => updateSection(i, { tan: e.target.value as Tan })}
+                    value={section.legShade}
+                    onChange={(e) => updateSection(i, { legShade: e.target.value as LegShade })}
                     className={SELECT_CLS}
                   >
                     <option value="">Select…</option>
-                    <option value="light">Light</option>
-                    <option value="medium">Medium</option>
-                    <option value="dark">Dark</option>
+                    {LEG_SHADE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </select>
                 </Field>
-                <Field label="Who designed the costume?">
+                <Field label="Costume Designer (optional)">
                   <input
                     type="text"
                     value={section.designer}
                     onChange={(e) => updateSection(i, { designer: e.target.value })}
                     className={INPUT_CLS}
-                    placeholder="Designer, dressmaker, or brand"
                   />
                 </Field>
+                <Field label="Dance School (optional)">
+                  <input
+                    type="text"
+                    value={section.school}
+                    onChange={(e) => updateSection(i, { school: e.target.value })}
+                    className={INPUT_CLS}
+                  />
+                </Field>
+              </div>
+
+              {/* Extras */}
+              <div>
+                <p className="text-sm font-medium text-stone-700 mb-2">Select Extras</p>
+                <div className="flex flex-wrap gap-2">
+                  {EXTRA_OPTIONS.map((extra) => (
+                    <button
+                      key={extra}
+                      type="button"
+                      onClick={() => toggleExtra(i, extra)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
+                        section.extras.includes(extra)
+                          ? 'bg-olive-800 text-white border-olive-800'
+                          : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
+                      }`}
+                    >
+                      {extra}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Photos */}
@@ -467,102 +504,17 @@ export default function CostumeOrderForm({
                   updateSection(i, { images })
                   if (warnNoImages && images.length > 0) setWarnNoImages(false)
                 }}
-                label="Costume & headpiece photos"
-                helperText={COSTUME_HELPER}
+                label="Upload Dancer Images"
+                helperText={DANCER_IMAGES_HELPER}
               />
 
-              {/* Extras */}
-              <div className="space-y-5">
-                <div className="flex items-baseline gap-3 border-b border-stone-200 pb-2">
-                  <h3 className="font-heading text-base text-gold-900">Extras</h3>
-                  <p className="text-xs text-stone-400">I will contact you about specifics</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-stone-700 mb-2">Background color</p>
-                  <ColorPicker
-                    value={section.extras.backgroundColor}
-                    onChange={(hex) => updateExtras(i, { backgroundColor: hex })}
-                    swatches={BACKGROUND_SWATCHES}
-                  />
-                  <p className="mt-2 text-xs text-stone-400">
-                    Selected:{' '}
-                    <span className="font-mono">{section.extras.backgroundColor}</span>
-                  </p>
-                </div>
-
-                <YesNoField
-                  label="Add school or major logo?"
-                  value={section.extras.addLogo}
-                  onChange={(v) => updateExtras(i, { addLogo: v })}
-                />
-                {section.extras.addLogo === 'yes' && (
-                  <div className="pl-4 border-l-2 border-gold-200">
-                    <ImageUpload
-                      files={section.extras.logoImages}
-                      onChange={(logoImages) => updateExtras(i, { logoImages })}
-                      label="Logo image"
-                      helperText="Upload the logo file or a clear photo of it."
-                    />
-                  </div>
-                )}
-
-                <YesNoField
-                  label="Add text?"
-                  value={section.extras.addText}
-                  onChange={(v) => updateExtras(i, { addText: v })}
-                />
-                {section.extras.addText === 'yes' && (
-                  <div className="pl-4 border-l-2 border-gold-200">
-                    <Field label="Text to include">
-                      <input
-                        type="text"
-                        value={section.extras.textContent}
-                        onChange={(e) => updateExtras(i, { textContent: e.target.value })}
-                        className={INPUT_CLS}
-                        placeholder="Name, school, year…"
-                      />
-                    </Field>
-                  </div>
-                )}
-
-                <YesNoField
-                  label="Add sash?"
-                  value={section.extras.addSash}
-                  onChange={(v) => updateExtras(i, { addSash: v })}
-                />
-
-                <div>
-                  <p className="text-sm font-medium text-stone-700 mb-2">
-                    Add trophy / plaque / prize / globe?
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {PRIZE_OPTIONS.map((prize) => (
-                      <button
-                        key={prize}
-                        type="button"
-                        onClick={() => togglePrize(i, prize)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
-                          section.extras.prizes.includes(prize)
-                            ? 'bg-gold-900 text-white border-gold-900'
-                            : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
-                        }`}
-                      >
-                        {prize}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
               {/* Comments */}
-              <Field label="Any comments or clarifications?">
+              <Field label="Dancer Comments">
                 <textarea
                   value={section.comments}
                   onChange={(e) => updateSection(i, { comments: e.target.value })}
                   rows={3}
                   className={`${INPUT_CLS} resize-y`}
-                  placeholder="Pose preference, background ideas, anything else I should know…"
                 />
               </Field>
             </section>
@@ -578,11 +530,86 @@ export default function CostumeOrderForm({
             </button>
           )}
 
+          {/* ---- Layout (once per order) ---- */}
+          <section className="space-y-5">
+            <div className="border-b border-gold-200 pb-2 space-y-0.5">
+              <h2 className="font-heading text-lg text-olive-800">Layout</h2>
+              <p className="text-xs text-stone-400">
+                Positioning, text, and background details for the finished product
+              </p>
+            </div>
+
+            <YesNoField
+              label="Add text?"
+              value={form.layout.addText}
+              onChange={(v) => updateLayout({ addText: v })}
+            />
+            {form.layout.addText === 'yes' && (
+              <div className="pl-4 border-l-2 border-gold-200">
+                <Field label="Type the text as you want it shown on the product">
+                  <input
+                    type="text"
+                    value={form.layout.textContent}
+                    onChange={(e) => updateLayout({ textContent: e.target.value })}
+                    className={INPUT_CLS}
+                  />
+                </Field>
+              </div>
+            )}
+
+            <div>
+              <p className="text-sm font-medium text-stone-700 mb-2">Background</p>
+              <div className="space-y-2">
+                {BACKGROUND_OPTIONS.map((o) => (
+                  <label
+                    key={o.value}
+                    className="flex items-start gap-2.5 text-sm text-stone-600 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="layout-background"
+                      checked={form.layout.background === o.value}
+                      onChange={() => updateLayout({ background: o.value })}
+                      className="mt-0.5 accent-olive-800"
+                    />
+                    {o.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <YesNoField
+              label="Add a logo?"
+              value={form.layout.addLogo}
+              onChange={(v) => updateLayout({ addLogo: v })}
+            />
+            {form.layout.addLogo === 'yes' && (
+              <p className="pl-4 border-l-2 border-gold-200 text-sm text-stone-500">
+                Please attach the logo under “Upload Layout Images” below and describe its size
+                and positioning in the layout comments.
+              </p>
+            )}
+
+            <ImageUpload
+              files={form.layout.images}
+              onChange={(images) => updateLayout({ images })}
+              label="Upload Layout Images"
+              helperText={LAYOUT_IMAGES_HELPER}
+            />
+
+            <Field label="Layout Comments">
+              <textarea
+                value={form.layout.comments}
+                onChange={(e) => updateLayout({ comments: e.target.value })}
+                rows={3}
+                className={`${INPUT_CLS} resize-y`}
+              />
+            </Field>
+          </section>
+
           {/* ---- Product selection (once per order) ---- */}
           <section className="space-y-4">
-            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
-              Product Selection
-            </h2>
+            <h2 className={SECTION_H2_CLS}>Product Selection</h2>
             <ProductSelectionBlock
               value={form.product}
               onChange={(product) => {
@@ -595,9 +622,7 @@ export default function CostumeOrderForm({
 
           {/* ---- Contact (once per order) ---- */}
           <section className="space-y-4">
-            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
-              Contact Information
-            </h2>
+            <h2 className={SECTION_H2_CLS}>Contact Information</h2>
             <ContactInfoBlock
               value={form.contact}
               onChange={(contact) => setForm((prev) => ({ ...prev, contact }))}
@@ -614,9 +639,9 @@ export default function CostumeOrderForm({
 
           {warnNoImages ? (
             <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
-              <p className="font-medium text-gold-900 text-sm">No costume photos uploaded</p>
+              <p className="font-medium text-gold-900 text-sm">No dancer images uploaded</p>
               <p className="text-gold-800 text-sm">
-                Costume photos are highly recommended — they help ensure the illustration captures
+                Dancer images are highly recommended — they help ensure the drawing captures
                 every detail accurately. Are you sure you want to submit without any?
               </p>
               <div className="flex flex-wrap gap-3">
@@ -625,14 +650,14 @@ export default function CostumeOrderForm({
                   onClick={() => setWarnNoImages(false)}
                   className="px-4 py-1.5 rounded-lg border border-gold-400 text-gold-900 text-sm font-medium hover:bg-gold-100 transition"
                 >
-                  ← Go back and add photos
+                  ← Go back and add images
                 </button>
                 <button
                   type="button"
                   onClick={doSubmit}
                   className="px-4 py-1.5 rounded-lg bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium transition"
                 >
-                  Submit without photos
+                  Submit without images
                 </button>
               </div>
             </div>
@@ -671,7 +696,7 @@ function YesNoField({
             onClick={() => onChange(value === v ? '' : v)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition ${
               value === v
-                ? 'bg-gold-900 text-white border-gold-900'
+                ? 'bg-olive-800 text-white border-olive-800'
                 : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
             }`}
           >

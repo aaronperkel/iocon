@@ -112,7 +112,7 @@ export default function NewCostumeDesignPage() {
   if (submitStatus === 'success') {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
-        <p className="font-heading text-3xl text-gold-900 mb-3">Order received!</p>
+        <p className="font-heading text-3xl text-olive-800 mb-3">Order received!</p>
         <p className="text-stone-500 text-sm mb-8">
           Your new costume design request has been added to the waitlist. I will be in touch soon!
         </p>
@@ -140,7 +140,7 @@ export default function NewCostumeDesignPage() {
         <span className="text-stone-600">New Costume Design</span>
       </nav>
 
-      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2 mt-4">
         New Costume Design
       </h1>
 
@@ -181,12 +181,11 @@ export default function NewCostumeDesignPage() {
               className={`w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition resize-y ${
                 errors.description ? 'border-red-400' : 'border-stone-300'
               }`}
-              placeholder="Describe your dream costume — silhouette, embroidery style, era, mood, color preferences, intended use (Worlds, Oireachtas, etc.)…"
             />
           </Field>
 
           <section className="space-y-4">
-            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-olive-800 border-b border-gold-200 pb-2">
               Product Selection
             </h2>
             <ProductSelectionBlock
@@ -200,7 +199,7 @@ export default function NewCostumeDesignPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="font-heading text-lg text-gold-900 border-b border-stone-100 pb-2">
+            <h2 className="font-heading text-lg text-olive-800 border-b border-gold-200 pb-2">
               Contact Information
             </h2>
             <ContactInfoBlock

@@ -18,13 +18,13 @@ export default function WaitlistPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2">Waitlist</h1>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2">Waitlist</h1>
       <p className="text-stone-500 text-sm mb-2">
         Info will come from completed order forms.
       </p>
       <p className="text-stone-700 text-sm font-medium mb-10">
         Current wait:{' '}
-        <span className="font-heading text-2xl text-gold-900">{openCount}</span>{' '}
+        <span className="font-heading text-2xl text-olive-800">{openCount}</span>{' '}
         open order{openCount !== 1 ? 's' : ''}
       </p>
 

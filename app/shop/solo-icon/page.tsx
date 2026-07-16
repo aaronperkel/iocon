@@ -2,22 +2,22 @@ import Link from 'next/link'
 
 export const metadata = { title: 'Solo Icon — Íocón' }
 
-// Solo Icon is a fork: design a brand-new costume (Flow A) or draw an
-// existing one (Flow B).
+// Solo Icon is a fork: draw an existing costume (Flow B) or design a
+// brand-new one (Flow A). Existing costume is listed first (Riley, 2026-07);
+// both blurbs are her copy.
 const OPTIONS = [
+  {
+    id: 'existing-costume',
+    label: 'Draw My Existing Costume',
+    description: 'An icon created from images of a costume you already own.',
+    href: '/shop/solo-icon/existing-costume',
+  },
   {
     id: 'new-costume',
     label: 'Design a New Costume from Scratch',
     description:
-      'A completely original costume concept tailored to your vision — silhouette, embroidery, colors, and all.',
+      'An original costume concept that we work together to create. Can be used to support the design process with dressmakers.',
     href: '/shop/solo-icon/new-costume',
-  },
-  {
-    id: 'existing-costume',
-    label: 'Draw My Existing Costume',
-    description:
-      'A solo icon of a costume you already own, drawn from your photos down to the last detail.',
-    href: '/shop/solo-icon/existing-costume',
   },
 ]
 
@@ -32,10 +32,7 @@ export default function SoloIconPage() {
         <span className="text-stone-600">Solo Icon</span>
       </nav>
 
-      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-2 mt-4">Solo Icon</h1>
-      <p className="text-stone-500 text-sm mb-10">
-        Would you like a brand-new costume design, or an icon of a costume you already own?
-      </p>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-8 mt-4">Solo Icon</h1>
 
       <div className="grid sm:grid-cols-2 gap-5">
         {OPTIONS.map((opt) => (
@@ -44,7 +41,7 @@ export default function SoloIconPage() {
             href={opt.href}
             className="group flex flex-col gap-3 bg-white border border-stone-200 hover:border-gold-400 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all"
           >
-            <span className="font-heading text-xl font-bold text-gold-900 group-hover:text-gold-700 transition-colors leading-tight">
+            <span className="font-heading text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
               {opt.label}
             </span>
             <span className="text-stone-500 text-sm leading-relaxed">{opt.description}</span>

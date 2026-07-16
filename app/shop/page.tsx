@@ -141,7 +141,7 @@ function CrownNumber({ number }: { number: number }) {
 export default function ShopPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-4xl font-bold text-gold-900 mb-3">Shop</h1>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Shop</h1>
       <p className="text-stone-600 text-sm leading-relaxed mb-8 max-w-2xl">
         Every order starts with the art. Pick a subject, fill out one short form to share the
         details, and choose your product format at the end.
@@ -162,7 +162,7 @@ export default function ShopPage() {
       </ol>
 
       {/* Subject buttons */}
-      <h2 className="font-heading text-2xl font-bold text-gold-900 mb-6">
+      <h2 className="font-heading text-2xl font-bold text-olive-800 mb-6">
         Choose a subject to start
       </h2>
 
