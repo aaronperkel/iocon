@@ -1,10 +1,10 @@
 'use client'
 
-// TODO: Protect this page with authentication before production.
-//   Options: NextAuth.js, Clerk, a middleware password check, or Vercel's
-//   password protection feature. Anyone with the URL can currently access it.
+// Access is gated by middleware.ts (email + one-time code, lib/auth.ts);
+// the 401 checks below only cover a session expiring while the page is open.
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ORDER_TYPE_LABELS,
   ORDER_STATUS_LABELS,
@@ -27,6 +27,7 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -36,13 +37,25 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetch('/api/orders')
-      .then((r) => r.json())
-      .then((data: Order[]) => {
+      .then((r) => {
+        if (r.status === 401) {
+          router.replace('/admin/login')
+          return null
+        }
+        return r.json()
+      })
+      .then((data: Order[] | null) => {
+        if (!data) return
         setOrders(data.slice().reverse()) // newest first
         setLoading(false)
       })
       .catch(() => setLoading(false))
-  }, [])
+  }, [router])
+
+  async function signOut() {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+    router.replace('/admin/login')
+  }
 
   async function updateStatus(id: string, status: OrderStatus) {
     setUpdatingId(id)
@@ -52,6 +65,10 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       })
+      if (res.status === 401) {
+        router.replace('/admin/login')
+        return
+      }
       if (!res.ok) throw new Error()
       const updated: Order = await res.json()
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
@@ -82,9 +99,18 @@ export default function AdminPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-start justify-between mb-2">
         <h1 className="font-heading text-4xl font-bold text-olive-800">Admin</h1>
-        <span className="mt-2 text-xs bg-gold-100 text-gold-800 px-2.5 py-1 rounded-full font-medium">
-          {openCount} open
-        </span>
+        <div className="mt-2 flex items-center gap-3">
+          <span className="text-xs bg-gold-100 text-gold-800 px-2.5 py-1 rounded-full font-medium">
+            {openCount} open
+          </span>
+          <button
+            type="button"
+            onClick={signOut}
+            className="text-xs text-stone-500 hover:text-olive-800 underline underline-offset-2 transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
       <p className="text-stone-400 text-xs mb-8">
         Full order details — not visible to clients. Update statuses below.

@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   addOrder,
   getOrders,
+  getQueuePosition,
   type ContactMethod,
   type OrderType,
   type SharingPlatform,
 } from '@/lib/orders'
 import { AVAILABLE_PRODUCTS, type ProductFormat } from '@/lib/products'
+import { sendNewOrderNotification, sendOrderPlacedEmail } from '@/lib/email'
 
 // ---------------------------------------------------------------------------
 // TODO: When you replace lib/orders.ts with a real DB, update these handlers
@@ -98,6 +100,18 @@ export async function POST(req: NextRequest) {
     sharingPlatforms,
     tagUsername: tagUsername || undefined,
   })
+
+  // Email failures must never lose the order — log and return 201 regardless.
+  const queuePosition = getQueuePosition(order.id) ?? 1
+  const results = await Promise.allSettled([
+    sendOrderPlacedEmail(order, queuePosition),
+    sendNewOrderNotification(order, queuePosition),
+  ])
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      console.error('[Orders] email failed:', result.reason)
+    }
+  }
 
   return NextResponse.json(order, { status: 201 })
 }

@@ -118,6 +118,16 @@ export function getOpenOrderCount(): number {
   return orders.filter((o) => o.status !== 'completed').length
 }
 
+// 1-based place in line among open orders, oldest first — what the email
+// alerts report as "number N in line". Null once completed (or unknown id).
+export function getQueuePosition(id: string): number | null {
+  const open = orders
+    .filter((o) => o.status !== 'completed')
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+  const index = open.findIndex((o) => o.id === id)
+  return index === -1 ? null : index + 1
+}
+
 export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
   'solo-icon': 'Solo Icon',
   'solo-icon-new': 'Solo Icon (New Design)',

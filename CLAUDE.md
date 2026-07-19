@@ -34,12 +34,21 @@ All routes live under `app/`. There are no `pages/` directory routes. `/order` a
 /shop/through-the-years            app/shop/through-the-years/…     ← Flow B wrapper (2+ age sections)
 /shop/walking-duo                  app/shop/walking-duo/page.tsx    ← Flow B wrapper (exactly 2 dancers)
 /waitlist                          app/waitlist/page.tsx            ← force-dynamic
-/admin                             app/admin/page.tsx               ← 'use client', unprotected stub
+/admin                             app/admin/page.tsx               ← 'use client', gated by middleware
+/admin/login                       app/admin/login/page.tsx         ← 'use client', email + 6-digit code
 POST   /api/contact                app/api/contact/route.ts
 GET|POST /api/orders               app/api/orders/route.ts
 PATCH  /api/orders/[id]            app/api/orders/[id]/route.ts     ← status updates
 GET|POST /api/reviews              app/api/reviews/route.ts
+POST   /api/auth/request-code      app/api/auth/request-code/route.ts ← email a sign-in code
+POST   /api/auth/verify            app/api/auth/verify/route.ts     ← code → session cookie
+POST   /api/auth/logout            app/api/auth/logout/route.ts
 ```
+
+### Admin auth (`middleware.ts`, `lib/auth.ts`, `lib/auth-email.ts`)
+Email + 6-digit one-time code. `middleware.ts` (matcher `/admin/:path*`, `/api/orders/:path*`) gates access: no valid session → `/admin` redirects to `/admin/login`, and `GET /api/orders` + `PATCH /api/orders/[id]` return 401. **`POST /api/orders` is deliberately public** — the order forms post there from public pages. `ADMIN_EMAILS` in `lib/auth.ts` is the allowlist (currently riley@iocongraphics.com + me@aaronperkel.com).
+
+**Stateless, no DB** (survives serverless + `next dev`'s per-bundle module copies): request-code mints an HMAC-signed *challenge* cookie holding a hash of (email, code, expiry) — the code itself is never stored — and verify recomputes the hash, then sets an HMAC-signed *session* cookie (30-day, httpOnly). All HMAC is Web Crypto (`crypto.subtle`) so it runs in the edge middleware too. Signing key is **`AUTH_SECRET`** (`.env.local`, gitignored — **mirror into Vercel**; a dev fallback keeps local login working but is insecure; rotating it signs everyone out). Codes expire in 10 min; `verifySessionToken` re-checks the allowlist so removing an email revokes its live sessions. Unknown emails get an identical `{ok:true}` with no cookie (no account enumeration). Rate limiting is in-memory/best-effort (per-lambda only in prod); the 10-min code expiry is the real guard. The sign-in code email lives in `lib/auth-email.ts`, which mirrors `lib/email.ts`'s SMTP transport (keep the two in sync) and no-ops with a console log when SMTP env is absent.
 
 ### Shop ordering scheme (Riley's)
 ```
@@ -67,6 +76,7 @@ The `/#contact` anchor works because `app/page.tsx` wraps the contact section in
 - `lib/products.ts` — `ProductFormat` taxonomy (`digital-download|print|sticker`) + labels shared by order forms and gallery filters. `AVAILABLE_PRODUCTS` gates what's actually for sale (currently digital download only); adding a format there lights it up in the product-selection step and API validation automatically.
 - `lib/reviews.ts` — same in-memory stub pattern for the home-page review section. TODO: verify reviewer made a purchase once auth/order lookup exists.
 - `lib/gallery.ts` — gallery entries, each tagged with a `product` (ProductFormat) and a `subject` (GallerySubject). To add real artwork: drop the file in `public/gallery/` and set `src`; tiles without `src` render placeholders.
+- `lib/email.ts` — all outbound email, via Riley's iCloud+ custom-domain SMTP (nodemailer). Env in `.env.local` (gitignored; mirror into Vercel): `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASS`, optional `CONTACT_EMAIL_TO` (Riley's inbox, defaults to riley@iocongraphics.com — override to test without emailing her). **The SMTP username must be the account's primary `@icloud.com` address** — the Apple ID (a gmail) gets `550 mailbox does not exist`, the custom-domain addresses get `535`. Two mail kinds: automated customer alerts from `orders@iocongraphics.com` (Reply-To Riley) — order placed (with queue position), moved up in queue (sent to open orders behind a newly completed one), being drawn (`in-progress`), finished (`completed`) — sent **only when `contactMethod === 'email'`**, silent no-op otherwise; and mail to Riley (contact form + new-order notifications) with Reply-To the customer. Status-change alerts fire only on real transitions (PATCH compares previous status). Missing SMTP env → helpers log and return instead of throwing, so a fresh clone still works. Email failures never fail the API request (`Promise.allSettled` + log), except the contact form, which returns 502 so the visitor knows to retry.
 
 ### Order data shape (`Order` interface)
 Key fields: `id`, `initials`, `name`, `contactMethod` (`text|email|whatsapp|instagram`), `contactValue`, `orderType`, `product`, `status`, `details`, `sharingPlatforms`, `tagUsername`, `createdAt`. `orderType` is one of `solo-icon | solo-icon-new | group-icons | through-the-years | walking-duo` — logo/custom-graphic requests deliberately have **no** order type; they arrive through the contact form. Per-dancer data (Flow B) is serialized into the `details` string, one `--- Dancer/Age ---` block per section plus a single `--- Layout ---` block. `sharingPlatforms`/`tagUsername` are legacy-optional — no form sends them anymore, but the admin page still displays them when present.
@@ -112,8 +122,7 @@ Colors are custom Tailwind scales in `tailwind.config.ts`: **gold** (`#FFB101` a
 - **Product format** (what the art ships as): add to `ProductFormat`/labels and `AVAILABLE_PRODUCTS` in `lib/products.ts` — the product-selection step, API validation, and gallery filters pick it up from there.
 
 ### Stubbed integrations
-- **Contact email** — `app/api/contact/route.ts` logs to console. Wire `RESEND_API_KEY` / `SENDGRID_API_KEY` / SMTP env vars when ready.
-- **Order persistence** — `lib/orders.ts`. Seed rows are at the top of that file; delete them when connecting a real DB.
+- **Order persistence** — `lib/orders.ts`. Seed rows are at the top of that file; delete them when connecting a real DB. Until then queue positions in emails are per-process, and in `next dev` each route bundle gets its **own copy** of the array (an order POSTed in dev can 404 on PATCH); the production server shares one process. Also: never run `npm run build` while `next dev` is running — both write `.next` and the prod output comes out corrupted (routes 500).
 - **Review persistence / purchase check** — `lib/reviews.ts`. In-memory; nothing verifies the reviewer actually bought something yet.
 - **File uploads** — `ImageUpload` component renders client-side previews via object URLs. Actual upload is stubbed with a TODO comment; wire to S3/Cloudflare R2/Vercel Blob and store the returned URL when ready.
 - **Gallery content** — `lib/gallery.ts` holds placeholder entries. Real images go in `public/gallery/` with `src` set per entry.

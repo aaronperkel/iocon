@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isEmailConfigured, sendContactEmail } from '@/lib/email'
 
-// ---------------------------------------------------------------------------
-// TODO: Wire up a real email provider here.
-//
-//   Options:
-//     • Resend     — RESEND_API_KEY
-//     • SendGrid   — SENDGRID_API_KEY
-//     • Nodemailer — SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
-//
-//   Also set:
-//     CONTACT_EMAIL_TO — the inbox that receives submissions
-//
-//   Replace the console.log below with your provider's send call.
-// ---------------------------------------------------------------------------
+// Submissions are emailed to Riley via lib/email.ts (iCloud SMTP).
+// Without SMTP env vars the submission is only logged — fine for dev.
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
@@ -25,8 +15,20 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // TODO: send email via provider (see env var stubs above)
-  console.log('[Contact Form]', { name, email, subject, message })
+  if (!isEmailConfigured()) {
+    console.log('[Contact Form — SMTP not configured]', { name, email, subject, message })
+    return NextResponse.json({ success: true })
+  }
+
+  try {
+    await sendContactEmail({ name, email, subject, message })
+  } catch (err) {
+    console.error('[Contact Form] send failed:', err)
+    return NextResponse.json(
+      { error: 'Your message could not be sent. Please try again in a moment.' },
+      { status: 502 }
+    )
+  }
 
   return NextResponse.json({ success: true })
 }
