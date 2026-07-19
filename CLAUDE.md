@@ -105,6 +105,8 @@ Reusable components used by the order forms live in `components/`:
 ### Branding constraint
 The brand name **Íocón** must always be a literal string. Never apply a Tailwind `uppercase`, `capitalize`, or `lowercase` class — or any CSS `text-transform` — to any element that contains it, as these mangle the accented Í.
 
+**Search/SEO name is "Íocón Graphics"** (2026-07: Google only matched the site for "iocon", not "iocon graphics", because the word Graphics appeared nowhere on-page). It leads the root `<title>`/description, OG `siteName`, every per-page `title` suffix (`… — Íocón Graphics`), the footer © line, and the home page's WebSite+Organization JSON-LD (`STRUCTURED_DATA` in `app/page.tsx` — Google's site-name feature reads the WebSite object from the home page only; `alternateName` carries the unaccented spellings). The **visible** wordmark (nav, hero, lockups) stays plain **Íocón** — don't append "Graphics" to it.
+
 ### Brand assets & palette
 Riley's master mockup sheets live in `design/` (not served). Individual lockups were traced to SVG in `public/brand/`: `wordmark-crowned`, `logo-horizontal`, `logo-stacked`, `crown`, `monogram` — each in color and `-black` variants. The favicon set (`app/icon.png`, `app/apple-icon.png`, `app/favicon.ico`) is generated from the crown; Next.js serves these by file convention. `components/CrownMark.tsx` is the crown as an inline SVG (`fill="currentColor"`, size via width class) — use it instead of embedding crown paths.
 

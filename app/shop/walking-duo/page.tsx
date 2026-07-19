@@ -1,6 +1,6 @@
 import CostumeOrderForm from '@/components/CostumeOrderForm'
 
-export const metadata = { title: 'Walking Duo — Íocón' }
+export const metadata = { title: 'Walking Duo — Íocón Graphics' }
 
 export default function WalkingDuoPage() {
   return (

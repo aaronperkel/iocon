@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import CrownMark from '@/components/CrownMark'
 
-export const metadata = { title: 'Page Not Found — Íocón' }
+export const metadata = { title: 'Page Not Found — Íocón Graphics' }
 
 export default function NotFound() {
   return (

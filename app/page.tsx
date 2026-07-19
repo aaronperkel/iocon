@@ -1,10 +1,37 @@
 import ContactForm from '@/components/ContactForm'
 import CrownMark from '@/components/CrownMark'
 import ReviewForm from '@/components/ReviewForm'
+import { SITE_URL } from '@/lib/site'
+
+// Google's site-name feature reads WebSite structured data from the home page
+// only; alternateName lists the unaccented spellings people actually type.
+const STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'Íocón Graphics',
+      alternateName: ['Íocón', 'Iocon Graphics', 'Iocon'],
+      url: SITE_URL,
+    },
+    {
+      '@type': 'Organization',
+      name: 'Íocón Graphics',
+      alternateName: 'Íocón',
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.png`,
+      sameAs: ['https://www.instagram.com/irish.dance.costumes/'],
+    },
+  ],
+}
 
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+      />
       {/* Hero — light olive banner; the rest of the page sits on olive-25 (body) */}
       <section className="bg-olive-100 border-b border-olive-200 py-20 px-4 text-center">
         <CrownMark className="w-16 mx-auto text-gold" />

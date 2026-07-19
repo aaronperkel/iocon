@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export const metadata = { title: 'Solo Icon — Íocón' }
+export const metadata = { title: 'Solo Icon — Íocón Graphics' }
 
 // Solo Icon is a fork: draw an existing costume (Flow B) or design a
 // brand-new one (Flow A). Existing costume is listed first (Riley, 2026-07);

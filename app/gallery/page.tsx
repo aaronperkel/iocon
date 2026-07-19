@@ -8,7 +8,7 @@
 import { Suspense } from 'react'
 import GalleryGrid from '@/components/GalleryGrid'
 
-export const metadata = { title: 'Gallery — Íocón' }
+export const metadata = { title: 'Gallery — Íocón Graphics' }
 
 export default function GalleryPage() {
   return (

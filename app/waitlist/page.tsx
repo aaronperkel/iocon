@@ -4,7 +4,7 @@ import { getOpenOrderCount, getOrders, ORDER_STATUS_LABELS, ORDER_TYPE_LABELS } 
 // When you swap to a DB, you can remove this and rely on normal Next.js caching.
 export const dynamic = 'force-dynamic'
 
-export const metadata = { title: 'Waitlist — Íocón' }
+export const metadata = { title: 'Waitlist — Íocón Graphics' }
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-gold-100 text-gold-800',

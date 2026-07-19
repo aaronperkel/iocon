@@ -1,6 +1,6 @@
 import CostumeOrderForm from '@/components/CostumeOrderForm'
 
-export const metadata = { title: 'Group Icons — Íocón' }
+export const metadata = { title: 'Group Icons — Íocón Graphics' }
 
 export default function GroupIconsPage() {
   return (

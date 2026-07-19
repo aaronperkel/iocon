@@ -1,6 +1,6 @@
 import CostumeOrderForm from '@/components/CostumeOrderForm'
 
-export const metadata = { title: 'Solo Icon — Íocón' }
+export const metadata = { title: 'Solo Icon — Íocón Graphics' }
 
 export default function SoloIconExistingPage() {
   return (

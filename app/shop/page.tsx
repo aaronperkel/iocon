@@ -3,7 +3,7 @@ import CrownMark from '@/components/CrownMark'
 import SubjectCard, { type ShopSubjectCard } from '@/components/SubjectCard'
 import { GALLERY_IMAGES, type GallerySubject } from '@/lib/gallery'
 
-export const metadata = { title: 'Shop — Íocón' }
+export const metadata = { title: 'Shop — Íocón Graphics' }
 
 // ---------------------------------------------------------------------------
 // Shop landing page.

@@ -1,6 +1,6 @@
 import CostumeOrderForm from '@/components/CostumeOrderForm'
 
-export const metadata = { title: 'Through the Years — Íocón' }
+export const metadata = { title: 'Through the Years — Íocón Graphics' }
 
 export default function ThroughTheYearsPage() {
   return (

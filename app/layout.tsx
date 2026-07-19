@@ -24,19 +24,24 @@ const uncialAntiqua = Uncial_Antiqua({
   display: 'swap',
 })
 
-// Title is set literally — no template suffix — so the accented Í is never
-// run through a CSS text-transform that could mangle it at the layout level.
+// Titles and description lead with "Íocón Graphics" — the searchable business
+// name, matching the domain. Without the word "Graphics" anywhere in on-page
+// text, Google only matched the site for "iocon", never "iocon graphics"; the
+// visible brand wordmark stays plain "Íocón". Title is set literally — no
+// template suffix — so the accented Í is never run through a CSS
+// text-transform that could mangle it at the layout level.
 // Social preview images live at app/opengraph-image.png / app/twitter-image.png
 // (Next.js file convention); the source design is design/og-image.html.
 export const metadata: Metadata = {
   // Base for absolute social-image URLs; see lib/site.ts for why this must
   // be the public domain rather than VERCEL_URL.
   metadataBase: new URL(SITE_URL),
-  title: 'Íocón',
+  applicationName: 'Íocón Graphics',
+  title: 'Íocón Graphics — Hand made graphics for the Irish Dance world',
   description:
-    'Custom Irish dance costume drawings, digital logos, and costume designs by Íocón.',
+    'Íocón Graphics creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for the Irish Dance world.',
   openGraph: {
-    siteName: 'Íocón',
+    siteName: 'Íocón Graphics',
     type: 'website',
     url: '/',
   },
@@ -63,7 +68,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <footer className="border-t border-stone-200 py-6 mt-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center text-stone-400 text-sm space-y-1">
-            <p>&copy; {new Date().getFullYear()} Íocón &middot; All rights reserved</p>
+            <p>&copy; {new Date().getFullYear()} Íocón Graphics &middot; All rights reserved</p>
             <p>
               Built by{' '}
               <a
