@@ -7,7 +7,7 @@
 // back. The dance-school tag question is grouped with the dancer-tag
 // questions here on purpose.
 
-import type { SharingPlatform } from '@/lib/orders'
+import type { SharingPlatform } from '@/lib/order-types'
 
 export interface SharingPrefsFields {
   platforms: SharingPlatform[]

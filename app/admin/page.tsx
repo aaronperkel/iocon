@@ -11,7 +11,7 @@ import {
   CONTACT_METHOD_LABELS,
   type Order,
   type OrderStatus,
-} from '@/lib/orders'
+} from '@/lib/order-types'
 import { PRODUCT_FORMAT_LABELS } from '@/lib/products'
 import AdminEmailPortal from '@/components/AdminEmailPortal'
 import AdminReviewsPanel from '@/components/AdminReviewsPanel'

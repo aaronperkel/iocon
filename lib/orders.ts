@@ -5,38 +5,24 @@
 // (cached on globalThis so all of `next dev`'s route bundles share it), so a
 // fresh clone works without credentials — same pattern as lib/email.ts.
 // State in that mode resets on restart.
+//
+// Server-only: client components must import types/labels from
+// lib/order-types.ts instead (re-exported below for server callers).
 // ---------------------------------------------------------------------------
 
+import 'server-only'
 import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise'
 import { getPool, isDbConfigured } from './db'
 import type { ProductFormat } from './products'
+import type {
+  ContactMethod,
+  Order,
+  OrderStatus,
+  OrderType,
+  SharingPlatform,
+} from './order-types'
 
-// Shop subjects that go through an order form. Logo / custom graphic / bulk
-// requests skip the order flow entirely and arrive via the contact form.
-export type OrderType =
-  | 'solo-icon' // Flow B, one dancer (existing costume)
-  | 'solo-icon-new' // Flow A, new costume designed from scratch
-  | 'group-icons'
-  | 'through-the-years'
-  | 'walking-duo'
-export type OrderStatus = 'pending' | 'in-progress' | 'completed'
-export type ContactMethod = 'text' | 'email' | 'whatsapp' | 'instagram'
-export type SharingPlatform = 'instagram' | 'tiktok' | 'website' | 'none'
-
-export interface Order {
-  id: string
-  initials: string
-  name: string
-  contactMethod: ContactMethod
-  contactValue: string
-  orderType: OrderType
-  product?: ProductFormat
-  status: OrderStatus
-  details?: string
-  sharingPlatforms?: SharingPlatform[]
-  tagUsername?: string
-  createdAt: string // ISO 8601
-}
+export * from './order-types'
 
 // --- In-memory fallback (no DATABASE_URL) ----------------------------------
 
@@ -188,25 +174,4 @@ export async function getQueuePosition(id: string): Promise<number | null> {
   }
   const index = openIds.indexOf(id)
   return index === -1 ? null : index + 1
-}
-
-export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
-  'solo-icon': 'Solo Icon',
-  'solo-icon-new': 'Solo Icon (New Design)',
-  'group-icons': 'Group Icons',
-  'through-the-years': 'Through the Years',
-  'walking-duo': 'Walking Duo',
-}
-
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: 'Pending',
-  'in-progress': 'In Progress',
-  completed: 'Completed',
-}
-
-export const CONTACT_METHOD_LABELS: Record<ContactMethod, string> = {
-  text: 'Text',
-  email: 'Email',
-  whatsapp: 'WhatsApp',
-  instagram: 'Instagram DM',
 }

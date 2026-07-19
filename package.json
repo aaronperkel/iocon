@@ -15,7 +15,8 @@
     "nodemailer": "^9.0.3",
     "react": "^19.0.0",
     "react-colorful": "^5.7.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

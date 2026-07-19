@@ -11,7 +11,7 @@ import {
   type ContactInfoFields,
   type ContactErrors,
 } from '@/components/ContactInfoBlock'
-import type { OrderType } from '@/lib/orders'
+import type { OrderType } from '@/lib/order-types'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 
 // ---------------------------------------------------------------------------

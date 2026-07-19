@@ -14,6 +14,7 @@
 // Tables are created by `npm run db:init` (scripts/init-db.mjs).
 // ---------------------------------------------------------------------------
 
+import 'server-only'
 import mysql from 'mysql2/promise'
 
 const globalForDb = globalThis as unknown as { __ioconDbPool?: mysql.Pool }

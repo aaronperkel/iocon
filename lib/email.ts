@@ -20,6 +20,7 @@
 // and returns instead of throwing, so dev works without credentials.
 // ---------------------------------------------------------------------------
 
+import 'server-only'
 import nodemailer, { type Transporter } from 'nodemailer'
 import { ORDER_TYPE_LABELS, CONTACT_METHOD_LABELS, type Order } from './orders'
 import { PRODUCT_FORMAT_LABELS } from './products'

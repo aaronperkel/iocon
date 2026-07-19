@@ -8,7 +8,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Field } from '@/components/FormField'
-import type { Order } from '@/lib/orders'
+import type { Order } from '@/lib/order-types'
 
 interface Recipient {
   key: string // lowercased email — identity for selection + the API

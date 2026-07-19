@@ -1,7 +1,7 @@
 'use client'
 
 import { Field } from './FormField'
-import type { ContactMethod } from '@/lib/orders'
+import type { ContactMethod } from '@/lib/order-types'
 
 export interface ContactInfoFields {
   firstName: string

@@ -7,6 +7,7 @@
 //   reviewer against a completed order before accepting.
 // ---------------------------------------------------------------------------
 
+import 'server-only'
 import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise'
 import { getPool, isDbConfigured } from './db'
 
