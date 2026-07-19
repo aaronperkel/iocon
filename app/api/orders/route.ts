@@ -10,11 +10,6 @@ import {
 import { AVAILABLE_PRODUCTS, type ProductFormat } from '@/lib/products'
 import { sendNewOrderNotification, sendOrderPlacedEmail } from '@/lib/email'
 
-// ---------------------------------------------------------------------------
-// TODO: When you replace lib/orders.ts with a real DB, update these handlers
-//   to run the equivalent queries instead of calling the in-memory helpers.
-// ---------------------------------------------------------------------------
-
 const VALID_TYPES: OrderType[] = [
   'solo-icon',
   'solo-icon-new',
@@ -25,7 +20,7 @@ const VALID_TYPES: OrderType[] = [
 const VALID_METHODS: ContactMethod[] = ['text', 'email', 'whatsapp', 'instagram']
 
 export async function GET() {
-  return NextResponse.json(getOrders())
+  return NextResponse.json(await getOrders())
 }
 
 export async function POST(req: NextRequest) {
@@ -89,7 +84,7 @@ export async function POST(req: NextRequest) {
       .filter(Boolean)
       .join('.') + '.'
 
-  const order = addOrder({
+  const order = await addOrder({
     name,
     initials,
     contactMethod: contactMethod as ContactMethod,
@@ -102,7 +97,7 @@ export async function POST(req: NextRequest) {
   })
 
   // Email failures must never lose the order — log and return 201 regardless.
-  const queuePosition = getQueuePosition(order.id) ?? 1
+  const queuePosition = (await getQueuePosition(order.id)) ?? 1
   const results = await Promise.allSettled([
     sendOrderPlacedEmail(order, queuePosition),
     sendNewOrderNotification(order, queuePosition),

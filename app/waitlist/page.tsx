@@ -1,20 +1,22 @@
 import { getOpenOrderCount, getOrders, ORDER_STATUS_LABELS, ORDER_TYPE_LABELS } from '@/lib/orders'
 
-// Force dynamic so this page always reflects the latest in-memory state.
-// When you swap to a DB, you can remove this and rely on normal Next.js caching.
+// Force dynamic so this page always reflects the live order queue instead of
+// a build-time snapshot.
 export const dynamic = 'force-dynamic'
 
 export const metadata = { title: 'Waitlist — Íocón Graphics' }
 
+// Waiting = neutral, being drawn = gold (active), finished = olive — brand
+// scales only, so the badges also retheme in dark mode (same map as /admin).
 const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-gold-100 text-gold-800',
-  'in-progress': 'bg-blue-100 text-blue-800',
+  pending: 'bg-stone-100 text-stone-600',
+  'in-progress': 'bg-gold-100 text-gold-800',
   completed: 'bg-olive-100 text-olive-800',
 }
 
-export default function WaitlistPage() {
-  const orders = getOrders()
-  const openCount = getOpenOrderCount()
+export default async function WaitlistPage() {
+  const orders = await getOrders()
+  const openCount = await getOpenOrderCount()
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
@@ -68,9 +70,6 @@ export default function WaitlistPage() {
           </table>
         </div>
       )}
-
-      {/* TODO: When real persistence is added, expose a protected admin route to
-          update order statuses (pending → in-progress → completed). */}
     </div>
   )
 }

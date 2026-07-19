@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { addReview, getReviews } from '@/lib/reviews'
 
 export async function GET() {
-  return NextResponse.json(getReviews())
+  return NextResponse.json(await getReviews())
 }
 
 export async function POST(req: NextRequest) {
@@ -27,6 +27,6 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const review = addReview({ name: name.trim(), rating, text: text.trim() })
+  const review = await addReview({ name: name.trim(), rating, text: text.trim() })
   return NextResponse.json(review, { status: 201 })
 }

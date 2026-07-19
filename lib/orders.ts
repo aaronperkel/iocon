@@ -1,13 +1,14 @@
 // ---------------------------------------------------------------------------
-// Shared order data layer
+// Shared order data layer, backed by TiDB (see lib/db.ts).
 //
-// TODO: Replace this module-level in-memory array with a real database.
-//   Options: Prisma + PostgreSQL, Supabase, PlanetScale, SQLite via Turso…
-//   Reserve the env var DATABASE_URL for the connection string.
-//   Swap getOrders() / addOrder() / updateOrderStatus() for DB queries and
-//   delete the array below.
+// When DATABASE_URL is absent every helper falls back to an in-memory array
+// (cached on globalThis so all of `next dev`'s route bundles share it), so a
+// fresh clone works without credentials — same pattern as lib/email.ts.
+// State in that mode resets on restart.
 // ---------------------------------------------------------------------------
 
+import type { RowDataPacket, ResultSetHeader } from 'mysql2/promise'
+import { getPool, isDbConfigured } from './db'
 import type { ProductFormat } from './products'
 
 // Shop subjects that go through an order form. Logo / custom graphic / bulk
@@ -37,94 +38,155 @@ export interface Order {
   createdAt: string // ISO 8601
 }
 
-// Seed rows so the waitlist page is never empty out of the box
-const seedOrders: Order[] = [
-  {
-    id: 'seed-1',
-    initials: 'S.M.',
-    name: 'Sample McSample',
-    contactMethod: 'email',
-    contactValue: 'sample@example.com',
-    orderType: 'group-icons',
-    product: 'digital-download',
-    status: 'completed',
-    details: 'Group icon — three dancers from Aoife Academy of Irish Dance.',
-    sharingPlatforms: ['website'],
-    createdAt: new Date('2024-05-01').toISOString(),
-  },
-  {
-    id: 'seed-2',
-    initials: 'C.R.',
-    name: 'Casey Reilly',
-    contactMethod: 'instagram',
-    contactValue: '@caseyreilly',
-    orderType: 'solo-icon',
-    product: 'digital-download',
-    status: 'in-progress',
-    details: 'Dancer: Casey\nShoe: Hard\nTan: Medium\nComments: Blue velvet solo dress with gold Celtic trim.',
-    sharingPlatforms: ['instagram', 'tiktok'],
-    tagUsername: '@caseyreilly',
-    createdAt: new Date('2024-06-10').toISOString(),
-  },
-  {
-    id: 'seed-3',
-    initials: 'K.L.',
-    name: 'Kate Lennon',
-    contactMethod: 'text',
-    contactValue: '555-0199',
-    orderType: 'solo-icon-new',
-    product: 'digital-download',
-    status: 'pending',
-    details: 'New championship dress design — forest green with silver embroidery.',
-    sharingPlatforms: ['none'],
-    createdAt: new Date('2024-06-20').toISOString(),
-  },
-]
+// --- In-memory fallback (no DATABASE_URL) ----------------------------------
 
-// In-memory store — state resets on server restart.
-// This is intentional for the stub; swap for DB queries when ready.
-let orders: Order[] = [...seedOrders]
+const memory = ((globalThis as unknown as { __ioconOrders?: { orders: Order[] } })
+  .__ioconOrders ??= { orders: [] })
 
-export function getOrders(): Order[] {
-  return [...orders]
+// --- DB row mapping --------------------------------------------------------
+
+interface OrderRow extends RowDataPacket {
+  id: string
+  initials: string
+  name: string
+  contact_method: ContactMethod
+  contact_value: string
+  order_type: OrderType
+  product: ProductFormat | null
+  status: OrderStatus
+  details: string | null
+  sharing_platforms: SharingPlatform[] | string | null
+  tag_username: string | null
+  created_at: Date
 }
 
-export function addOrder(
+function rowToOrder(row: OrderRow): Order {
+  const platforms =
+    typeof row.sharing_platforms === 'string'
+      ? (JSON.parse(row.sharing_platforms) as SharingPlatform[])
+      : row.sharing_platforms
+  return {
+    id: row.id,
+    initials: row.initials,
+    name: row.name,
+    contactMethod: row.contact_method,
+    contactValue: row.contact_value,
+    orderType: row.order_type,
+    product: row.product ?? undefined,
+    status: row.status,
+    details: row.details ?? undefined,
+    sharingPlatforms: platforms ?? undefined,
+    tagUsername: row.tag_username ?? undefined,
+    createdAt: row.created_at.toISOString(),
+  }
+}
+
+const SELECT_ORDERS =
+  'SELECT id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at FROM orders'
+
+// --- Helpers ---------------------------------------------------------------
+
+export async function getOrders(): Promise<Order[]> {
+  if (!isDbConfigured()) return [...memory.orders]
+  const [rows] = await getPool().query<OrderRow[]>(
+    `${SELECT_ORDERS} ORDER BY created_at ASC, id ASC`
+  )
+  return rows.map(rowToOrder)
+}
+
+export async function getOrder(id: string): Promise<Order | null> {
+  if (!isDbConfigured()) return memory.orders.find((o) => o.id === id) ?? null
+  const [rows] = await getPool().query<OrderRow[]>(
+    `${SELECT_ORDERS} WHERE id = ?`,
+    [id]
+  )
+  return rows.length ? rowToOrder(rows[0]) : null
+}
+
+export async function addOrder(
   data: Omit<Order, 'id' | 'status' | 'createdAt'>
-): Order {
+): Promise<Order> {
   const newOrder: Order = {
     ...data,
     id: `order-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     status: 'pending',
     createdAt: new Date().toISOString(),
   }
-  orders = [...orders, newOrder]
+  if (!isDbConfigured()) {
+    memory.orders = [...memory.orders, newOrder]
+    return newOrder
+  }
+  await getPool().execute(
+    `INSERT INTO orders
+       (id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      newOrder.id,
+      newOrder.initials,
+      newOrder.name,
+      newOrder.contactMethod,
+      newOrder.contactValue,
+      newOrder.orderType,
+      newOrder.product ?? null,
+      newOrder.status,
+      newOrder.details ?? null,
+      newOrder.sharingPlatforms ? JSON.stringify(newOrder.sharingPlatforms) : null,
+      newOrder.tagUsername ?? null,
+      new Date(newOrder.createdAt),
+    ]
+  )
   return newOrder
 }
 
-export function updateOrderStatus(id: string, status: OrderStatus): Order | null {
-  let updated: Order | null = null
-  orders = orders.map((o) => {
-    if (o.id === id) {
-      updated = { ...o, status }
-      return updated
-    }
-    return o
-  })
-  return updated
+export async function updateOrderStatus(
+  id: string,
+  status: OrderStatus
+): Promise<Order | null> {
+  if (!isDbConfigured()) {
+    let updated: Order | null = null
+    memory.orders = memory.orders.map((o) => {
+      if (o.id === id) {
+        updated = { ...o, status }
+        return updated
+      }
+      return o
+    })
+    return updated
+  }
+  const [result] = await getPool().execute<ResultSetHeader>(
+    'UPDATE orders SET status = ? WHERE id = ?',
+    [status, id]
+  )
+  if (result.affectedRows === 0) return null
+  return getOrder(id)
 }
 
-export function getOpenOrderCount(): number {
-  return orders.filter((o) => o.status !== 'completed').length
+export async function getOpenOrderCount(): Promise<number> {
+  if (!isDbConfigured()) {
+    return memory.orders.filter((o) => o.status !== 'completed').length
+  }
+  const [rows] = await getPool().query<RowDataPacket[]>(
+    "SELECT COUNT(*) AS c FROM orders WHERE status <> 'completed'"
+  )
+  return Number(rows[0].c)
 }
 
 // 1-based place in line among open orders, oldest first — what the email
 // alerts report as "number N in line". Null once completed (or unknown id).
-export function getQueuePosition(id: string): number | null {
-  const open = orders
-    .filter((o) => o.status !== 'completed')
-    .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-  const index = open.findIndex((o) => o.id === id)
+export async function getQueuePosition(id: string): Promise<number | null> {
+  let openIds: string[]
+  if (!isDbConfigured()) {
+    openIds = memory.orders
+      .filter((o) => o.status !== 'completed')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .map((o) => o.id)
+  } else {
+    const [rows] = await getPool().query<RowDataPacket[]>(
+      "SELECT id FROM orders WHERE status <> 'completed' ORDER BY created_at ASC, id ASC"
+    )
+    openIds = rows.map((r) => r.id as string)
+  }
+  const index = openIds.indexOf(id)
   return index === -1 ? null : index + 1
 }
 

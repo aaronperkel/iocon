@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
+  getOrder,
   getOrders,
   getQueuePosition,
   updateOrderStatus,
   type OrderStatus,
 } from '@/lib/orders'
 import { sendOrderStatusEmail, sendQueueUpdateEmail } from '@/lib/email'
-
-// TODO: Protect this endpoint with authentication before production.
 
 const VALID_STATUSES: OrderStatus[] = ['pending', 'in-progress', 'completed']
 
@@ -26,8 +25,8 @@ export async function PATCH(
     )
   }
 
-  const previous = getOrders().find((o) => o.id === id)
-  const updated = updateOrderStatus(id, status as OrderStatus)
+  const previous = await getOrder(id)
+  const updated = await updateOrderStatus(id, status as OrderStatus)
   if (!updated) {
     return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
   }
@@ -43,11 +42,11 @@ export async function PATCH(
 
     // Completing an order moves everyone behind it up one place.
     if (updated.status === 'completed') {
-      const movedUp = getOrders().filter(
+      const movedUp = (await getOrders()).filter(
         (o) => o.status !== 'completed' && o.createdAt > updated.createdAt
       )
       for (const order of movedUp) {
-        const position = getQueuePosition(order.id)
+        const position = await getQueuePosition(order.id)
         if (position !== null) {
           emailJobs.push(sendQueueUpdateEmail(order, position))
         }
