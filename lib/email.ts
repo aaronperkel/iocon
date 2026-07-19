@@ -168,6 +168,27 @@ export async function sendOrderStatusEmail(
   }
 }
 
+// Custom one-off mail Riley composes in the admin portal (/admin → Email).
+// Same branded shell, greeting, and sign-off as the automated alerts. The
+// portal only offers customers who chose email as their contact method, and
+// each recipient gets their own message — addresses are never shared.
+export async function sendCustomEmail(
+  recipient: { email: string; firstName: string },
+  subject: string,
+  message: string
+): Promise<void> {
+  await send({
+    to: recipient.email,
+    subject,
+    text: `Hi ${recipient.firstName},\n\n${message}\n${SIGN_OFF_TEXT}`,
+    html: brandedHtml(
+      `<p style="margin:0 0 12px;">Hi ${escapeHtml(recipient.firstName)},</p>
+  <p style="margin:0;white-space:pre-wrap;">${escapeHtml(message)}</p>
+  ${SIGN_OFF_HTML}`
+    ),
+  })
+}
+
 // --- Mail to Riley ----------------------------------------------------------
 
 export async function sendNewOrderNotification(

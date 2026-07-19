@@ -13,6 +13,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  if (pathname.startsWith('/api/reviews')) {
+    // The home page reads and submits reviews publicly; moderation (DELETE)
+    // is admin-only.
+    if (request.method === 'GET' || request.method === 'POST') return NextResponse.next()
+    if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.next()
+  }
+
+  if (pathname.startsWith('/api/admin')) {
+    if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.next()
+  }
+
   if (pathname === '/admin/login') {
     if (email) return NextResponse.redirect(new URL('/admin', request.url))
     return NextResponse.next()
@@ -23,5 +36,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/orders/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/api/orders/:path*',
+    '/api/reviews/:path*',
+    '/api/admin/:path*',
+  ],
 }
