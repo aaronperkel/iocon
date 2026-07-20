@@ -14,6 +14,7 @@ const ROUTES = [
   '/shop/group-icons',
   '/shop/through-the-years',
   '/shop/walking-duo',
+  '/terms',
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {

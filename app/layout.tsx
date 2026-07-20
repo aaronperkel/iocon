@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Link from 'next/link'
 import { Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
@@ -68,7 +69,16 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <footer className="border-t border-stone-200 py-6 mt-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center text-stone-400 text-sm space-y-1">
-            <p>&copy; {new Date().getFullYear()} Íocón Graphics &middot; All rights reserved</p>
+            <p>
+              &copy; {new Date().getFullYear()} Íocón Graphics &middot; All rights reserved
+              &middot;{' '}
+              <Link
+                href="/terms"
+                className="text-stone-500 hover:text-gold-700 underline underline-offset-2 transition-colors"
+              >
+                Commission Terms
+              </Link>
+            </p>
             <p>
               Built by{' '}
               <a

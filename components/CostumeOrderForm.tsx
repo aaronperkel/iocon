@@ -637,6 +637,17 @@ export default function CostumeOrderForm({
             <p className="text-sm text-red-600">Something went wrong — please try again.</p>
           )}
 
+          <p className="text-xs text-stone-500">
+            By ordering, you agree to the{' '}
+            <Link
+              href="/terms"
+              className="text-gold-700 font-medium underline underline-offset-2 hover:text-gold-600 transition-colors"
+            >
+              Commission Terms
+            </Link>
+            .
+          </p>
+
           {warnNoImages ? (
             <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">
               <p className="font-medium text-gold-900 text-sm">No dancer images uploaded</p>
