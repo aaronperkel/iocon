@@ -1,12 +1,14 @@
 import type { ProductFormat } from './products'
 
 // ---------------------------------------------------------------------------
-// Gallery data — each image is tagged with a product type and a subject so
-// visitors can filter the gallery by either.
+// Gallery types + labels — each image is tagged with a product type and a
+// subject so visitors can filter the gallery by either. This module stays
+// client-safe (GalleryGrid value-imports it); the DB-backed store that Riley
+// manages from the admin Gallery tab lives in lib/gallery-store.ts
+// (server-only), following the orders.ts / order-types.ts split.
 //
-// TODO: These are placeholder entries. To add real pieces, drop the image in
-//   public/gallery/ and add an entry with `src: '/gallery/<file>'` — tiles
-//   without a src render as placeholder art blocks.
+// GALLERY_IMAGES below are placeholder entries, shown only while the real
+// (admin-managed) gallery is empty so the page never renders blank.
 // ---------------------------------------------------------------------------
 
 export type GallerySubject =
@@ -33,7 +35,17 @@ export interface GalleryImage {
   caption: string
   product: ProductFormat
   subject: GallerySubject
-  src?: string // path under /public; placeholder tile when absent
+  src?: string // Blob URL or path under /public; placeholder tile when absent
+  date?: string // YYYY-MM-DD — when the piece was made (Riley dates each entry)
+}
+
+// Shown as "Jul 2026" on tiles — month/year is the granularity that matters
+// for artwork; the admin panel shows the full date.
+export function formatGalleryDate(date: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 export const GALLERY_IMAGES: GalleryImage[] = [

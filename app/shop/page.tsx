@@ -1,9 +1,14 @@
 import Link from 'next/link'
 import CrownMark from '@/components/CrownMark'
 import SubjectCard, { type ShopSubjectCard } from '@/components/SubjectCard'
-import { GALLERY_IMAGES, type GallerySubject } from '@/lib/gallery'
+import { type GallerySubject } from '@/lib/gallery'
+import { getPublicGalleryImages } from '@/lib/gallery-store'
 
 export const metadata = { title: 'Shop — Íocón Graphics' }
+
+// The flip-tile carousels pull from the admin-managed gallery, so new uploads
+// must show up immediately, not at next build.
+export const dynamic = 'force-dynamic'
 
 // ---------------------------------------------------------------------------
 // Shop landing page.
@@ -138,7 +143,8 @@ function CrownNumber({ number }: { number: number }) {
   )
 }
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const galleryImages = await getPublicGalleryImages()
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Shop</h1>
@@ -171,7 +177,7 @@ export default function ShopPage() {
           <SubjectCard
             key={subject.id}
             subject={subject}
-            examples={GALLERY_IMAGES.filter((img) => img.subject === gallerySubject)}
+            examples={galleryImages.filter((img) => img.subject === gallerySubject)}
           />
         ))}
       </div>

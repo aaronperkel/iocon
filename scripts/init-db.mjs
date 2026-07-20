@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
 // One-time (idempotent) TiDB setup: creates the database named in
-// DATABASE_URL plus the orders and reviews tables. Safe to re-run.
+// DATABASE_URL plus the orders, reviews, and gallery tables. Safe to re-run.
 //
 //   npm run db:init      (reads DATABASE_URL from .env.local)
 //
@@ -64,6 +64,19 @@ await connection.query(`
     \`text\` TEXT NOT NULL,
     created_at DATETIME(3) NOT NULL,
     KEY idx_reviews_created (created_at)
+  )
+`)
+
+await connection.query(`
+  CREATE TABLE IF NOT EXISTS gallery (
+    id VARCHAR(64) PRIMARY KEY,
+    caption VARCHAR(191) NOT NULL,
+    product VARCHAR(32) NOT NULL,
+    subject VARCHAR(32) NOT NULL,
+    src VARCHAR(1024) NOT NULL,
+    artwork_date DATE NULL,
+    created_at DATETIME(3) NOT NULL,
+    KEY idx_gallery_created (created_at)
   )
 `)
 

@@ -14,6 +14,7 @@ import {
 } from '@/lib/order-types'
 import { PRODUCT_FORMAT_LABELS } from '@/lib/products'
 import AdminEmailPortal from '@/components/AdminEmailPortal'
+import AdminGalleryPanel from '@/components/AdminGalleryPanel'
 import AdminReviewsPanel from '@/components/AdminReviewsPanel'
 
 const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
@@ -30,12 +31,13 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
   completed: 'bg-olive-100 text-olive-800',
 }
 
-type AdminTab = 'orders' | 'email' | 'reviews'
+type AdminTab = 'orders' | 'email' | 'reviews' | 'gallery'
 
 const TABS: { value: AdminTab; label: string }[] = [
   { value: 'orders', label: 'Orders' },
   { value: 'email', label: 'Email Customers' },
   { value: 'reviews', label: 'Reviews' },
+  { value: 'gallery', label: 'Gallery' },
 ]
 
 export default function AdminPage() {
@@ -136,7 +138,7 @@ export default function AdminPage() {
         </div>
       </div>
       <p className="text-stone-400 text-xs mb-6">
-        Orders, customer email, and review moderation — not visible to clients.
+        Orders, customer email, review moderation, and the gallery — not visible to clients.
       </p>
 
       {/* Tabs */}
@@ -167,6 +169,8 @@ export default function AdminPage() {
       )}
 
       {tab === 'reviews' && <AdminReviewsPanel />}
+
+      {tab === 'gallery' && <AdminGalleryPanel />}
 
       {tab === 'orders' && (
         <>

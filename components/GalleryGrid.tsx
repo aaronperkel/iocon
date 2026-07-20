@@ -3,20 +3,23 @@
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
-  GALLERY_IMAGES,
+  formatGalleryDate,
   GALLERY_SUBJECT_LABELS,
+  type GalleryImage,
   type GallerySubject,
 } from '@/lib/gallery'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 
-// Filterable gallery grid. The active filters live in the URL query string
-// (?product=…&subject=…) so views are shareable and the shop's
-// "Digital Download" button can deep-link straight to a filtered gallery.
+// Filterable gallery grid. Entries come from the server page (the DB-backed
+// gallery Riley manages from the admin Gallery tab). The active filters live
+// in the URL query string (?product=…&subject=…) so views are shareable and
+// the shop's "Digital Download" button can deep-link straight to a filtered
+// gallery.
 
 const PRODUCTS = Object.keys(PRODUCT_FORMAT_LABELS) as ProductFormat[]
 const SUBJECTS = Object.keys(GALLERY_SUBJECT_LABELS) as GallerySubject[]
 
-export default function GalleryGrid() {
+export default function GalleryGrid({ images }: { images: GalleryImage[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -41,7 +44,7 @@ export default function GalleryGrid() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
   }
 
-  const filtered = GALLERY_IMAGES.filter(
+  const filtered = images.filter(
     (img) => (!product || img.product === product) && (!subject || img.subject === subject)
   )
 
@@ -93,6 +96,11 @@ export default function GalleryGrid() {
                 <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
                   {PRODUCT_FORMAT_LABELS[img.product]}
                 </span>
+                {img.date && (
+                  <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                    {formatGalleryDate(img.date)}
+                  </span>
+                )}
               </div>
               <div className="absolute inset-0 bg-gold-950/0 group-hover:bg-gold-950/10 transition-colors" />
             </div>
