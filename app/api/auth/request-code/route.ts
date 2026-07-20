@@ -4,10 +4,10 @@ import {
   CODE_TTL_MS,
   createChallengeToken,
   generateCode,
-  isAdminEmail,
   normalizeEmail,
   rateLimit,
 } from '@/lib/auth'
+import { isAllowedAdminEmail } from '@/lib/admin-users'
 import { sendLoginCodeEmail } from '@/lib/auth-email'
 
 export async function POST(request: NextRequest) {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   // Unknown emails get the same success response as allowed ones, so the
   // form can't be used to discover which addresses have admin access.
-  if (!isAdminEmail(email) || !rateLimit(`send:${email}`, 5, CODE_TTL_MS)) {
+  if (!(await isAllowedAdminEmail(email)) || !rateLimit(`send:${email}`, 5, CODE_TTL_MS)) {
     return NextResponse.json({ ok: true })
   }
 

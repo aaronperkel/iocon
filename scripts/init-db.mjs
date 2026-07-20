@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // One-time (idempotent) TiDB setup: creates the database named in
-// DATABASE_URL plus the orders, reviews, and gallery tables. Safe to re-run.
+// DATABASE_URL plus the orders, reviews, gallery, and admin_users tables
+// (seeding admin_users with the two founding admins). Safe to re-run.
 //
 //   npm run db:init      (reads DATABASE_URL from .env.local)
 //
@@ -78,6 +79,23 @@ await connection.query(`
     created_at DATETIME(3) NOT NULL,
     KEY idx_gallery_created (created_at)
   )
+`)
+
+await connection.query(`
+  CREATE TABLE IF NOT EXISTS admin_users (
+    email VARCHAR(191) PRIMARY KEY,
+    added_by VARCHAR(191) NULL,
+    created_at DATETIME(3) NOT NULL
+  )
+`)
+
+// Founding admins (added_by NULL). INSERT IGNORE leaves existing rows alone;
+// note a re-run does restore a founder who was removed from the portal —
+// that doubles as the recovery path if admin access is ever lost.
+await connection.query(`
+  INSERT IGNORE INTO admin_users (email, added_by, created_at) VALUES
+    ('riley@iocongraphics.com', NULL, NOW(3)),
+    ('aaron@iocongraphics.com', NULL, NOW(3))
 `)
 
 const [tables] = await connection.query('SHOW TABLES')

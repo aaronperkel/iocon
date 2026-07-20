@@ -13,21 +13,17 @@
 // login working but offers no security.
 // ---------------------------------------------------------------------------
 
-export const ADMIN_EMAILS = ['riley@iocongraphics.com', 'aaron@iocongraphics.com']
+// The allowlist lives in the admin_users table (lib/admin-users.ts, managed
+// from the admin Admins tab); normalizeEmail is re-exported for the routes.
+import { isAllowedAdminEmail, normalizeEmail } from './admin-users'
+
+export { normalizeEmail }
 
 export const SESSION_COOKIE = 'iocon_admin_session'
 export const CHALLENGE_COOKIE = 'iocon_admin_challenge'
 
 export const CODE_TTL_MS = 10 * 60 * 1000
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000
-
-export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
-}
-
-export function isAdminEmail(email: string): boolean {
-  return ADMIN_EMAILS.includes(normalizeEmail(email))
-}
 
 let warnedMissingSecret = false
 
@@ -111,8 +107,8 @@ export async function createSessionToken(email: string): Promise<string> {
   return `${payload}|${await hmacHex(`session:${payload}`)}`
 }
 
-// Returns the signed-in admin email, or null. Re-checks the allowlist so
-// removing an address from ADMIN_EMAILS also revokes its existing sessions.
+// Returns the signed-in admin email, or null. Re-checks the allowlist (the
+// admin_users table) so removing an admin also revokes their live sessions.
 export async function verifySessionToken(token: string | undefined): Promise<string | null> {
   if (!token) return null
   const parts = token.split('|')
@@ -128,7 +124,7 @@ export async function verifySessionToken(token: string | undefined): Promise<str
   } catch {
     return null
   }
-  return isAdminEmail(email) ? email : null
+  return (await isAllowedAdminEmail(email)) ? email : null
 }
 
 // --- Best-effort rate limiting ----------------------------------------------

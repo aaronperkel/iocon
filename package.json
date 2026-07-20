@@ -9,6 +9,7 @@
     "db:init": "node --env-file-if-exists=.env.local scripts/init-db.mjs"
   },
   "dependencies": {
+    "@tidbcloud/serverless": "^0.3.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.6.1",
     "mysql2": "^3.23.1",
