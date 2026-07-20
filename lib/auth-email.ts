@@ -32,10 +32,11 @@ export async function sendLoginCodeEmail(to: string, code: string): Promise<void
     return
   }
   await t.sendMail({
-    // TODO: switch to noreply@iocongraphics.com once Aaron adds that alias to
-    // Riley's iCloud+ custom domain — iCloud rejects sends from unregistered
-    // aliases, so flipping it early would break admin login emails.
-    from: { name: 'Íocón Admin', address: 'orders@iocongraphics.com' },
+    // hello@ is a registered alias on Riley's iCloud+ custom domain (added
+    // 2026-07). iCloud rejects sends from unregistered aliases, so never
+    // change this to an address that isn't set up there — it would break
+    // admin login emails.
+    from: { name: 'Íocón Admin', address: 'hello@iocongraphics.com' },
     to,
     subject,
     text,

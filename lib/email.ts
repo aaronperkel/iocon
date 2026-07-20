@@ -9,10 +9,12 @@
 //     Riley's inbox (contact form + new-order notifications).
 //     Defaults to riley@iocongraphics.com.
 //
-// Two kinds of mail leave this module:
+// Three kinds of mail leave this module:
 //   • Automated customer alerts (order placed / queue moved / being drawn /
 //     finished) — from orders@iocongraphics.com, Reply-To Riley, and only
 //     when the customer chose email as their contact method.
+//   • Custom mail Riley composes in the admin portal — from
+//     riley@iocongraphics.com, since she's the one writing it.
 //   • Mail to Riley (contact form, new-order notifications) — Reply-To the
 //     customer when we have their email, so she can reply directly.
 //
@@ -26,6 +28,7 @@ import { ORDER_TYPE_LABELS, CONTACT_METHOD_LABELS, type Order } from './orders'
 import { PRODUCT_FORMAT_LABELS } from './products'
 
 const ORDERS_FROM = { name: 'Íocón Orders', address: 'orders@iocongraphics.com' }
+const RILEY_FROM = { name: 'Riley at Íocón', address: 'riley@iocongraphics.com' }
 const RILEY_REPLY_TO = 'riley@iocongraphics.com'
 
 function rileyInbox(): string {
@@ -78,6 +81,7 @@ async function send(options: {
   html: string
   replyTo?: string
   fromName?: string
+  from?: { name: string; address: string }
 }): Promise<void> {
   const t = getTransporter()
   if (!t) {
@@ -86,7 +90,7 @@ async function send(options: {
     return
   }
   await t.sendMail({
-    from: { name: options.fromName ?? ORDERS_FROM.name, address: ORDERS_FROM.address },
+    from: options.from ?? { name: options.fromName ?? ORDERS_FROM.name, address: ORDERS_FROM.address },
     to: options.to,
     subject: options.subject,
     text: options.text,
@@ -170,15 +174,18 @@ export async function sendOrderStatusEmail(
 }
 
 // Custom one-off mail Riley composes in the admin portal (/admin → Email).
-// Same branded shell, greeting, and sign-off as the automated alerts. The
-// portal only offers customers who chose email as their contact method, and
-// each recipient gets their own message — addresses are never shared.
+// Same branded shell, greeting, and sign-off as the automated alerts, but
+// sent from Riley's own address — she's the one writing it, and replies
+// should feel like a direct conversation with her. The portal only offers
+// customers who chose email as their contact method, and each recipient gets
+// their own message — addresses are never shared.
 export async function sendCustomEmail(
   recipient: { email: string; firstName: string },
   subject: string,
   message: string
 ): Promise<void> {
   await send({
+    from: RILEY_FROM,
     to: recipient.email,
     subject,
     text: `Hi ${recipient.firstName},\n\n${message}\n${SIGN_OFF_TEXT}`,

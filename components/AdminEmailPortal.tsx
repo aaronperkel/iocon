@@ -194,7 +194,7 @@ export default function AdminEmailPortal({
       <p className="text-xs text-stone-400">
         Each customer gets their own email starting &ldquo;Hi &lt;first
         name&gt;,&rdquo; and ending &ldquo;— Riley&rdquo;, sent from
-        orders@iocongraphics.com. Replies go to riley@iocongraphics.com.
+        riley@iocongraphics.com — replies come straight back to you.
       </p>
 
       {/* Send — two-step confirm instead of a browser dialog */}
