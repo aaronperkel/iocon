@@ -13,7 +13,7 @@
 // login working but offers no security.
 // ---------------------------------------------------------------------------
 
-export const ADMIN_EMAILS = ['riley@iocongraphics.com', 'me@aaronperkel.com']
+export const ADMIN_EMAILS = ['riley@iocongraphics.com', 'aaron@iocongraphics.com']
 
 export const SESSION_COOKIE = 'iocon_admin_session'
 export const CHALLENGE_COOKIE = 'iocon_admin_challenge'
