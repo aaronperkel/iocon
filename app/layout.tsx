@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
 import Nav from '@/components/Nav'
+import { Icon } from '@/components/icons'
 import { SITE_URL } from '@/lib/site'
 import { Analytics } from "@vercel/analytics/next";
 
@@ -68,7 +69,16 @@ export default function RootLayout({
         <Nav />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-stone-200 py-6 mt-20">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center text-stone-400 text-sm space-y-1">
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center text-stone-400 text-sm space-y-1">
+            <a
+              href="https://www.instagram.com/iocongraphics/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Íocón Graphics on Instagram (@iocongraphics)"
+              className="inline-flex text-stone-400 hover:text-gold-700 transition-colors sm:absolute sm:right-6 sm:top-0.5"
+            >
+              <Icon name="instagram" className="w-5 h-5" />
+            </a>
             <p>
               &copy; {new Date().getFullYear()} Íocón Graphics &middot; All rights reserved
               &middot;{' '}

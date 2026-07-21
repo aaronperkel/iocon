@@ -19,7 +19,7 @@ const STRUCTURED_DATA = {
       alternateName: ['Íocón', 'Iocon Graphics', 'Iocon'],
       url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
-      sameAs: ['https://www.instagram.com/irish.dance.costumes/'],
+      sameAs: ['https://www.instagram.com/iocongraphics/'],
     },
   ],
 }
@@ -61,16 +61,8 @@ export default function HomePage() {
             <p>
               I&apos;m Riley and I&apos;ve been an Irish dancer in the Mid-Atlantic region for 10
               years. During the pandemic, I started creating free drawings for dancers using only
-              my iPhone and pointer finger under the Instagram name of{' '}
-              <a
-                href="https://www.instagram.com/irish.dance.costumes/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-olive-800 underline underline-offset-2 hover:text-gold-700 transition-colors"
-              >
-                @irish.dance.costumes
-              </a>
-              . The years of support since then, and the growth of generative AI, have motivated me
+              my iPhone and pointer finger under my previous Instagram name, @irish.dance.costumes.
+              The years of support since then, and the growth of generative AI, have motivated me
               to increase my efforts and presence in the Irish dance community.
             </p>
             <p>
@@ -78,7 +70,16 @@ export default function HomePage() {
               graphics, design, and gifts. The name comes from the Irish word for Icon, inspired by
               the strong, basic, and upright form that my original dancer drawings take. The
               graphics that I offer are highly customizable and I always welcome collaboration
-              until the design is just right.
+              until the design is just right. You can follow along on Instagram at{' '}
+              <a
+                href="https://www.instagram.com/iocongraphics/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-olive-800 underline underline-offset-2 hover:text-gold-700 transition-colors"
+              >
+                @iocongraphics
+              </a>
+              .
             </p>
           </div>
         </section>

@@ -101,6 +101,17 @@ function TimelineIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+// Instagram glyph — footer link to @iocongraphics
+function InstagramIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Svg {...props}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.5" fill="currentColor" />
+    </Svg>
+  )
+}
+
 const ICON_MAP = {
   image: ImageIcon,
   costume: CostumeIcon,
@@ -109,6 +120,7 @@ const ICON_MAP = {
   dancer: DancerIcon,
   dancers: DancersIcon,
   timeline: TimelineIcon,
+  instagram: InstagramIcon,
 } as const
 
 export type IconName = keyof typeof ICON_MAP
