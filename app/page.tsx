@@ -16,7 +16,7 @@ const STRUCTURED_DATA = {
     {
       '@type': 'Organization',
       name: 'Íocón Graphics',
-      alternateName: 'Íocón',
+      alternateName: ['Íocón', 'Iocon Graphics', 'Iocon'],
       url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
       sameAs: ['https://www.instagram.com/irish.dance.costumes/'],
