@@ -68,7 +68,8 @@ export default function ReviewForm({ initialRating = 0 }: { initialRating?: numb
         </div>
         <p className="font-heading text-2xl text-olive-800 mb-2">Thank you for your review!</p>
         <p className="text-olive-700 text-sm">
-          Your feedback means a lot — thank you for supporting Íocón.
+          Your feedback means a lot — thank you for supporting Íocón. Your review will appear
+          on the site once it&rsquo;s been approved.
         </p>
       </div>
     )

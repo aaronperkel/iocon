@@ -1,6 +1,15 @@
+import Link from 'next/link'
 import ContactForm from '@/components/ContactForm'
 import CrownMark from '@/components/CrownMark'
+import { getPublicReviews } from '@/lib/reviews'
 import { SITE_URL } from '@/lib/site'
+
+// Force dynamic so newly approved reviews show immediately (same immediacy
+// pattern as /shop and /gallery).
+export const dynamic = 'force-dynamic'
+
+// Cap the home-page strip; the point is social proof, not an archive.
+const MAX_HOME_REVIEWS = 6
 
 // Google's site-name feature reads WebSite structured data from the home page
 // only; alternateName lists the unaccented spellings people actually type.
@@ -24,7 +33,8 @@ const STRUCTURED_DATA = {
   ],
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const reviews = (await getPublicReviews()).slice(0, MAX_HOME_REVIEWS)
   return (
     <>
       <script
@@ -83,6 +93,44 @@ export default function HomePage() {
             </p>
           </div>
         </section>
+
+        {/* Reviews — approved ones only (Riley moderates in the admin Reviews
+            tab); the section disappears entirely while there are none. */}
+        {reviews.length > 0 && (
+          <section>
+            <h2 className="font-heading text-4xl font-bold text-olive-800 mb-6">Reviews</h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {reviews.map((review) => (
+                <figure
+                  key={review.id}
+                  className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 flex flex-col gap-2.5"
+                >
+                  <div className="flex gap-1" aria-label={`${review.rating} of 5 crowns`}>
+                    {Array.from({ length: review.rating }, (_, i) => (
+                      <CrownMark key={i} className="w-4 text-gold" />
+                    ))}
+                  </div>
+                  <blockquote className="text-sm text-stone-600 leading-relaxed flex-1 whitespace-pre-wrap">
+                    {review.text}
+                  </blockquote>
+                  <figcaption className="text-sm font-medium text-olive-800">
+                    — {review.name}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="mt-5 text-sm text-stone-500">
+              Ordered from Íocón before?{' '}
+              <Link
+                href="/review"
+                className="text-gold-700 font-medium underline underline-offset-2 hover:text-gold-600 transition-colors"
+              >
+                Leave a review
+              </Link>
+              .
+            </p>
+          </section>
+        )}
 
         {/* Contact Me — id="contact" lets /#contact anchor scrolling work */}
         <section id="contact" className="scroll-mt-20">

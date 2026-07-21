@@ -1,8 +1,8 @@
 'use client'
 
-// Review moderation panel on the admin page — currently the only place
-// submitted reviews are visible at all (the home page has just the form).
-// Anyone can POST /api/reviews, so Riley needs a way to see and remove spam.
+// Review moderation panel on the admin page. Reviews submit unapproved and
+// render publicly (home-page section) only once Riley approves them here —
+// anyone can POST /api/reviews, so nothing shows without her say-so.
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -14,6 +14,7 @@ export default function AdminReviewsPanel() {
   const [reviews, setReviews] = useState<Review[] | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -22,6 +23,31 @@ export default function AdminReviewsPanel() {
       .then((data: Review[]) => setReviews(data.slice().reverse())) // newest first
       .catch(() => setReviews([]))
   }, [])
+
+  async function toggleApproved(review: Review) {
+    setTogglingId(review.id)
+    setError(null)
+    try {
+      const res = await fetch(`/api/reviews/${review.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved: !review.approved }),
+      })
+      if (res.status === 401) {
+        router.replace('/admin/login')
+        return
+      }
+      if (!res.ok) throw new Error()
+      const updated: Review = await res.json()
+      setReviews((prev) =>
+        prev ? prev.map((r) => (r.id === updated.id ? updated : r)) : prev
+      )
+    } catch {
+      setError('Failed to update the review. Please try again.')
+    } finally {
+      setTogglingId(null)
+    }
+  }
 
   async function remove(id: string) {
     setDeletingId(id)
@@ -65,6 +91,15 @@ export default function AdminReviewsPanel() {
               ))}
             </div>
             <span className="text-sm font-medium text-stone-800">{review.name}</span>
+            <span
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                review.approved
+                  ? 'bg-olive-100 text-olive-800'
+                  : 'bg-stone-100 text-stone-600'
+              }`}
+            >
+              {review.approved ? 'Shown on site' : 'Hidden'}
+            </span>
             <span className="text-xs text-stone-400 flex-1">
               {new Date(review.createdAt).toLocaleDateString('en-US', {
                 month: 'short',
@@ -72,6 +107,18 @@ export default function AdminReviewsPanel() {
                 year: 'numeric',
               })}
             </span>
+            <button
+              type="button"
+              disabled={togglingId === review.id}
+              onClick={() => toggleApproved(review)}
+              className="text-xs text-stone-500 hover:text-olive-800 underline underline-offset-2 transition-colors disabled:opacity-50"
+            >
+              {togglingId === review.id
+                ? 'Saving…'
+                : review.approved
+                  ? 'Hide from site'
+                  : 'Show on site'}
+            </button>
             {confirmId === review.id ? (
               <span className="flex items-center gap-3">
                 <button

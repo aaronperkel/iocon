@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { addReview, getReviews } from '@/lib/reviews'
-import { rateLimit } from '@/lib/auth'
+import { addReview, getPublicReviews, getReviews } from '@/lib/reviews'
+import { rateLimit, SESSION_COOKIE, verifySessionToken } from '@/lib/auth'
 
 // POST is deliberately public — the /review page (linked from the review-ask
 // emails) submits here. Length caps match the DB columns (name VARCHAR(191),
@@ -10,8 +10,12 @@ import { rateLimit } from '@/lib/auth'
 const MAX_NAME = 191
 const MAX_TEXT = 2000
 
-export async function GET() {
-  return NextResponse.json(await getReviews())
+// GET stays public in the middleware, but only admins (the Reviews tab needs
+// the moderation queue) see unapproved reviews — everyone else gets the
+// approved set, so pending/rejected reviews never leak.
+export async function GET(req: NextRequest) {
+  const email = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value)
+  return NextResponse.json(email ? await getReviews() : await getPublicReviews())
 }
 
 export async function POST(req: NextRequest) {
