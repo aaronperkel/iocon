@@ -4,15 +4,20 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Icon, type IconName } from '@/components/icons'
+import InquiryModal from '@/components/InquiryModal'
 import type { GalleryImage } from '@/lib/gallery'
 
 // ---------------------------------------------------------------------------
 // SubjectCard — one shop subject as a flippable tile (Riley, July 2026).
 //
 // Front: image (or placeholder icon) + title, linking straight to the order
-// form (or /#contact), with a slim "Learn more" bar that flips the card.
+// form, with a slim "Learn more" bar that flips the card.
 // Back: example carousel pulled from the gallery (entries tagged with this
 // subject), the starting price, Riley's blurb, and the same CTA.
+//
+// Subjects without an order form (Bulk Drawings / Logo / Graphic) set
+// `inquirySubject` instead of `href`: both CTAs open the InquiryModal — a
+// contact form tagged with that subject — rather than navigating away.
 //
 // Both faces stay mounted so the 3D flip can animate; the hidden face is
 // `inert` so it never traps keyboard focus. The faces are stacked in the same
@@ -22,13 +27,13 @@ import type { GalleryImage } from '@/lib/gallery'
 export interface ShopSubjectCard {
   id: string
   title: string
-  href: string
+  href?: string // order-form route; omitted when inquirySubject is set
   icon: IconName
   image?: string // path under /public — front-of-tile artwork
   imageFit?: 'cover' | 'contain' // contain (on white) for drawings that must not crop; default cover
   price?: string // e.g. 'Starting from $–' (TODO: real prices from Riley)
   blurb: string
-  contactNote?: boolean // true → card routes to the contact section, not a form
+  inquirySubject?: string // e.g. 'Bulk Ordering Inquiry' → CTA opens the contact modal
 }
 
 const TILE_SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
@@ -42,6 +47,7 @@ export default function SubjectCard({
 }) {
   const [flipped, setFlipped] = useState(false)
   const [exampleIndex, setExampleIndex] = useState(0)
+  const [inquiryOpen, setInquiryOpen] = useState(false)
 
   // Flipping makes the focused control inert (browsers then drop focus to
   // <body>), so hand focus to the revealed face's control instead.
@@ -56,8 +62,37 @@ export default function SubjectCard({
     ;(flipped ? closeRef : learnMoreRef).current?.focus()
   }, [flipped])
 
-  const cta = subject.contactNote ? 'Contact me' : 'Start an order'
+  const cta = subject.inquirySubject ? 'Contact me' : 'Start an order'
   const example = examples[exampleIndex]
+
+  const frontFace = (
+    <>
+      <div
+        className={`relative flex-1 min-h-40 border-b border-stone-100 ${
+          subject.imageFit === 'contain'
+            ? 'bg-[#fff]' // literal white mat: must match the artwork's own white ground even in dark mode
+            : 'bg-gradient-to-br from-olive-50 to-gold-50'
+        }`}
+      >
+        {subject.image ? (
+          <Image
+            src={subject.image}
+            alt={subject.title}
+            fill
+            sizes={TILE_SIZES}
+            className={subject.imageFit === 'contain' ? 'object-contain p-2' : 'object-cover'}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-olive-300 group-hover:text-gold-400 transition-colors">
+            <Icon name={subject.icon} className="w-12 h-12" />
+          </div>
+        )}
+      </div>
+      <span className="block p-4 text-center font-heading text-lg sm:text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
+        {subject.title}
+      </span>
+    </>
+  )
 
   return (
     <div className="h-full [perspective:1200px]">
@@ -71,32 +106,19 @@ export default function SubjectCard({
           inert={flipped}
           className="[grid-area:1/1] [backface-visibility:hidden] flex flex-col bg-white border border-stone-200 hover:border-gold-400 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all"
         >
-          <Link href={subject.href} className="group flex flex-col flex-1">
-            <div
-              className={`relative flex-1 min-h-40 border-b border-stone-100 ${
-                subject.imageFit === 'contain'
-                  ? 'bg-[#fff]' // literal white mat: must match the artwork's own white ground even in dark mode
-                  : 'bg-gradient-to-br from-olive-50 to-gold-50'
-              }`}
+          {subject.inquirySubject ? (
+            <button
+              type="button"
+              onClick={() => setInquiryOpen(true)}
+              className="group flex flex-col flex-1 text-left"
             >
-              {subject.image ? (
-                <Image
-                  src={subject.image}
-                  alt={subject.title}
-                  fill
-                  sizes={TILE_SIZES}
-                  className={subject.imageFit === 'contain' ? 'object-contain p-2' : 'object-cover'}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-olive-300 group-hover:text-gold-400 transition-colors">
-                  <Icon name={subject.icon} className="w-12 h-12" />
-                </div>
-              )}
-            </div>
-            <span className="block p-4 text-center font-heading text-lg sm:text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
-              {subject.title}
-            </span>
-          </Link>
+              {frontFace}
+            </button>
+          ) : (
+            <Link href={subject.href ?? '/shop'} className="group flex flex-col flex-1">
+              {frontFace}
+            </Link>
+          )}
           <button
             ref={learnMoreRef}
             type="button"
@@ -173,12 +195,22 @@ export default function SubjectCard({
             )}
             <p className="text-stone-600 text-xs leading-relaxed">{subject.blurb}</p>
             <div className="mt-auto pt-2 flex items-center justify-between gap-2">
-              <Link
-                href={subject.href}
-                className="text-gold-700 text-xs font-medium hover:underline"
-              >
-                {cta} &rarr;
-              </Link>
+              {subject.inquirySubject ? (
+                <button
+                  type="button"
+                  onClick={() => setInquiryOpen(true)}
+                  className="text-gold-700 text-xs font-medium hover:underline"
+                >
+                  {cta} &rarr;
+                </button>
+              ) : (
+                <Link
+                  href={subject.href ?? '/shop'}
+                  className="text-gold-700 text-xs font-medium hover:underline"
+                >
+                  {cta} &rarr;
+                </Link>
+              )}
               <button
                 ref={closeRef}
                 type="button"
@@ -191,6 +223,14 @@ export default function SubjectCard({
           </div>
         </div>
       </div>
+
+      {subject.inquirySubject && (
+        <InquiryModal
+          title={subject.inquirySubject}
+          open={inquiryOpen}
+          onClose={() => setInquiryOpen(false)}
+        />
+      )}
     </div>
   )
 }

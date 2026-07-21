@@ -11,16 +11,19 @@ interface Fields {
 
 const EMPTY: Fields = { name: '', email: '', subject: '', message: '' }
 
-function validate(f: Fields): Partial<Record<keyof Fields, string>> {
+function validate(f: Fields, hasPresetSubject: boolean): Partial<Record<keyof Fields, string>> {
   const e: Partial<Record<keyof Fields, string>> = {}
   if (!f.name.trim()) e.name = 'Name is required.'
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) e.email = 'Enter a valid email address.'
-  if (!f.subject.trim()) e.subject = 'Subject is required.'
+  if (!hasPresetSubject && !f.subject.trim()) e.subject = 'Subject is required.'
   if (f.message.trim().length < 10) e.message = 'Message must be at least 10 characters.'
   return e
 }
 
-export default function ContactForm() {
+// `presetSubject` (the shop inquiry tiles: "Bulk Ordering Inquiry", …) hides
+// the subject input and tags the submission with that value instead, so
+// Riley's email says what the visitor clicked.
+export default function ContactForm({ presetSubject }: { presetSubject?: string }) {
   const [form, setForm] = useState<Fields>(EMPTY)
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -34,7 +37,7 @@ export default function ContactForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const errs = validate(form)
+    const errs = validate(form, Boolean(presetSubject))
     if (Object.keys(errs).length) {
       setErrors(errs)
       return
@@ -44,7 +47,7 @@ export default function ContactForm() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, subject: presetSubject ?? form.subject }),
       })
       if (!res.ok) throw new Error()
       setStatus('success')
@@ -99,15 +102,17 @@ export default function ContactForm() {
         </Field>
       </div>
 
-      <Field label="Subject" required error={errors.subject}>
-        <input
-          type="text"
-          value={form.subject}
-          onChange={set('subject')}
-          className={inputCls('subject')}
-          placeholder="What is this about?"
-        />
-      </Field>
+      {!presetSubject && (
+        <Field label="Subject" required error={errors.subject}>
+          <input
+            type="text"
+            value={form.subject}
+            onChange={set('subject')}
+            className={inputCls('subject')}
+            placeholder="What is this about?"
+          />
+        </Field>
+      )}
 
       <Field label="Message" required error={errors.message}>
         <textarea

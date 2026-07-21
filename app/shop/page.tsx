@@ -18,7 +18,8 @@ export const dynamic = 'force-dynamic'
 //   - Group Icons              → /shop/group-icons        (multi-dancer form)
 //   - Through the Years        → /shop/through-the-years  (multi-age form)
 //   - Walking Duo              → /shop/walking-duo        (two-dancer form)
-//   - Bulk Drawings / Logo / Graphic → /#contact (no order form — starts with a conversation)
+//   - Bulk Drawings / Logo / Graphic → in-place contact modal (no order form —
+//     starts with a conversation; the email is tagged with the inquiry name)
 //
 // Each subject is a flippable tile (components/SubjectCard.tsx): front shows
 // the artwork + title, the back shows Riley's blurb and a carousel of gallery
@@ -79,33 +80,30 @@ const SUBJECTS: Subject[] = [
   {
     id: 'bulk-drawings',
     title: 'Bulk Drawings',
-    href: '/#contact',
     icon: 'dancers',
     image: '/shop/bulk-drawings.jpeg',
     gallerySubject: 'bulk-drawings',
     blurb:
       'Contact me to discuss drawings for a large group (more than 5 drawings). Intended for individual send-off gifts or posts for a group.',
-    contactNote: true,
+    inquirySubject: 'Bulk Ordering Inquiry',
   },
   {
     id: 'logo',
     title: 'Logo',
-    href: '/#contact',
     icon: 'logo',
     gallerySubject: 'logo',
     blurb:
       'A custom logo, symbol, or graphic. Great for brands, merchandise, schools, organizations, or competitions.',
-    contactNote: true,
+    inquirySubject: 'Logo Inquiry',
   },
   {
     id: 'custom-graphic',
     title: 'Graphic',
-    href: '/#contact',
     icon: 'image',
     gallerySubject: 'custom-graphic',
     blurb:
       'Custom graphics for social media posts, posters, statistics, good luck messages, mock-ups, and much more! Very customizable and flexible.',
-    contactNote: true,
+    inquirySubject: 'Graphic Inquiry',
   },
 ]
 
