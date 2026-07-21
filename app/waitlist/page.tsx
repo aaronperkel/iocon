@@ -14,15 +14,24 @@ const STATUS_COLORS: Record<string, string> = {
   completed: 'bg-olive-100 text-olive-800',
 }
 
+// Completed orders linger briefly (nice to see the queue moving), then drop
+// off. Legacy completed rows without a completed_at timestamp are hidden too.
+const COMPLETED_VISIBLE_MS = 14 * 24 * 60 * 60 * 1000
+
 export default async function WaitlistPage() {
-  const orders = await getOrders()
+  const cutoff = Date.now() - COMPLETED_VISIBLE_MS
+  const orders = (await getOrders()).filter(
+    (o) =>
+      o.status !== 'completed' ||
+      (o.completedAt !== undefined && new Date(o.completedAt).getTime() > cutoff)
+  )
   const openCount = await getOpenOrderCount()
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2">Waitlist</h1>
       <p className="text-stone-500 text-sm mb-2">
-        Info will come from completed order forms.
+        The live order queue, oldest first. Finished pieces stay listed for two weeks.
       </p>
       <p className="text-stone-700 text-sm font-medium mb-10">
         Current wait:{' '}

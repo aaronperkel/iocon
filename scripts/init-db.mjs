@@ -53,6 +53,7 @@ await connection.query(`
     sharing_platforms JSON NULL,
     tag_username VARCHAR(191) NULL,
     created_at DATETIME(3) NOT NULL,
+    completed_at DATETIME(3) NULL,
     KEY idx_orders_status_created (status, created_at)
   )
 `)
@@ -63,10 +64,22 @@ await connection.query(`
     name VARCHAR(191) NOT NULL,
     rating TINYINT NOT NULL,
     \`text\` TEXT NOT NULL,
+    approved TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME(3) NOT NULL,
     KEY idx_reviews_created (created_at)
   )
 `)
+
+// Columns added after launch — ALTER … IF NOT EXISTS is TiDB syntax (plain
+// MySQL lacks it), which keeps this script idempotent for existing databases.
+// completed_at: when an order reached 'completed' (waitlist hides old ones).
+// approved: Riley's moderation flag — only approved reviews render publicly.
+await connection.query(
+  'ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at DATETIME(3) NULL'
+)
+await connection.query(
+  'ALTER TABLE reviews ADD COLUMN IF NOT EXISTS approved TINYINT(1) NOT NULL DEFAULT 0'
+)
 
 await connection.query(`
   CREATE TABLE IF NOT EXISTS gallery (

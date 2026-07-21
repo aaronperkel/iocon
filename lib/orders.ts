@@ -44,6 +44,7 @@ interface OrderRow extends RowDataPacket {
   sharing_platforms: SharingPlatform[] | string | null
   tag_username: string | null
   created_at: Date
+  completed_at: Date | null
 }
 
 function rowToOrder(row: OrderRow): Order {
@@ -64,11 +65,12 @@ function rowToOrder(row: OrderRow): Order {
     sharingPlatforms: platforms ?? undefined,
     tagUsername: row.tag_username ?? undefined,
     createdAt: row.created_at.toISOString(),
+    completedAt: row.completed_at?.toISOString() ?? undefined,
   }
 }
 
 const SELECT_ORDERS =
-  'SELECT id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at FROM orders'
+  'SELECT id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at, completed_at FROM orders'
 
 // --- Helpers ---------------------------------------------------------------
 
@@ -128,11 +130,14 @@ export async function updateOrderStatus(
   id: string,
   status: OrderStatus
 ): Promise<Order | null> {
+  // completed_at marks when the order finished (the waitlist ages completed
+  // rows off by it); reopening an order clears it.
+  const completedAt = status === 'completed' ? new Date() : null
   if (!isDbConfigured()) {
     let updated: Order | null = null
     memory.orders = memory.orders.map((o) => {
       if (o.id === id) {
-        updated = { ...o, status }
+        updated = { ...o, status, completedAt: completedAt?.toISOString() ?? undefined }
         return updated
       }
       return o
@@ -140,8 +145,8 @@ export async function updateOrderStatus(
     return updated
   }
   const [result] = await getPool().execute<ResultSetHeader>(
-    'UPDATE orders SET status = ? WHERE id = ?',
-    [status, id]
+    'UPDATE orders SET status = ?, completed_at = ? WHERE id = ?',
+    [status, completedAt, id]
   )
   if (result.affectedRows === 0) return null
   return getOrder(id)

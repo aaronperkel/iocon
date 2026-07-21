@@ -33,6 +33,7 @@ export interface Order {
   sharingPlatforms?: SharingPlatform[]
   tagUsername?: string
   createdAt: string // ISO 8601
+  completedAt?: string // ISO 8601 — set when status becomes 'completed'
 }
 
 export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
