@@ -131,9 +131,15 @@ interface FormState {
   contact: ContactInfoFields
 }
 
+interface SectionErrors {
+  name?: string // dancer name or approximate age, depending on sectionNoun
+  shoe?: string
+  legShade?: string
+}
+
 interface FormErrors {
   dancerName?: string
-  sections?: Record<number, string>
+  sections?: Record<number, SectionErrors>
   product?: string
   contact?: ContactErrors
 }
@@ -179,10 +185,15 @@ export default function CostumeOrderForm({
       ...prev,
       sections: prev.sections.map((s, idx) => (idx === i ? { ...s, ...update } : s)),
     }))
-    if (errors.sections?.[i] && (update.name || update.age)) {
+    const sectionErrors = errors.sections?.[i]
+    if (sectionErrors) {
+      const cleared: SectionErrors = { ...sectionErrors }
+      if (update.name !== undefined || update.age !== undefined) cleared.name = undefined
+      if (update.shoe !== undefined) cleared.shoe = undefined
+      if (update.legShade !== undefined) cleared.legShade = undefined
       setErrors((prev) => ({
         ...prev,
-        sections: { ...prev.sections, [i]: '' },
+        sections: { ...prev.sections, [i]: cleared },
       }))
     }
   }
@@ -228,16 +239,20 @@ export default function CostumeOrderForm({
     if (sectionNoun === 'age' && !form.dancerName.trim()) {
       errs.dancerName = 'Dancer name is required.'
     }
-    const sectionErrs: Record<number, string> = {}
+    const sectionErrs: Record<number, SectionErrors> = {}
     form.sections.forEach((s, i) => {
+      const se: SectionErrors = {}
       if (sectionNoun === 'age' && !s.age.trim()) {
-        sectionErrs[i] = 'Approximate age is required.'
+        se.name = 'Approximate age is required.'
       }
       if (sectionNoun === 'dancer' && form.sections.length > 1 && !s.name.trim()) {
-        sectionErrs[i] = 'Dancer first name is required.'
+        se.name = 'Dancer first name is required.'
       }
+      if (!s.shoe) se.shoe = 'Please choose hard or soft shoe.'
+      if (!s.legShade) se.legShade = 'Please choose a leg shade.'
+      if (Object.keys(se).length) sectionErrs[i] = se
     })
-    if (Object.values(sectionErrs).some(Boolean)) errs.sections = sectionErrs
+    if (Object.keys(sectionErrs).length) errs.sections = sectionErrs
     if (!form.product) errs.product = 'Please choose a product format.'
     const contactErrs: ContactErrors = {}
     if (!form.contact.firstName.trim()) contactErrs.firstName = 'First name is required.'
@@ -334,12 +349,7 @@ export default function CostumeOrderForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const errs = validate()
-    if (
-      errs.dancerName ||
-      errs.product ||
-      errs.contact ||
-      (errs.sections && Object.values(errs.sections).some(Boolean))
-    ) {
+    if (errs.dancerName || errs.product || errs.contact || errs.sections) {
       setErrors(errs)
       return
     }
@@ -429,7 +439,7 @@ export default function CostumeOrderForm({
               {/* Dancer details */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {sectionNoun === 'age' ? (
-                  <Field label="Approximate age" required error={errors.sections?.[i] || undefined}>
+                  <Field label="Approximate age" required error={errors.sections?.[i]?.name}>
                     <input
                       type="text"
                       value={section.age}
@@ -441,7 +451,7 @@ export default function CostumeOrderForm({
                   <Field
                     label="First name of dancer"
                     required={form.sections.length > 1}
-                    error={errors.sections?.[i] || undefined}
+                    error={errors.sections?.[i]?.name}
                   >
                     <input
                       type="text"
@@ -451,7 +461,7 @@ export default function CostumeOrderForm({
                     />
                   </Field>
                 )}
-                <Field label="Hard or soft shoe" required>
+                <Field label="Hard or soft shoe" required error={errors.sections?.[i]?.shoe}>
                   <select
                     value={section.shoe}
                     onChange={(e) => updateSection(i, { shoe: e.target.value as Shoe })}
@@ -462,7 +472,7 @@ export default function CostumeOrderForm({
                     <option value="soft">Soft shoe</option>
                   </select>
                 </Field>
-                <Field label="Leg shade" required>
+                <Field label="Leg shade" required error={errors.sections?.[i]?.legShade}>
                   <select
                     value={section.legShade}
                     onChange={(e) => updateSection(i, { legShade: e.target.value as LegShade })}
