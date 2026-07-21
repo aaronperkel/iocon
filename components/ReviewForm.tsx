@@ -20,8 +20,10 @@ function validate(f: Fields): Partial<Record<keyof Fields, string>> {
   return e
 }
 
-export default function ReviewForm() {
-  const [form, setForm] = useState<Fields>(EMPTY)
+// `initialRating` preselects the crowns — the review-ask emails link each
+// crown to /review?rating=N so the choice carries into the form.
+export default function ReviewForm({ initialRating = 0 }: { initialRating?: number }) {
+  const [form, setForm] = useState<Fields>({ ...EMPTY, rating: initialRating })
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({})
   const [hovered, setHovered] = useState(0)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')

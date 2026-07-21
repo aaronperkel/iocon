@@ -1,6 +1,5 @@
 import ContactForm from '@/components/ContactForm'
 import CrownMark from '@/components/CrownMark'
-import ReviewForm from '@/components/ReviewForm'
 import { SITE_URL } from '@/lib/site'
 
 // Google's site-name feature reads WebSite structured data from the home page
@@ -96,19 +95,6 @@ export default function HomePage() {
           </p>
           <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
             <ContactForm />
-          </div>
-        </section>
-
-        {/* Leave a Review */}
-        <section id="review" className="scroll-mt-20">
-          <h2 className="font-heading text-4xl font-bold text-olive-800 mb-2">
-            Leave a Review
-          </h2>
-          <p className="text-stone-500 text-sm mb-8">
-            Ordered from Íocón before? Rate your experience and tell others how it went.
-          </p>
-          <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
-            <ReviewForm />
           </div>
         </section>
 

@@ -26,6 +26,7 @@ import 'server-only'
 import nodemailer, { type Transporter } from 'nodemailer'
 import { ORDER_TYPE_LABELS, CONTACT_METHOD_LABELS, type Order } from './orders'
 import { PRODUCT_FORMAT_LABELS } from './products'
+import { SITE_URL } from './site'
 
 const ORDERS_FROM = { name: 'Íocón Orders', address: 'orders@iocongraphics.com' }
 const RILEY_FROM = { name: 'Riley at Íocón', address: 'riley@iocongraphics.com' }
@@ -105,6 +106,34 @@ const SIGN_OFF_TEXT = '\n— Riley\n\nQuestions? Just reply to this email.'
 const SIGN_OFF_HTML =
   '<p style="margin:16px 0 0;">— Riley</p><p style="margin:16px 0 0;color:#777;">Questions? Just reply to this email.</p>'
 
+// --- Review ask -------------------------------------------------------------
+// A row of five crown links; the nth opens /review?rating=n with that crown
+// preselected. Deliberately a GET that only prefills — email link scanners
+// follow URLs, so clicking must never create a review by itself. The crown is
+// U+265B (a text glyph, not emoji — colorable, renders everywhere).
+
+function reviewCrownsHtml(sizePx: number): string {
+  return [1, 2, 3, 4, 5]
+    .map(
+      (n) =>
+        `<a href="${SITE_URL}/review?rating=${n}" style="text-decoration:none;color:#FFB101;font-size:${sizePx}px;line-height:1;padding:0 3px;">&#9819;</a>`
+    )
+    .join('')
+}
+
+const REVIEW_ASK_TEXT = `\n\nLike what you see? Leave a review: ${SITE_URL}/review`
+
+const REVIEW_ASK_HTML = `<div style="margin:24px 0 0;text-align:center;">
+  <p style="margin:0 0 6px;font-weight:bold;">Like what you see? Leave a review — just tap a crown:</p>
+  <p style="margin:0;">${reviewCrownsHtml(28)}</p>
+</div>`
+
+// Smaller, muted variant for the footer of Riley's custom mail.
+const REVIEW_FOOTER_HTML = `<div style="margin:24px 0 0;text-align:center;">
+  <p style="margin:0 0 4px;color:#777;font-size:13px;">Like what you see? Leave a review — just tap a crown:</p>
+  <p style="margin:0;">${reviewCrownsHtml(20)}</p>
+</div>`
+
 function customerFirstName(order: Order): string {
   return order.name.trim().split(/\s+/)[0]
 }
@@ -114,17 +143,19 @@ function customerFirstName(order: Order): string {
 async function sendCustomerAlert(
   order: Order,
   subject: string,
-  bodyText: string
+  bodyText: string,
+  extra?: { text: string; html: string }
 ): Promise<void> {
   if (order.contactMethod !== 'email') return
   await send({
     to: order.contactValue,
     subject,
-    text: `Hi ${customerFirstName(order)},\n\n${bodyText}\n${SIGN_OFF_TEXT}`,
+    text: `Hi ${customerFirstName(order)},\n\n${bodyText}\n${SIGN_OFF_TEXT}${extra?.text ?? ''}`,
     html: brandedHtml(
       `<p style="margin:0 0 12px;">Hi ${escapeHtml(customerFirstName(order))},</p>
   <p style="margin:0;">${escapeHtml(bodyText)}</p>
-  ${SIGN_OFF_HTML}`
+  ${SIGN_OFF_HTML}
+  ${extra?.html ?? ''}`
     ),
   })
 }
@@ -168,7 +199,8 @@ export async function sendOrderStatusEmail(
     await sendCustomerAlert(
       order,
       'Your Íocón order is finished',
-      `Your ${type} is finished! I'll be in touch shortly to get it to you.`
+      `Your ${type} is finished! I'll be in touch shortly to get it to you.`,
+      { text: REVIEW_ASK_TEXT, html: REVIEW_ASK_HTML }
     )
   }
 }
@@ -188,11 +220,12 @@ export async function sendCustomEmail(
     from: RILEY_FROM,
     to: recipient.email,
     subject,
-    text: `Hi ${recipient.firstName},\n\n${message}\n${SIGN_OFF_TEXT}`,
+    text: `Hi ${recipient.firstName},\n\n${message}\n${SIGN_OFF_TEXT}${REVIEW_ASK_TEXT}`,
     html: brandedHtml(
       `<p style="margin:0 0 12px;">Hi ${escapeHtml(recipient.firstName)},</p>
   <p style="margin:0;white-space:pre-wrap;">${escapeHtml(message)}</p>
-  ${SIGN_OFF_HTML}`
+  ${SIGN_OFF_HTML}
+  ${REVIEW_FOOTER_HTML}`
     ),
   })
 }
