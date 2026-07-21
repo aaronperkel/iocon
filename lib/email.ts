@@ -109,14 +109,25 @@ const SIGN_OFF_HTML =
 // --- Review ask -------------------------------------------------------------
 // A row of five crown links; the nth opens /review?rating=n with that crown
 // preselected. Deliberately a GET that only prefills — email link scanners
-// follow URLs, so clicking must never create a review by itself. The crown is
-// U+265B (a text glyph, not emoji — colorable, renders everywhere).
+// follow URLs, so clicking must never create a review by itself.
+//
+// Each crown is the brand crown logo (public/brand/crown-email.png, rendered
+// from crown.svg — Gmail strips SVG, so it must be a PNG) with alt="♛"
+// (U+265B, a text glyph, not emoji) styled gold at a matching size: clients
+// that block or fail to load the image show gold text crowns instead.
 
-function reviewCrownsHtml(sizePx: number): string {
+const CROWN_IMG = `${SITE_URL}/brand/crown-email.png`
+const CROWN_RATIO = 200 / 104 // crown-email.png dimensions
+
+function reviewCrownsHtml(heightPx: number): string {
+  const width = Math.round(heightPx * CROWN_RATIO)
   return [1, 2, 3, 4, 5]
     .map(
       (n) =>
-        `<a href="${SITE_URL}/review?rating=${n}" style="text-decoration:none;color:#FFB101;font-size:${sizePx}px;line-height:1;padding:0 3px;">&#9819;</a>`
+        `<a href="${SITE_URL}/review?rating=${n}" style="text-decoration:none;color:#FFB101;">` +
+        `<img src="${CROWN_IMG}" width="${width}" height="${heightPx}" alt="&#9819;" ` +
+        `style="vertical-align:middle;border:0;margin:0 3px;color:#FFB101;font-size:${heightPx}px;line-height:1;text-decoration:none;">` +
+        `</a>`
     )
     .join('')
 }
@@ -125,13 +136,13 @@ const REVIEW_ASK_TEXT = `\n\nLike what you see? Leave a review: ${SITE_URL}/revi
 
 const REVIEW_ASK_HTML = `<div style="margin:24px 0 0;text-align:center;">
   <p style="margin:0 0 6px;font-weight:bold;">Like what you see? Leave a review — just tap a crown:</p>
-  <p style="margin:0;">${reviewCrownsHtml(28)}</p>
+  <p style="margin:0;">${reviewCrownsHtml(24)}</p>
 </div>`
 
 // Smaller, muted variant for the footer of Riley's custom mail.
 const REVIEW_FOOTER_HTML = `<div style="margin:24px 0 0;text-align:center;">
   <p style="margin:0 0 4px;color:#777;font-size:13px;">Like what you see? Leave a review — just tap a crown:</p>
-  <p style="margin:0;">${reviewCrownsHtml(20)}</p>
+  <p style="margin:0;">${reviewCrownsHtml(16)}</p>
 </div>`
 
 function customerFirstName(order: Order): string {

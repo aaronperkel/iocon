@@ -78,6 +78,13 @@ export default function RootLayout({
               >
                 Commission Terms
               </Link>
+              {' '}&middot;{' '}
+              <Link
+                href="/review"
+                className="text-stone-500 hover:text-gold-700 underline underline-offset-2 transition-colors"
+              >
+                Leave a Review
+              </Link>
             </p>
             <p>
               Built by{' '}
