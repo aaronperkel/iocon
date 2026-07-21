@@ -22,6 +22,9 @@ yarn-error.log*
 # local-dev gallery uploads (prod uses Vercel Blob)
 /public/gallery/uploads/
 
+# local-dev order-form image uploads (prod uses Vercel Blob)
+/public/order-uploads/
+
 # local env files
 .env
 .env*.local

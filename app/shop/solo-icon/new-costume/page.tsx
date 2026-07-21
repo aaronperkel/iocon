@@ -12,6 +12,7 @@ import {
   type ContactErrors,
 } from '@/components/ContactInfoBlock'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
+import { uploadOrderImages } from '@/lib/upload-images'
 
 // Flow A in Riley's ordering scheme — design a brand-new costume from scratch.
 // Solo Icon only; the other subjects always draw existing costumes.
@@ -56,6 +57,7 @@ export default function NewCostumeDesignPage() {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle'
   )
+  const [submitError, setSubmitError] = useState('')
   const [warnNoImages, setWarnNoImages] = useState(false)
 
   function clearContactError(key: keyof ContactInfoFields) {
@@ -65,10 +67,21 @@ export default function NewCostumeDesignPage() {
   async function doSubmit() {
     setWarnNoImages(false)
     setSubmitStatus('loading')
+
+    let imageUrls: string[]
+    try {
+      imageUrls = await uploadOrderImages(form.images)
+    } catch {
+      setSubmitError(
+        'We couldn’t upload your images — please try again in a moment. Your answers are still filled in.'
+      )
+      setSubmitStatus('error')
+      return
+    }
+
     const details = [
       `Descriptions / preferences: ${form.description}`,
-      form.images.length > 0 &&
-        `Inspiration images: ${form.images.length} uploaded — TODO: wire to file storage`,
+      imageUrls.length > 0 && `Inspiration images:\n${imageUrls.join('\n')}`,
       form.product && `Product: ${PRODUCT_FORMAT_LABELS[form.product]}`,
     ]
       .filter(Boolean)
@@ -91,6 +104,7 @@ export default function NewCostumeDesignPage() {
       if (!res.ok) throw new Error()
       setSubmitStatus('success')
     } catch {
+      setSubmitError('Something went wrong — please try again.')
       setSubmitStatus('error')
     }
   }
@@ -211,7 +225,9 @@ export default function NewCostumeDesignPage() {
           </section>
 
           {submitStatus === 'error' && (
-            <p className="text-sm text-red-600">Something went wrong — please try again.</p>
+            <p className="text-sm text-red-600">
+              {submitError || 'Something went wrong — please try again.'}
+            </p>
           )}
 
           <p className="text-xs text-stone-500">

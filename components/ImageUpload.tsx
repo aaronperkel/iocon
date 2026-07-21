@@ -1,12 +1,18 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 export interface UploadedFile {
   id: string
   name: string
   previewUrl: string
+  /** The original file, kept so the form can upload it on submit. */
+  file: File
 }
+
+// Must match IMAGE_EXTENSIONS in app/api/uploads/route.ts. Listing concrete
+// types (not image/*) also nudges iOS into converting HEIC photos to JPEG.
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 
 interface Props {
   files: UploadedFile[]
@@ -26,17 +32,20 @@ export function ImageUpload({
   error,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const [typeNote, setTypeNote] = useState(false)
 
   function handleFileList(fileList: FileList | null) {
     if (!fileList) return
-    const newFiles: UploadedFile[] = Array.from(fileList).map((file) => ({
+    // Drag-and-drop ignores the input's accept list, so filter here too.
+    const accepted = Array.from(fileList).filter((f) => ACCEPTED_TYPES.includes(f.type))
+    setTypeNote(accepted.length < fileList.length)
+    const newFiles: UploadedFile[] = accepted.map((file) => ({
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name: file.name,
       previewUrl: URL.createObjectURL(file),
-      // TODO: Upload to storage (S3, Cloudflare R2, Vercel Blob…) and store
-      //   the returned URL instead. Delete the object URL after upload.
+      file,
     }))
-    onChange([...files, ...newFiles])
+    if (newFiles.length > 0) onChange([...files, ...newFiles])
     // Reset input so the same file can be re-added after removal
     if (inputRef.current) inputRef.current.value = ''
   }
@@ -72,12 +81,17 @@ export function ImageUpload({
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept={ACCEPTED_TYPES.join(',')}
           multiple
           className="hidden"
           onChange={(e) => handleFileList(e.target.files)}
         />
       </div>
+      {typeNote && (
+        <p className="mt-1 text-xs text-stone-500">
+          Some files weren&rsquo;t added — images must be JPEG, PNG, WebP, or GIF.
+        </p>
+      )}
 
       {files.length > 0 && (
         <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">

@@ -13,6 +13,7 @@ import {
 } from '@/components/ContactInfoBlock'
 import type { OrderType } from '@/lib/order-types'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
+import { uploadOrderImages } from '@/lib/upload-images'
 
 // ---------------------------------------------------------------------------
 // Shared "draw an existing costume" order form (Flow B in Riley's ordering
@@ -158,6 +159,7 @@ export default function CostumeOrderForm({
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle'
   )
+  const [submitError, setSubmitError] = useState('')
   const [warnNoImages, setWarnNoImages] = useState(false)
 
   const nounLabel = sectionNoun === 'age' ? 'age' : 'dancer'
@@ -247,7 +249,7 @@ export default function CostumeOrderForm({
 
   // ---- Details builder ----
 
-  function buildDetails(): string {
+  function buildDetails(sectionImageUrls: string[][], layoutImageUrls: string[]): string {
     const lines: string[] = []
     if (sectionNoun === 'age' && form.dancerName) lines.push(`Dancer: ${form.dancerName}`)
 
@@ -262,8 +264,8 @@ export default function CostumeOrderForm({
       if (s.designer) lines.push(`Costume designer: ${s.designer}`)
       if (s.school) lines.push(`Dance school: ${s.school}`)
       if (s.extras.length > 0) lines.push(`Extras: ${s.extras.join(', ')}`)
-      if (s.images.length > 0)
-        lines.push(`Dancer images: ${s.images.length} uploaded — TODO: wire to storage`)
+      const urls = sectionImageUrls[i] ?? []
+      if (urls.length > 0) lines.push(`Dancer images:\n${urls.join('\n')}`)
       if (s.comments) lines.push(`Comments: ${s.comments}`)
     })
 
@@ -278,8 +280,7 @@ export default function CostumeOrderForm({
     )
     if (layout.addLogo === 'yes')
       lines.push('Logo: Yes — see layout images and comments for size/positioning')
-    if (layout.images.length > 0)
-      lines.push(`Layout images: ${layout.images.length} uploaded — TODO: wire to storage`)
+    if (layoutImageUrls.length > 0) lines.push(`Layout images:\n${layoutImageUrls.join('\n')}`)
     if (layout.comments) lines.push(`Layout comments: ${layout.comments}`)
 
     if (form.product) lines.push(`\nProduct: ${PRODUCT_FORMAT_LABELS[form.product]}`)
@@ -292,6 +293,22 @@ export default function CostumeOrderForm({
   async function doSubmit() {
     setWarnNoImages(false)
     setSubmitStatus('loading')
+
+    let sectionImageUrls: string[][]
+    let layoutImageUrls: string[]
+    try {
+      ;[sectionImageUrls, layoutImageUrls] = await Promise.all([
+        Promise.all(form.sections.map((s) => uploadOrderImages(s.images))),
+        uploadOrderImages(form.layout.images),
+      ])
+    } catch {
+      setSubmitError(
+        'We couldn’t upload your images — please try again in a moment. Your answers are still filled in.'
+      )
+      setSubmitStatus('error')
+      return
+    }
+
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
@@ -303,12 +320,13 @@ export default function CostumeOrderForm({
           contactValue: form.contact.contactValue,
           orderType,
           product: form.product,
-          details: buildDetails(),
+          details: buildDetails(sectionImageUrls, layoutImageUrls),
         }),
       })
       if (!res.ok) throw new Error()
       setSubmitStatus('success')
     } catch {
+      setSubmitError('Something went wrong — please try again.')
       setSubmitStatus('error')
     }
   }
@@ -634,7 +652,9 @@ export default function CostumeOrderForm({
           </section>
 
           {submitStatus === 'error' && (
-            <p className="text-sm text-red-600">Something went wrong — please try again.</p>
+            <p className="text-sm text-red-600">
+              {submitError || 'Something went wrong — please try again.'}
+            </p>
           )}
 
           <p className="text-xs text-stone-500">

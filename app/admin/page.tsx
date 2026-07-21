@@ -317,8 +317,8 @@ function OrderCard({
               <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-1">
                 Order details
               </p>
-              <pre className="whitespace-pre-wrap text-stone-600 text-sm bg-stone-50 rounded-lg p-3 border border-stone-100 font-sans leading-relaxed">
-                {order.details}
+              <pre className="whitespace-pre-wrap break-words text-stone-600 text-sm bg-stone-50 rounded-lg p-3 border border-stone-100 font-sans leading-relaxed">
+                {linkifyDetails(order.details)}
               </pre>
             </div>
           )}
@@ -358,6 +358,27 @@ function OrderCard({
         </div>
       )}
     </div>
+  )
+}
+
+// Order details are plain text, but the order forms embed uploaded-image URLs
+// (Vercel Blob, or /order-uploads/… in dev) — render those as links so Riley
+// can open the customer's photos straight from the card.
+function linkifyDetails(details: string): React.ReactNode[] {
+  return details.split(/(https?:\/\/\S+|\/order-uploads\/\S+)/g).map((part, i) =>
+    /^(https?:\/\/|\/order-uploads\/)/.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noreferrer"
+        className="text-gold-700 underline underline-offset-2 hover:text-gold-600 break-all transition-colors"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
   )
 }
 
