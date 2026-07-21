@@ -15,8 +15,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const body = await req.json()
-  const { status } = body as { status?: string }
+  const body = await req.json().catch(() => null)
+  const { status } = (body ?? {}) as { status?: string }
 
   if (!status || !VALID_STATUSES.includes(status as OrderStatus)) {
     return NextResponse.json(
