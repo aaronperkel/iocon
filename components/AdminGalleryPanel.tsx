@@ -5,6 +5,8 @@
 // images and tag them and date them"). Entries go live on /gallery and the
 // shop flip-tile carousels immediately. Files are stored via
 // POST /api/admin/gallery (Vercel Blob, or public/gallery/uploads/ in dev).
+// The "Shop tile thumbnails" section picks which piece fronts each subject
+// tile on /shop (PATCH /api/admin/gallery/[id], one per subject).
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -47,6 +49,10 @@ export default function AdminGalleryPanel() {
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [listError, setListError] = useState<string | null>(null)
+
+  // Shop-tile thumbnail picker
+  const [thumbSavingId, setThumbSavingId] = useState<string | null>(null)
+  const [thumbError, setThumbError] = useState<string | null>(null)
 
   async function refresh(): Promise<GalleryImage[] | null> {
     const res = await fetch('/api/admin/gallery')
@@ -112,6 +118,38 @@ export default function AdminGalleryPanel() {
       )
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function setThumbnail(img: GalleryImage, on: boolean) {
+    setThumbSavingId(img.id)
+    setThumbError(null)
+    try {
+      const res = await fetch(`/api/admin/gallery/${img.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shopThumbnail: on }),
+      })
+      if (res.status === 401) {
+        router.replace('/admin/login')
+        return
+      }
+      if (!res.ok) throw new Error()
+      // Mirror the server rule locally: at most one thumbnail per subject.
+      setImages(
+        (prev) =>
+          prev?.map((i) =>
+            i.id === img.id
+              ? { ...i, shopThumbnail: on }
+              : on && i.subject === img.subject
+                ? { ...i, shopThumbnail: false }
+                : i
+          ) ?? prev
+      )
+    } catch {
+      setThumbError('Failed to update the shop thumbnail. Please try again.')
+    } finally {
+      setThumbSavingId(null)
     }
   }
 
@@ -230,6 +268,65 @@ export default function AdminGalleryPanel() {
         {formError && <p className="text-xs text-red-600">{formError}</p>}
       </div>
 
+      {/* Shop-tile thumbnails — which piece fronts each subject tile on /shop */}
+      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 space-y-4">
+        <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
+          Shop tile thumbnails
+        </p>
+        <p className="text-xs text-stone-500 leading-relaxed">
+          Choose which piece appears on the front of each subject tile on the shop page. Tap an
+          image to feature it; tap it again to go back to the tile&rsquo;s default artwork. Each
+          subject offers the gallery images tagged with it.
+        </p>
+        {thumbError && <p className="text-xs text-red-600">{thumbError}</p>}
+        {images === null ? (
+          <p className="text-stone-400 text-sm">Loading gallery…</p>
+        ) : images.length === 0 ? (
+          <p className="text-stone-400 italic text-sm">
+            Add a gallery image first — the choices here come from the gallery.
+          </p>
+        ) : (
+          (Object.keys(GALLERY_SUBJECT_LABELS) as GallerySubject[])
+            .map((s) => ({ subject: s, entries: images.filter((img) => img.subject === s) }))
+            .filter(({ entries }) => entries.length > 0)
+            .map(({ subject: s, entries }) => (
+              <div key={s}>
+                <p className="text-xs font-medium text-olive-800 mb-2">
+                  {GALLERY_SUBJECT_LABELS[s]}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {entries.map((img) => (
+                    <button
+                      key={img.id}
+                      type="button"
+                      disabled={thumbSavingId !== null}
+                      onClick={() => setThumbnail(img, !img.shopThumbnail)}
+                      aria-pressed={img.shopThumbnail === true}
+                      title={img.caption}
+                      className={`relative rounded-lg overflow-hidden border-2 transition ${
+                        img.shopThumbnail
+                          ? 'border-gold-500 ring-2 ring-gold-200'
+                          : 'border-transparent hover:border-gold-300'
+                      } ${thumbSavingId === img.id ? 'opacity-60' : ''}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.src} alt={img.caption} className="h-16 w-16 object-cover" />
+                      {img.shopThumbnail && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-1 right-1 h-4 w-4 rounded-full bg-gold text-gold-950 text-[10px] font-bold flex items-center justify-center"
+                        >
+                          &#10003;
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))
+        )}
+      </div>
+
       {/* Existing entries */}
       <div>
         <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-3">
@@ -272,6 +369,11 @@ export default function AdminGalleryPanel() {
                           day: 'numeric',
                           year: 'numeric',
                         })}
+                      </span>
+                    )}
+                    {img.shopThumbnail && (
+                      <span className="bg-gold-50 text-gold-900 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                        Shop tile
                       </span>
                     )}
                   </div>

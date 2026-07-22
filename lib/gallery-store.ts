@@ -23,6 +23,7 @@ interface GalleryRow extends RowDataPacket {
   subject: GalleryImage['subject']
   src: string
   artwork_date: Date | null
+  shop_thumbnail: number
   created_at: Date
 }
 
@@ -36,6 +37,7 @@ function rowToImage(row: GalleryRow): GalleryImage {
     // DATE columns come back as midnight-UTC Dates (pool timezone is 'Z');
     // slice the ISO string rather than round-tripping through local time.
     date: row.artwork_date ? row.artwork_date.toISOString().slice(0, 10) : undefined,
+    shopThumbnail: row.shop_thumbnail === 1,
   }
 }
 
@@ -48,7 +50,7 @@ function byDateDesc(a: GalleryImage, b: GalleryImage): number {
 export async function getGalleryImages(): Promise<GalleryImage[]> {
   if (!isDbConfigured()) return [...memory.images].sort(byDateDesc)
   const [rows] = await getPool().query<GalleryRow[]>(
-    `SELECT id, caption, product, subject, src, artwork_date, created_at
+    `SELECT id, caption, product, subject, src, artwork_date, shop_thumbnail, created_at
      FROM gallery
      ORDER BY (artwork_date IS NULL), artwork_date DESC, created_at DESC`
   )
@@ -96,10 +98,43 @@ export async function deleteGalleryImage(id: string): Promise<GalleryImage | nul
     return image
   }
   const [rows] = await getPool().query<GalleryRow[]>(
-    'SELECT id, caption, product, subject, src, artwork_date, created_at FROM gallery WHERE id = ?',
+    'SELECT id, caption, product, subject, src, artwork_date, shop_thumbnail, created_at FROM gallery WHERE id = ?',
     [id]
   )
   if (rows.length === 0) return null
   await getPool().execute<ResultSetHeader>('DELETE FROM gallery WHERE id = ?', [id])
   return rowToImage(rows[0])
+}
+
+/**
+ * Feature an entry on the front of its subject's shop tile, or un-feature it.
+ * Featuring clears the subject's previous pick — at most one thumbnail per
+ * subject. Returns the updated entry, or null when the id doesn't exist.
+ */
+export async function setShopThumbnail(id: string, on: boolean): Promise<GalleryImage | null> {
+  if (!isDbConfigured()) {
+    const image = memory.images.find((img) => img.id === id)
+    if (!image) return null
+    memory.images = memory.images.map((img) =>
+      img.id === id
+        ? { ...img, shopThumbnail: on }
+        : on && img.subject === image.subject
+          ? { ...img, shopThumbnail: false }
+          : img
+    )
+    return memory.images.find((img) => img.id === id) ?? null
+  }
+  const [rows] = await getPool().query<GalleryRow[]>(
+    'SELECT id, caption, product, subject, src, artwork_date, shop_thumbnail, created_at FROM gallery WHERE id = ?',
+    [id]
+  )
+  if (rows.length === 0) return null
+  if (on) {
+    await getPool().execute(
+      'UPDATE gallery SET shop_thumbnail = 0 WHERE subject = ? AND shop_thumbnail = 1',
+      [rows[0].subject]
+    )
+  }
+  await getPool().execute('UPDATE gallery SET shop_thumbnail = ? WHERE id = ?', [on ? 1 : 0, id])
+  return { ...rowToImage(rows[0]), shopThumbnail: on }
 }

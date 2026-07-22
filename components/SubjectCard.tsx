@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Icon, type IconName } from '@/components/icons'
 import InquiryModal from '@/components/InquiryModal'
+import MattedImage from '@/components/MattedImage'
 import type { GalleryImage } from '@/lib/gallery'
 
 // ---------------------------------------------------------------------------
@@ -41,9 +42,11 @@ const TILE_SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
 export default function SubjectCard({
   subject,
   examples,
+  thumbnail,
 }: {
   subject: ShopSubjectCard
   examples: GalleryImage[]
+  thumbnail?: GalleryImage // admin-picked gallery piece for the tile front (beats subject.image)
 }) {
   const [flipped, setFlipped] = useState(false)
   const [exampleIndex, setExampleIndex] = useState(0)
@@ -64,24 +67,25 @@ export default function SubjectCard({
 
   const cta = subject.inquirySubject ? 'Contact me' : 'Start an order'
   const example = examples[exampleIndex]
+  const thumbnailSrc = thumbnail?.src
 
   const frontFace = (
     <>
-      <div
-        className={`relative flex-1 min-h-40 border-b border-stone-100 ${
-          subject.imageFit === 'contain'
-            ? 'bg-[#fff]' // literal white mat: must match the artwork's own white ground even in dark mode
-            : 'bg-gradient-to-br from-olive-50 to-gold-50'
-        }`}
-      >
-        {subject.image ? (
-          <Image
-            src={subject.image}
-            alt={subject.title}
-            fill
-            sizes={TILE_SIZES}
-            className={subject.imageFit === 'contain' ? 'object-contain p-2' : 'object-cover'}
-          />
+      <div className="relative flex-1 min-h-40 border-b border-stone-100 bg-gradient-to-br from-olive-50 to-gold-50">
+        {thumbnailSrc ? (
+          <MattedImage src={thumbnailSrc} alt={subject.title} sizes={TILE_SIZES} />
+        ) : subject.image ? (
+          subject.imageFit === 'contain' ? (
+            <MattedImage src={subject.image} alt={subject.title} sizes={TILE_SIZES} />
+          ) : (
+            <Image
+              src={subject.image}
+              alt={subject.title}
+              fill
+              sizes={TILE_SIZES}
+              className="object-cover"
+            />
+          )
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-olive-300 group-hover:text-gold-400 transition-colors">
             <Icon name={subject.icon} className="w-12 h-12" />
@@ -138,12 +142,12 @@ export default function SubjectCard({
           <div className="relative aspect-[4/3] bg-gradient-to-br from-olive-50 to-gold-50 border-b border-stone-100">
             {example ? (
               example.src ? (
-                <Image
+                // Keyed by src: each carousel step gets a fresh sampled mat.
+                <MattedImage
+                  key={example.src}
                   src={example.src}
                   alt={example.caption}
-                  fill
                   sizes={TILE_SIZES}
-                  className="object-cover"
                 />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">

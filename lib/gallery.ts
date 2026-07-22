@@ -37,6 +37,7 @@ export interface GalleryImage {
   subject: GallerySubject
   src?: string // Blob URL or path under /public; placeholder tile when absent
   date?: string // YYYY-MM-DD — when the piece was made (Riley dates each entry)
+  shopThumbnail?: boolean // fronts the matching shop tile (Riley picks one per subject in the admin Gallery tab)
 }
 
 // Shown as "Jul 2026" on tiles — month/year is the granularity that matters

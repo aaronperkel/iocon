@@ -2,12 +2,13 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { NextRequest, NextResponse } from 'next/server'
 import { del } from '@vercel/blob'
-import { deleteGalleryImage } from '@/lib/gallery-store'
+import { deleteGalleryImage, setShopThumbnail } from '@/lib/gallery-store'
 
-// Admin-only (middleware.ts gates all of /api/admin): removes a gallery entry
-// and best-effort cleans up its stored image (Vercel Blob, or the local-dev
-// public/gallery/uploads/ fallback). A failed cleanup never fails the request
-// — the entry is already gone, an orphaned file is just clutter.
+// Admin-only (middleware.ts gates all of /api/admin). DELETE removes a
+// gallery entry and best-effort cleans up its stored image (Vercel Blob, or
+// the local-dev public/gallery/uploads/ fallback) — a failed cleanup never
+// fails the request; the entry is already gone, an orphaned file is just
+// clutter. PATCH toggles the entry as its subject's shop-tile thumbnail.
 
 async function deleteStoredImage(src: string) {
   try {
@@ -21,6 +22,22 @@ async function deleteStoredImage(src: string) {
   } catch (error) {
     console.error('Failed to delete stored gallery image:', src, error)
   }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const body = await req.json().catch(() => null)
+  if (!body || typeof body.shopThumbnail !== 'boolean') {
+    return NextResponse.json({ error: 'shopThumbnail must be true or false.' }, { status: 400 })
+  }
+  const updated = await setShopThumbnail(id, body.shopThumbnail)
+  if (!updated) {
+    return NextResponse.json({ error: 'Gallery entry not found.' }, { status: 404 })
+  }
+  return NextResponse.json(updated)
 }
 
 export async function DELETE(

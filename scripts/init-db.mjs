@@ -74,6 +74,9 @@ await connection.query(`
 // MySQL lacks it), which keeps this script idempotent for existing databases.
 // completed_at: when an order reached 'completed' (waitlist hides old ones).
 // approved: Riley's moderation flag — only approved reviews render publicly.
+// shop_thumbnail: fronts the matching shop tile (one per subject, picked in
+// the admin Gallery tab). The ALTER runs after the CREATE below on a fresh
+// database, so the CREATE also carries the column.
 await connection.query(
   'ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at DATETIME(3) NULL'
 )
@@ -89,10 +92,15 @@ await connection.query(`
     subject VARCHAR(32) NOT NULL,
     src VARCHAR(1024) NOT NULL,
     artwork_date DATE NULL,
+    shop_thumbnail TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME(3) NOT NULL,
     KEY idx_gallery_created (created_at)
   )
 `)
+
+await connection.query(
+  'ALTER TABLE gallery ADD COLUMN IF NOT EXISTS shop_thumbnail TINYINT(1) NOT NULL DEFAULT 0'
+)
 
 await connection.query(`
   CREATE TABLE IF NOT EXISTS admin_users (

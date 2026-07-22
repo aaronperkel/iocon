@@ -171,13 +171,19 @@ export default async function ShopPage() {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-        {SUBJECTS.map(({ gallerySubject, ...subject }) => (
-          <SubjectCard
-            key={subject.id}
-            subject={subject}
-            examples={galleryImages.filter((img) => img.subject === gallerySubject)}
-          />
-        ))}
+        {SUBJECTS.map(({ gallerySubject, ...subject }) => {
+          const examples = galleryImages.filter((img) => img.subject === gallerySubject)
+          return (
+            <SubjectCard
+              key={subject.id}
+              subject={subject}
+              examples={examples}
+              // Riley's pick from the admin Gallery tab fronts the tile;
+              // without one the tile falls back to subject.image / the icon.
+              thumbnail={examples.find((img) => img.shopThumbnail && img.src)}
+            />
+          )
+        })}
       </div>
 
       <p className="mt-10 text-sm text-stone-500">
