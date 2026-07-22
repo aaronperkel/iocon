@@ -16,6 +16,7 @@ const ROUTES = [
   '/shop/walking-duo',
   '/review',
   '/terms',
+  '/privacy',
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {

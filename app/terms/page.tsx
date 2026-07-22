@@ -4,8 +4,8 @@ import Link from 'next/link'
 // Commission Terms — plain-English terms for custom commissions.
 //
 // Placeholders to fill in before launch: [LAST_UPDATED], [DELIVERY_TIMEFRAME].
-// Linked from the footer (app/layout.tsx) and from the agreement line above
-// the submit button on both order forms.
+// Linked from the footer (components/Footer.tsx) and from the agreement line
+// above the submit button on both order forms.
 // ---------------------------------------------------------------------------
 
 export const metadata = {
