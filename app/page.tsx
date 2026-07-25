@@ -34,7 +34,12 @@ const STRUCTURED_DATA = {
 }
 
 export default async function HomePage() {
-  const reviews = (await getPublicReviews()).slice(0, MAX_HOME_REVIEWS)
+  // A DB hiccup must render the page without reviews, never 500 it — repeated
+  // 5xx responses get a page dropped from Google's index.
+  const reviews = (await getPublicReviews().catch(() => [])).slice(
+    0,
+    MAX_HOME_REVIEWS
+  )
   return (
     <>
       <script

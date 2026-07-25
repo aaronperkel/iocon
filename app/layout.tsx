@@ -41,10 +41,15 @@ export const metadata: Metadata = {
   title: 'Íocón Graphics — Hand made graphics for the Irish Dance world',
   description:
     'Íocón Graphics creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for the Irish Dance world.',
+  // './' resolves against the current route, so every page self-canonicalizes
+  // (and drops query strings — gallery filter views canonicalize to /gallery).
+  alternates: {
+    canonical: './',
+  },
   openGraph: {
     siteName: 'Íocón Graphics',
     type: 'website',
-    url: '/',
+    url: './',
   },
   twitter: {
     card: 'summary_large_image',
