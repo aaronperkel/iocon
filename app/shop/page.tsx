@@ -31,9 +31,9 @@ interface Subject extends ShopSubjectCard {
   gallerySubject: GallerySubject // feeds the back-of-tile example carousel
 }
 
-// TODO: replace the '$–' placeholders when Riley settles real starting prices.
-const PRICE_TBD = 'Starting from $–'
-
+// Tile backs show no price line until Riley settles real starting prices —
+// set `price: 'Starting from $NN'` on an entry to bring it back. Meanwhile
+// she prices each commission on the Stripe invoice she sends after the order.
 const SUBJECTS: Subject[] = [
   {
     id: 'solo-icon',
@@ -41,7 +41,6 @@ const SUBJECTS: Subject[] = [
     href: '/shop/solo-icon',
     icon: 'dancer',
     gallerySubject: 'solo-icon',
-    price: PRICE_TBD,
     blurb:
       'Where it all began! A single dancer with the original Íocón look. A detailed drawing of an existing costume or a new costume design.',
   },
@@ -51,7 +50,6 @@ const SUBJECTS: Subject[] = [
     href: '/shop/group-icons',
     icon: 'dancers',
     gallerySubject: 'group-icons',
-    price: PRICE_TBD,
     blurb:
       'Multiple dancers together in one drawing. Great for siblings, teams, and friends. See the “Through the Years” option for one dancer (young to old).',
   },
@@ -63,7 +61,6 @@ const SUBJECTS: Subject[] = [
     image: '/shop/through-the-years.png',
     imageFit: 'contain', // the age progression must show all dancers — never crop
     gallerySubject: 'through-the-years',
-    price: PRICE_TBD,
     blurb:
       'An excellent way to remember a dance career or dress design evolutions. Meant for one dancer to show their growth through the years. See “Group Icons” for a group drawing intended for friends, teammates, or siblings.',
   },
@@ -73,7 +70,6 @@ const SUBJECTS: Subject[] = [
     href: '/shop/walking-duo',
     icon: 'dancers',
     gallerySubject: 'walking-duo',
-    price: PRICE_TBD,
     blurb:
       'A new, more organic template for two dancers. The drawing depicts dancers holding hands, walking away from the viewer, with the back of the costume drawn in detail. Ideal for dance besties, siblings, or teammates. Male dancers can also be used in the template by request.',
   },

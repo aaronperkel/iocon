@@ -69,8 +69,10 @@ export default function TermsPage() {
           waitlist page.
         </p>
         <p>
-          Payment is processed securely by Stripe; your card details never pass through this
-          site. Full payment is due up front, before work on your commission begins.
+          After your order comes in, I&rsquo;ll send you an invoice through Stripe, with a
+          link to pay securely online — your card details go straight to Stripe and never
+          pass through this site. Full payment is due up front, before work on your
+          commission begins.
         </p>
       </Section>
 

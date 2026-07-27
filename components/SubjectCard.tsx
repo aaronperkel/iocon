@@ -32,7 +32,7 @@ export interface ShopSubjectCard {
   icon: IconName
   image?: string // path under /public — front-of-tile artwork
   imageFit?: 'cover' | 'contain' // contain (on white) for drawings that must not crop; default cover
-  price?: string // e.g. 'Starting from $–' (TODO: real prices from Riley)
+  price?: string // e.g. 'Starting from $40' — omitted until Riley sets starting prices
   blurb: string
   inquirySubject?: string // e.g. 'Bulk Ordering Inquiry' → CTA opens the contact modal
 }

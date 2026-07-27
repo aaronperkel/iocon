@@ -125,9 +125,9 @@ export default function PrivacyPage() {
             order updates and contact-form messages.
           </li>
           <li>
-            <span className="font-medium text-stone-700">Stripe</span> handles payment when you
-            pay online — your card details go directly to Stripe and never pass through this
-            site.
+            <span className="font-medium text-stone-700">Stripe</span> handles payment —
+            orders are paid through a Stripe invoice, and your card details go directly to
+            Stripe, never through this site.
           </li>
         </ul>
       </Section>
