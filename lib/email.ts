@@ -3,8 +3,9 @@
 //
 // Env vars (see .env.local; mirror into Vercel for production):
 //   SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS
-//     iCloud SMTP. SMTP_USER is Riley's Apple ID; SMTP_PASS is an
-//     app-specific password, NOT her real password.
+//     iCloud SMTP. SMTP_USER must be the account's primary @icloud.com
+//     address (the Apple ID — a gmail — gets 550, the custom-domain aliases
+//     get 535); SMTP_PASS is an app-specific password, NOT her real password.
 //   CONTACT_EMAIL_TO
 //     Riley's inbox (contact form + new-order notifications).
 //     Defaults to riley@iocongraphics.com.

@@ -18,7 +18,6 @@ export type OrderType =
   | 'walking-duo'
 export type OrderStatus = 'pending' | 'in-progress' | 'completed'
 export type ContactMethod = 'text' | 'email' | 'whatsapp' | 'instagram'
-export type SharingPlatform = 'instagram' | 'tiktok' | 'website' | 'none'
 
 export interface Order {
   id: string
@@ -30,8 +29,6 @@ export interface Order {
   product?: ProductFormat
   status: OrderStatus
   details?: string
-  sharingPlatforms?: SharingPlatform[]
-  tagUsername?: string
   createdAt: string // ISO 8601
   completedAt?: string // ISO 8601 — set when status becomes 'completed'
 }

@@ -304,12 +304,6 @@ function OrderCard({
               label="Contact"
               value={`${CONTACT_METHOD_LABELS[order.contactMethod]}: ${order.contactValue}`}
             />
-            {order.sharingPlatforms && order.sharingPlatforms.length > 0 && (
-              <DetailRow label="Sharing" value={order.sharingPlatforms.join(', ')} />
-            )}
-            {order.tagUsername && (
-              <DetailRow label="Tag username" value={order.tagUsername} />
-            )}
           </div>
 
           {order.details && (

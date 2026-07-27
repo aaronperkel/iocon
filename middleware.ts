@@ -14,8 +14,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith('/api/reviews')) {
-    // The home page reads and submits reviews publicly; moderation (DELETE)
-    // is admin-only.
+    // The home page reads reviews and /review submits them publicly;
+    // moderation (PATCH approve / DELETE) is admin-only.
     if (request.method === 'GET' || request.method === 'POST') return NextResponse.next()
     if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     return NextResponse.next()

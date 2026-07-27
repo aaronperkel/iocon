@@ -19,7 +19,6 @@ import type {
   Order,
   OrderStatus,
   OrderType,
-  SharingPlatform,
 } from './order-types'
 
 export * from './order-types'
@@ -41,17 +40,11 @@ interface OrderRow extends RowDataPacket {
   product: ProductFormat | null
   status: OrderStatus
   details: string | null
-  sharing_platforms: SharingPlatform[] | string | null
-  tag_username: string | null
   created_at: Date
   completed_at: Date | null
 }
 
 function rowToOrder(row: OrderRow): Order {
-  const platforms =
-    typeof row.sharing_platforms === 'string'
-      ? (JSON.parse(row.sharing_platforms) as SharingPlatform[])
-      : row.sharing_platforms
   return {
     id: row.id,
     initials: row.initials,
@@ -62,15 +55,13 @@ function rowToOrder(row: OrderRow): Order {
     product: row.product ?? undefined,
     status: row.status,
     details: row.details ?? undefined,
-    sharingPlatforms: platforms ?? undefined,
-    tagUsername: row.tag_username ?? undefined,
     createdAt: row.created_at.toISOString(),
     completedAt: row.completed_at?.toISOString() ?? undefined,
   }
 }
 
 const SELECT_ORDERS =
-  'SELECT id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at, completed_at FROM orders'
+  'SELECT id, initials, name, contact_method, contact_value, order_type, product, status, details, created_at, completed_at FROM orders'
 
 // --- Helpers ---------------------------------------------------------------
 
@@ -106,8 +97,8 @@ export async function addOrder(
   }
   await getPool().execute(
     `INSERT INTO orders
-       (id, initials, name, contact_method, contact_value, order_type, product, status, details, sharing_platforms, tag_username, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, initials, name, contact_method, contact_value, order_type, product, status, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       newOrder.id,
       newOrder.initials,
@@ -118,8 +109,6 @@ export async function addOrder(
       newOrder.product ?? null,
       newOrder.status,
       newOrder.details ?? null,
-      newOrder.sharingPlatforms ? JSON.stringify(newOrder.sharingPlatforms) : null,
-      newOrder.tagUsername ?? null,
       new Date(newOrder.createdAt),
     ]
   )

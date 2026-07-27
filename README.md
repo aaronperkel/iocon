@@ -1,105 +1,49 @@
-# Íocón
+# Íocón Graphics
 
-Custom Irish dance costume illustrations — digital images, logos, and costume designs.
+Custom Irish dance artwork — costume drawings, icons, logos, and graphics, hand made by Riley. Next.js 15 (App Router) + TypeScript + Tailwind CSS 3, deployed on Vercel at [iocongraphics.com](https://iocongraphics.com).
+
+For architecture detail (data layers, auth, email, branding rules), see `CLAUDE.md`.
 
 ## Quick start
 
 ```bash
 npm install
-npm run dev
-# → http://localhost:3000
+npm run dev        # → http://localhost:3000
+npm run build      # production build (also type-checks)
+npm run db:init    # one-time/idempotent: create the DB tables (needs DATABASE_URL)
 ```
 
-Requires Node.js 18+.
+Requires Node.js 18+. A fresh clone works with **zero configuration**: without env vars, orders/reviews/gallery use in-memory stores (reset on restart), email helpers log to the console instead of sending, and uploads write to `public/` locally.
 
----
+## Environment variables
+
+All live in `.env.local` (gitignored) — **mirror every one into Vercel** for production.
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | TiDB Cloud Serverless, `mysql://user:pass@host:4000/dbname`. Local dev uses the `iocon_dev` database, prod uses `iocon` (same cluster). Absent → in-memory fallback. |
+| `AUTH_SECRET` | HMAC key for admin sessions. Rotating it signs everyone out. Absent → insecure dev fallback. |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | iCloud Mail SMTP. `SMTP_USER` must be the account's primary `@icloud.com` address; `SMTP_PASS` is an app-specific password. Absent → emails are logged, not sent. |
+| `CONTACT_EMAIL_TO` | Riley's inbox for contact-form + new-order mail. Defaults to riley@iocongraphics.com — override to test without emailing her. |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob store for gallery + order-form image uploads. Absent → local files in dev, 503 in prod. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` / `STRIPE_SECRET_KEY` | Reserved for the payment integration — **not used by any code yet**. |
 
 ## Route map
 
 | Route | Description |
 |---|---|
-| `/` | Home — About Me + Contact form |
-| `/gallery` | Gallery (stub — see below) |
-| `/order` | Order entry — product categories |
-| `/order/costume` | Costume sub-menu |
-| `/order/logo` | Logo order form |
-| `/order/drawing` | Existing costume drawing form |
-| `/order/design` | New costume design form |
-| `/waitlist` | Live waitlist fed by order submissions |
+| `/` | Home — hero, About, approved reviews, contact form |
+| `/gallery` | Filterable gallery (admin-managed, Vercel Blob) |
+| `/shop` | Subject tiles + how-it-works; `/order*` redirects here |
+| `/shop/solo-icon` (+ `existing-costume`, `new-costume`) | Solo Icon fork + order forms |
+| `/shop/group-icons`, `/shop/through-the-years`, `/shop/walking-duo` | Multi-section order forms |
+| `/waitlist` | Public live order queue (initials only) |
+| `/review` | Review form; `?rating=N` preselects crowns (linked from emails) |
+| `/terms`, `/privacy` | Commission terms & privacy policy |
+| `/admin` | Order/email/review/gallery/admin management — gated by email + one-time code |
 
-### Order flow
+## Deploying
 
-```
-/order  (Digital Image)
-  ├── Other    → /#contact  (Home page, scrolls to Contact Me)
-  ├── Logo     → /order/logo
-  └── Costume  → /order/costume
-                   ├── Existing Costume Drawing → /order/drawing
-                   └── New Costume Design        → /order/design
-```
+Push to `main` → Vercel deploys production; any other branch gets a preview URL. After adding a table or column locally, re-run `npm run db:init` against the **prod** `DATABASE_URL` too.
 
----
-
-## Stubbed integration points
-
-### Contact form email  (`app/api/contact/route.ts`)
-Submissions are currently logged to the console.  
-To wire up a real provider, add the relevant env var and replace the `console.log`:
-
-| Provider | Env var |
-|---|---|
-| Resend | `RESEND_API_KEY` |
-| SendGrid | `SENDGRID_API_KEY` |
-| Nodemailer / SMTP | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` |
-| Recipient inbox | `CONTACT_EMAIL_TO` |
-
-### Order persistence (`lib/orders.ts` + `app/api/orders/route.ts`)
-Orders are stored in a module-level in-memory array.  
-State resets on server restart and does not sync across serverless instances.
-
-To add real persistence:
-1. Pick a database (PostgreSQL/Prisma, Supabase, PlanetScale, SQLite/Turso, …).
-2. Set `DATABASE_URL` (reserved env var).
-3. Replace `getOrders()` and `addOrder()` in `lib/orders.ts` with DB queries.
-4. Update the route handlers in `app/api/orders/route.ts` accordingly.
-
-Seed data (3 sample rows) lives at the top of `lib/orders.ts` — delete it when you connect a real DB.
-
-### File uploads (drawing/design forms)
-Both forms include a note that reference photos can be sent after confirmation.  
-To add actual upload fields:
-- Add a `<input type="file">` to the form.
-- Wire to a storage provider (S3, Cloudflare R2, Vercel Blob, Uploadthing…).
-- Set `STORAGE_BUCKET` / provider-specific env vars.
-
----
-
-## Intentional placeholders
-
-| What | Where | Status |
-|---|---|---|
-| Gallery images | `components/ImageGrid.tsx` | Scaffold only — replace `sampleImages` with real data |
-| Gallery data source | `app/gallery/page.tsx` | TODO comment at top of file |
-| About Me copy | `app/page.tsx` | Lorem ipsum — replace with real bio |
-| Hero tagline | `app/page.tsx` | Placeholder — update to match brand voice |
-| Favicon / OG image | `/public/` | Not included — add `favicon.ico` and `opengraph-image.png` |
-
----
-
-## Adding a new product category
-
-1. Open `app/order/page.tsx`.
-2. Append an entry to the `CATEGORIES` array — each entry has a `title`, `subtitle`, and `options[]`.
-3. Create the corresponding routes under `app/order/`.
-
-No other files need to change.
-
----
-
-## Tech stack
-
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **Tailwind CSS 3**
-- **react-colorful** — in-page color picker for the drawing form
-- Fonts (via `next/font/google`): Uncial Antiqua (Íocón brand wordmark only), Cormorant Garamond (headings + serif body), Inter (UI copy)
+⚠️ Never run `npm run build` while `next dev` is running — both write `.next` and the output corrupts.

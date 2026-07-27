@@ -39,6 +39,10 @@ const connection = await mysql.createConnection({
 await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\``)
 await connection.query(`USE \`${database}\``)
 
+// Databases created before 2026-07 also carry legacy sharing_platforms /
+// tag_username columns (both NULLable, from the retired sharing-permissions
+// questions) — the app no longer reads or writes them, and they can be
+// dropped by hand whenever convenient.
 await connection.query(`
   CREATE TABLE IF NOT EXISTS orders (
     id VARCHAR(64) PRIMARY KEY,
@@ -50,8 +54,6 @@ await connection.query(`
     product VARCHAR(32) NULL,
     status VARCHAR(16) NOT NULL DEFAULT 'pending',
     details MEDIUMTEXT NULL,
-    sharing_platforms JSON NULL,
-    tag_username VARCHAR(191) NULL,
     created_at DATETIME(3) NOT NULL,
     completed_at DATETIME(3) NULL,
     KEY idx_orders_status_created (status, created_at)

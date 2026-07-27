@@ -118,7 +118,7 @@ const STEPS = [
   },
   {
     title: 'Choose a product',
-    text: 'Apply your design to a selection of product types: digital downloads and prints (with more to come).',
+    text: 'Apply your design to a selection of product types: digital downloads, with prints and more to come.',
   },
 ]
 

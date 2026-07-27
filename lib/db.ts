@@ -3,8 +3,8 @@
 //
 // Configured by DATABASE_URL (mysql://user:pass@host:4000/dbname) in
 // .env.local — gitignored, mirror into Vercel. When it is absent,
-// lib/orders.ts and lib/reviews.ts fall back to their in-memory stubs so a
-// fresh clone still works with zero setup.
+// lib/orders.ts, lib/reviews.ts, and lib/gallery-store.ts fall back to their
+// in-memory stubs so a fresh clone still works with zero setup.
 //
 // The pool is cached on globalThis so `next dev`'s per-bundle module copies
 // (and serverless warm invocations) share one pool instead of leaking

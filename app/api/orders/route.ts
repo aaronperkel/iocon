@@ -5,7 +5,6 @@ import {
   getQueuePosition,
   type ContactMethod,
   type OrderType,
-  type SharingPlatform,
 } from '@/lib/orders'
 import { AVAILABLE_PRODUCTS, type ProductFormat } from '@/lib/products'
 import { sendNewOrderNotification, sendOrderPlacedEmail } from '@/lib/email'
@@ -19,13 +18,11 @@ const VALID_TYPES: OrderType[] = [
   'walking-duo',
 ]
 const VALID_METHODS: ContactMethod[] = ['text', 'email', 'whatsapp', 'instagram']
-const VALID_PLATFORMS: SharingPlatform[] = ['instagram', 'tiktok', 'website', 'none']
 
 // Column caps from scripts/init-db.mjs — reject over-length input with a 400
 // instead of letting the INSERT fail with a 500.
 const MAX_NAME = 191
 const MAX_CONTACT_VALUE = 191
-const MAX_TAG_USERNAME = 191
 // details is MEDIUMTEXT; the cap is just a sanity bound (biggest legit orders
 // — many dancers, comments, image URLs — stay well under it).
 const MAX_DETAILS = 100_000
@@ -55,8 +52,6 @@ export async function POST(req: NextRequest) {
     orderType,
     product,
     details,
-    sharingPlatforms,
-    tagUsername,
   } = body as {
     firstName?: unknown
     lastName?: unknown
@@ -65,8 +60,6 @@ export async function POST(req: NextRequest) {
     orderType?: unknown
     product?: unknown
     details?: unknown
-    sharingPlatforms?: unknown
-    tagUsername?: unknown
   }
 
   if (
@@ -113,25 +106,6 @@ export async function POST(req: NextRequest) {
   }
 
   if (
-    sharingPlatforms !== undefined &&
-    (!Array.isArray(sharingPlatforms) ||
-      sharingPlatforms.length > VALID_PLATFORMS.length ||
-      !sharingPlatforms.every((p) => VALID_PLATFORMS.includes(p as SharingPlatform)))
-  ) {
-    return NextResponse.json(
-      { error: `sharingPlatforms must be an array of: ${VALID_PLATFORMS.join(', ')}.` },
-      { status: 400 }
-    )
-  }
-
-  if (
-    tagUsername !== undefined &&
-    (typeof tagUsername !== 'string' || tagUsername.length > MAX_TAG_USERNAME)
-  ) {
-    return NextResponse.json({ error: 'tagUsername is invalid.' }, { status: 400 })
-  }
-
-  if (
     contactMethod === 'email' &&
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactValue.trim())
   ) {
@@ -165,8 +139,6 @@ export async function POST(req: NextRequest) {
     orderType: orderType as OrderType,
     product: product ? (product as ProductFormat) : undefined,
     details: details as string | undefined,
-    sharingPlatforms: sharingPlatforms as SharingPlatform[] | undefined,
-    tagUsername: (tagUsername as string | undefined) || undefined,
   })
 
   // Email failures must never lose the order — log and return 201 regardless.
