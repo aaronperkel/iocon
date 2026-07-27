@@ -61,6 +61,12 @@ export default function Footer() {
             <p className="mt-3 text-sm text-stone-500 leading-relaxed max-w-xs">
               Hand made graphics for the Irish Dance world.
             </p>
+            {/* SEO: the unaccented spelling must exist as visible on-page text
+                sitewide — Google otherwise reads "iocon" as a typo of "icon"
+                and never matches the site for accent-less searches. */}
+            <p className="mt-1.5 text-xs text-stone-400">
+              No fadas on your keyboard? Plain &ldquo;Iocon Graphics&rdquo; works too.
+            </p>
             <a
               href="https://www.instagram.com/iocongraphics/"
               target="_blank"

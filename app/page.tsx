@@ -82,8 +82,9 @@ export default async function HomePage() {
             </p>
             <p>
               Íocón was developed to be a multi-purpose small business for Irish dance art,
-              graphics, design, and gifts. The name comes from the Irish word for Icon, inspired by
-              the strong, basic, and upright form that my original dancer drawings take. The
+              graphics, design, and gifts. The name comes from the Irish word for Icon — written
+              without its fadas, plain Iocon — inspired by the strong, basic, and upright form
+              that my original dancer drawings take. The
               graphics that I offer are highly customizable and I always welcome collaboration
               until the design is just right. You can follow along on Instagram at{' '}
               <a

@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   applicationName: 'Íocón Graphics',
   title: 'Íocón Graphics — Hand made graphics for the Irish Dance world',
   description:
-    'Íocón Graphics creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for the Irish Dance world.',
+    'Íocón Graphics (also written Iocon Graphics) creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for the Irish Dance world.',
   // './' resolves against the current route, so every page self-canonicalizes
   // (and drops query strings — gallery filter views canonicalize to /gallery).
   alternates: {
