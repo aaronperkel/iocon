@@ -1,9 +1,25 @@
 import Link from 'next/link'
 import CrownMark from '@/components/CrownMark'
+import Footer from '@/components/Footer'
+import Nav from '@/components/Nav'
 
 export const metadata = { title: 'Page Not Found — Íocón Graphics' }
 
+// Renders its own Nav/Footer: the global not-found lives outside the (site)
+// route group (whose layout carries the chrome), in the bare root layout.
 export default function NotFound() {
+  return (
+    <>
+      <Nav />
+      <main className="flex-1">
+        <NotFoundBody />
+      </main>
+      <Footer />
+    </>
+  )
+}
+
+function NotFoundBody() {
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-24 text-center">
       <CrownMark className="w-14 mx-auto text-gold" />

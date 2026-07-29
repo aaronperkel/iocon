@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Uncial_Antiqua } from 'next/font/google'
 import './globals.css'
-import Nav from '@/components/Nav'
-import Footer from '@/components/Footer'
 import { SITE_URL } from '@/lib/site'
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -68,12 +66,12 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Nav + Footer live in app/(site)/layout.tsx, not here — /coming-soon
+  // (the pre-launch landing) must render without the site chrome.
   return (
     <html lang="en" className={`${inter.variable} ${uncialAntiqua.variable}`}>
       <body className="font-sans text-stone-900 min-h-screen flex flex-col">
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>
