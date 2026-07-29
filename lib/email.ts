@@ -72,7 +72,7 @@ function brandedHtml(paragraphsHtml: string): string {
   <p style="font-family:'Times New Roman',Times,serif;font-size:26px;font-weight:bold;color:#8B8A00;margin:0 0 4px;">Íocón</p>
   <div style="border-bottom:2px solid #FFB101;margin-bottom:20px;"></div>
   ${paragraphsHtml}
-  <p style="margin:24px 0 0;color:#777;font-size:13px;">Íocón · Hand made graphics for the Irish Dance world · iocongraphics.com</p>
+  <p style="margin:24px 0 0;color:#777;font-size:13px;">Íocón · Hand made graphics for Irish dancers · iocongraphics.com</p>
 </div>`
 }
 
@@ -103,9 +103,20 @@ async function send(options: {
 
 // --- Customer-facing order alerts ------------------------------------------
 
-const SIGN_OFF_TEXT = '\n— Riley\n\nQuestions? Just reply to this email.'
-const SIGN_OFF_HTML =
-  '<p style="margin:16px 0 0;">— Riley</p><p style="margin:16px 0 0;color:#777;">Questions? Just reply to this email.</p>'
+// Riley's July 2026 email pass: bodies end with a bare "— Riley"; the
+// "reply to this email" invitation lives only in the order-placed body.
+const SIGN_OFF_TEXT = '\n— Riley'
+const SIGN_OFF_HTML = '<p style="margin:16px 0 0;">— Riley</p>'
+
+// Gold CTA button to the live queue — the placed / moved-up / being-drawn
+// alerts end with it (Riley's spec); the finished email deliberately
+// doesn't, since there's nothing left to wait for. Gold bg + dark text
+// mirrors the site's CTA rule (never white on gold).
+const WAITLIST_BUTTON_TEXT = `\n\nCheck the waitlist: ${SITE_URL}/waitlist`
+const WAITLIST_BUTTON_HTML = `<div style="margin:24px 0 0;text-align:center;">
+  <a href="${SITE_URL}/waitlist" style="display:inline-block;background-color:#FFB101;color:#362600;font-weight:bold;font-size:14px;padding:10px 24px;border-radius:8px;text-decoration:none;">Check Waitlist</a>
+</div>`
+const WAITLIST_BUTTON = { text: WAITLIST_BUTTON_TEXT, html: WAITLIST_BUTTON_HTML }
 
 // --- Review ask -------------------------------------------------------------
 // A row of five crown links; the nth opens /review?rating=n with that crown
@@ -180,19 +191,31 @@ export async function sendOrderPlacedEmail(
   await sendCustomerAlert(
     order,
     'Your Íocón order has been placed',
-    `Thanks for your order! Your ${type} is in the queue — you're currently number ${queuePosition} in line. I'll email you when I start drawing it.`
+    `Thank you for your order! Your ${type} is in the queue and you're currently number ${queuePosition} in line. You'll receive another email once I begin your order. If you have any questions, you can reply to this email.`,
+    WAITLIST_BUTTON
   )
+}
+
+// Riley (July 2026): no email for every one-step bump — only milestone
+// positions feel like news ("you're number 10!", "you're number 5!").
+// Alert on reaching the top five or any multiple of ten. If Riley wants to
+// tune this herself someday, this predicate is what an admin-portal setting
+// would replace.
+export function isQueueAlertPosition(position: number): boolean {
+  return position <= 5 || position % 10 === 0
 }
 
 export async function sendQueueUpdateEmail(
   order: Order,
   queuePosition: number
 ): Promise<void> {
+  if (!isQueueAlertPosition(queuePosition)) return
   const type = ORDER_TYPE_LABELS[order.orderType]
   await sendCustomerAlert(
     order,
     "You've moved up in the Íocón queue",
-    `Good news — you've moved up in the queue. You're now number ${queuePosition} in line for your ${type}.`
+    `Good news! You've moved up in the queue. You're now number ${queuePosition} in line for your ${type}.`,
+    WAITLIST_BUTTON
   )
 }
 
@@ -205,13 +228,14 @@ export async function sendOrderStatusEmail(
     await sendCustomerAlert(
       order,
       'Your Íocón order is being drawn',
-      `I've started drawing your ${type}. I'll email you as soon as it's finished.`
+      `I've started your ${type}. You'll receive one last email as soon as it's finished.`,
+      WAITLIST_BUTTON
     )
   } else {
     await sendCustomerAlert(
       order,
       'Your Íocón order is finished',
-      `Your ${type} is finished! I'll be in touch shortly to get it to you.`,
+      `Your ${type} is finished! I'll be in touch with you shortly to get it to you.`,
       { text: REVIEW_ASK_TEXT, html: REVIEW_ASK_HTML }
     )
   }

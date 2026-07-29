@@ -16,8 +16,10 @@ export default function Nav() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
+  // olive-25 (the page background) rather than white so the bar matches the
+  // body in dark mode too — bg-white maps to the card gray there (Riley).
   return (
-    <nav className="bg-white/95 backdrop-blur-sm border-b border-stone-200 sticky top-0 z-50">
+    <nav className="bg-olive-25/95 backdrop-blur-sm border-b border-stone-200 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
 

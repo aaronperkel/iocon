@@ -1,28 +1,41 @@
 'use client'
 
 import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
   formatGalleryDate,
   GALLERY_SUBJECT_LABELS,
+  PUBLIC_GALLERY_SUBJECTS,
   type GalleryImage,
   type GallerySubject,
 } from '@/lib/gallery'
-import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
+import { AVAILABLE_PRODUCTS, PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 
 // Filterable gallery grid. Entries come from the server page (the DB-backed
 // gallery Riley manages from the admin Gallery tab). The active filters live
 // in the URL query string (?product=…&subject=…) so views are shareable and
-// the shop's "Digital Download" button can deep-link straight to a filtered
-// gallery.
+// deep-linkable. Filter chips offer only what's currently for sale
+// (AVAILABLE_PRODUCTS / PUBLIC_GALLERY_SUBJECTS) — the product row hides
+// itself entirely while only one format exists. Clicking a tile opens the
+// piece full-size in a lightbox (tiles crop to squares; the dialog doesn't).
 
-const PRODUCTS = Object.keys(PRODUCT_FORMAT_LABELS) as ProductFormat[]
-const SUBJECTS = Object.keys(GALLERY_SUBJECT_LABELS) as GallerySubject[]
+const PRODUCTS = AVAILABLE_PRODUCTS
+const SUBJECTS = PUBLIC_GALLERY_SUBJECTS
 
 export default function GalleryGrid({ images }: { images: GalleryImage[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [lightbox, setLightbox] = useState<GalleryImage | null>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    if (lightbox && !dialog.open) dialog.showModal()
+    else if (!lightbox && dialog.open) dialog.close()
+  }, [lightbox])
 
   const productParam = searchParams.get('product')
   const subjectParam = searchParams.get('subject')
@@ -52,12 +65,14 @@ export default function GalleryGrid({ images }: { images: GalleryImage[] }) {
     <div className="space-y-8">
       {/* Filters */}
       <div className="space-y-4">
-        <FilterRow
-          label="Product"
-          options={PRODUCTS.map((p) => ({ value: p, label: PRODUCT_FORMAT_LABELS[p] }))}
-          active={product}
-          onSelect={(v) => setFilter('product', v)}
-        />
+        {PRODUCTS.length > 1 && (
+          <FilterRow
+            label="Product"
+            options={PRODUCTS.map((p) => ({ value: p, label: PRODUCT_FORMAT_LABELS[p] }))}
+            active={product}
+            onSelect={(v) => setFilter('product', v)}
+          />
+        )}
         <FilterRow
           label="Subject"
           options={SUBJECTS.map((s) => ({ value: s, label: GALLERY_SUBJECT_LABELS[s] }))}
@@ -73,39 +88,93 @@ export default function GalleryGrid({ images }: { images: GalleryImage[] }) {
         </p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {filtered.map((img) => (
-            <div
-              key={img.id}
-              className="group relative rounded-xl overflow-hidden aspect-square bg-gradient-to-br from-olive-50 to-gold-50 border border-stone-200"
-            >
-              {img.src ? (
+          {filtered.map((img) =>
+            img.src ? (
+              <button
+                key={img.id}
+                type="button"
+                onClick={() => setLightbox(img)}
+                aria-label={`View “${img.caption}” full size`}
+                className="group relative rounded-xl overflow-hidden aspect-square bg-gradient-to-br from-olive-50 to-gold-50 border border-stone-200 cursor-zoom-in text-left"
+              >
                 <Image src={img.src} alt={img.caption} fill className="object-cover" />
-              ) : (
+                <TileBadges img={img} />
+                <div className="absolute inset-0 bg-gold-950/0 group-hover:bg-gold-950/10 transition-colors" />
+              </button>
+            ) : (
+              <div
+                key={img.id}
+                className="group relative rounded-xl overflow-hidden aspect-square bg-gradient-to-br from-olive-50 to-gold-50 border border-stone-200"
+              >
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
                   <ImagePlaceholderIcon />
                   <p className="text-stone-400 text-xs text-center leading-tight">
                     {img.caption}
                   </p>
                 </div>
-              )}
-              {/* Tag badges */}
-              <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
-                <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
-                  {GALLERY_SUBJECT_LABELS[img.subject]}
-                </span>
-                <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
-                  {PRODUCT_FORMAT_LABELS[img.product]}
-                </span>
-                {img.date && (
-                  <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
-                    {formatGalleryDate(img.date)}
-                  </span>
-                )}
+                <TileBadges img={img} />
               </div>
-              <div className="absolute inset-0 bg-gold-950/0 group-hover:bg-gold-950/10 transition-colors" />
-            </div>
-          ))}
+            )
+          )}
         </div>
+      )}
+
+      {/* Lightbox — the tiles crop to squares; this shows the whole piece. */}
+      <dialog
+        ref={dialogRef}
+        onClose={() => setLightbox(null)}
+        onClick={(e) => {
+          // The dialog element itself is only the click target on the backdrop.
+          if (e.target === dialogRef.current) dialogRef.current?.close()
+        }}
+        aria-label={lightbox ? `${lightbox.caption}, full size` : undefined}
+        className="rounded-2xl border border-stone-200 bg-white p-0 shadow-xl backdrop:bg-[rgb(28_25_23/0.7)]"
+      >
+        {lightbox?.src && (
+          <div className="p-3 sm:p-4">
+            <div className="relative w-[min(90vw,52rem)] h-[min(72vh,44rem)]">
+              <Image
+                src={lightbox.src}
+                alt={lightbox.caption}
+                fill
+                sizes="90vw"
+                className="object-contain"
+              />
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-4">
+              <p className="text-sm text-stone-600">
+                <span className="font-medium text-stone-700">{lightbox.caption}</span>
+                <span className="text-stone-400">
+                  {' '}
+                  — {GALLERY_SUBJECT_LABELS[lightbox.subject]}
+                  {lightbox.date ? `, ${formatGalleryDate(lightbox.date)}` : ''}
+                </span>
+              </p>
+              <button
+                type="button"
+                onClick={() => dialogRef.current?.close()}
+                className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </dialog>
+    </div>
+  )
+}
+
+function TileBadges({ img }: { img: GalleryImage }) {
+  return (
+    <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
+      <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
+        {GALLERY_SUBJECT_LABELS[img.subject]}
+      </span>
+      {img.date && (
+        <span className="bg-white/90 text-stone-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
+          {formatGalleryDate(img.date)}
+        </span>
       )}
     </div>
   )

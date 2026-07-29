@@ -19,6 +19,8 @@ interface Props {
   onChange: (files: UploadedFile[]) => void
   label?: string
   helperText?: string
+  /** Customer-facing uploads set this — reassures that photos stay private (Riley, July 2026). */
+  privacyNote?: boolean
   required?: boolean
   error?: string
 }
@@ -28,6 +30,7 @@ export function ImageUpload({
   onChange,
   label = 'Upload Images',
   helperText,
+  privacyNote,
   required,
   error,
 }: Props) {
@@ -63,6 +66,11 @@ export function ImageUpload({
         {required && <span className="text-gold-600 ml-0.5">*</span>}
       </label>
       {helperText && <p className="text-xs text-stone-500 mb-2">{helperText}</p>}
+      {privacyNote && (
+        <p className="text-xs text-stone-500 italic mb-2">
+          Images will only be used as references. They will never be shared or posted.
+        </p>
+      )}
       <div
         role="button"
         tabIndex={0}

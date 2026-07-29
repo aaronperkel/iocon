@@ -11,8 +11,8 @@ import type { GalleryImage } from '@/lib/gallery'
 // ---------------------------------------------------------------------------
 // SubjectCard — one shop subject as a flippable tile (Riley, July 2026).
 //
-// Front: image (or placeholder icon) + title, linking straight to the order
-// form, with a slim "Learn more" bar that flips the card.
+// Front: image (or placeholder icon) + title + starting price, linking
+// straight to the order form, with a slim "Learn more" bar that flips the card.
 // Back: example carousel pulled from the gallery (entries tagged with this
 // subject), the starting price, Riley's blurb, and the same CTA.
 //
@@ -32,7 +32,7 @@ export interface ShopSubjectCard {
   icon: IconName
   image?: string // path under /public — front-of-tile artwork
   imageFit?: 'cover' | 'contain' // contain (on white) for drawings that must not crop; default cover
-  price?: string // e.g. 'Starting from $40' — omitted until Riley sets starting prices
+  price?: string // e.g. 'Starting from $25' — shown on the tile front and back (Riley, July 2026)
   blurb: string
   inquirySubject?: string // e.g. 'Bulk Ordering Inquiry' → CTA opens the contact modal
 }
@@ -92,9 +92,18 @@ export default function SubjectCard({
           </div>
         )}
       </div>
-      <span className="block p-4 text-center font-heading text-lg sm:text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
+      <span
+        className={`block px-4 pt-4 text-center font-heading text-lg sm:text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight ${
+          subject.price ? 'pb-1' : 'pb-4'
+        }`}
+      >
         {subject.title}
       </span>
+      {subject.price && (
+        <span className="block px-4 pb-3.5 text-center text-xs font-medium text-stone-500">
+          {subject.price}
+        </span>
+      )}
     </>
   )
 

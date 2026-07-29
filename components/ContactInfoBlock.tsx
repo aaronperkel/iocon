@@ -20,16 +20,24 @@ export const EMPTY_CONTACT: ContactInfoFields = {
 export type ContactErrors = Partial<Record<keyof ContactInfoFields, string>>
 
 // No placeholder/example text in the inputs — Riley wants the order forms
-// very simple (2026-07); the field labels carry the meaning.
+// very simple (2026-07); the field labels carry the meaning. fieldLabel names
+// what to type for the chosen method (her July 2026 wording for Text and
+// Instagram DM).
 const CONTACT_OPTIONS: {
   value: ContactMethod
   label: string
+  fieldLabel: string
   inputType: string
 }[] = [
-  { value: 'text', label: 'Text', inputType: 'tel' },
-  { value: 'email', label: 'Email', inputType: 'email' },
-  { value: 'whatsapp', label: 'WhatsApp', inputType: 'tel' },
-  { value: 'instagram', label: 'Instagram DM', inputType: 'text' },
+  { value: 'text', label: 'Text', fieldLabel: 'Your Cell Number', inputType: 'tel' },
+  { value: 'email', label: 'Email', fieldLabel: 'Your Email', inputType: 'email' },
+  { value: 'whatsapp', label: 'WhatsApp', fieldLabel: 'Your WhatsApp Number', inputType: 'tel' },
+  {
+    value: 'instagram',
+    label: 'Instagram DM',
+    fieldLabel: 'Your Instagram Username',
+    inputType: 'text',
+  },
 ]
 
 interface Props {
@@ -101,7 +109,7 @@ export function ContactInfoBlock({ value, onChange, errors, onClearError }: Prop
         )}
       </div>
 
-      <Field label={`Your ${selected.label}`} required error={errors.contactValue}>
+      <Field label={selected.fieldLabel} required error={errors.contactValue}>
         <input
           type={selected.inputType}
           value={value.contactValue}

@@ -13,10 +13,11 @@ import { useRouter } from 'next/navigation'
 import { Field } from '@/components/FormField'
 import {
   GALLERY_SUBJECT_LABELS,
+  PUBLIC_GALLERY_SUBJECTS,
   type GalleryImage,
   type GallerySubject,
 } from '@/lib/gallery'
-import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
+import { AVAILABLE_PRODUCTS, PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 import { shrinkImage } from '@/lib/shrink-image'
 
 const inputCls =
@@ -221,9 +222,9 @@ export default function AdminGalleryPanel() {
               <option value="" disabled>
                 Choose…
               </option>
-              {Object.entries(GALLERY_SUBJECT_LABELS).map(([value, label]) => (
+              {PUBLIC_GALLERY_SUBJECTS.map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {GALLERY_SUBJECT_LABELS[value]}
                 </option>
               ))}
             </select>
@@ -234,9 +235,9 @@ export default function AdminGalleryPanel() {
               onChange={(e) => setProduct(e.target.value as ProductFormat)}
               className={inputCls}
             >
-              {Object.entries(PRODUCT_FORMAT_LABELS).map(([value, label]) => (
+              {AVAILABLE_PRODUCTS.map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {PRODUCT_FORMAT_LABELS[value]}
                 </option>
               ))}
             </select>
@@ -286,7 +287,7 @@ export default function AdminGalleryPanel() {
             Add a gallery image first — the choices here come from the gallery.
           </p>
         ) : (
-          (Object.keys(GALLERY_SUBJECT_LABELS) as GallerySubject[])
+          PUBLIC_GALLERY_SUBJECTS
             .map((s) => ({ subject: s, entries: images.filter((img) => img.subject === s) }))
             .filter(({ entries }) => entries.length > 0)
             .map(({ subject: s, entries }) => (

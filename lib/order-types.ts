@@ -15,7 +15,7 @@ export type OrderType =
   | 'solo-icon-new' // Flow A, new costume designed from scratch
   | 'group-icons'
   | 'through-the-years'
-  | 'walking-duo'
+  | 'walking-duo' // retired (Riley, July 2026) — no page or API acceptance; kept so old orders still render
 export type OrderStatus = 'pending' | 'in-progress' | 'completed'
 export type ContactMethod = 'text' | 'email' | 'whatsapp' | 'instagram'
 

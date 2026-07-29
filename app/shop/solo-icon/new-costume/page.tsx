@@ -11,11 +11,15 @@ import {
   type ContactInfoFields,
   type ContactErrors,
 } from '@/components/ContactInfoBlock'
+import { estimateOrderCost, formatUsd } from '@/lib/pricing'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 import { uploadOrderImages } from '@/lib/upload-images'
 
 // Flow A in Riley's ordering scheme — design a brand-new costume from scratch.
 // Solo Icon only; the other subjects always draw existing costumes.
+
+// Flow A has no extras/text/logo add-ons, so the estimate is just the base.
+const ESTIMATED_COST = estimateOrderCost({ orderType: 'solo-icon-new' })
 
 interface FormState {
   images: UploadedFile[]
@@ -83,6 +87,7 @@ export default function NewCostumeDesignPage() {
       `Descriptions / preferences: ${form.description}`,
       imageUrls.length > 0 && `Inspiration images:\n${imageUrls.join('\n')}`,
       form.product && `Product: ${PRODUCT_FORMAT_LABELS[form.product]}`,
+      `Estimated cost: ${formatUsd(ESTIMATED_COST)} (before taxes/fees)`,
     ]
       .filter(Boolean)
       .join('\n')
@@ -127,9 +132,14 @@ export default function NewCostumeDesignPage() {
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
         <p className="font-heading text-3xl text-olive-800 mb-3">Order received!</p>
-        <p className="text-stone-500 text-sm mb-8">
+        <p className="text-stone-500 text-sm mb-4">
           Your new costume design request has been added to the waitlist. I will be in touch soon!
         </p>
+        {form.contact.contactMethod === 'email' && (
+          <p className="text-sm text-gold-800 bg-gold-50 border border-gold-200 rounded-lg px-4 py-2.5 mb-8">
+            Order updates will come by email — make sure you check your junk folder!
+          </p>
+        )}
         <Link
           href="/waitlist"
           className="inline-block bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
@@ -158,13 +168,14 @@ export default function NewCostumeDesignPage() {
         New Costume Design
       </h1>
 
+      {/* Riley's copy (July 2026) */}
       <div className="bg-gold-50 border border-gold-200 rounded-xl p-4 mb-8 text-sm text-stone-600 leading-relaxed">
         <p className="font-medium text-stone-700 mb-1">About this service</p>
         <p>
-          Starting from scratch? I&apos;ll design a completely original costume concept just for
-          you — from silhouette and embroidery style to color palette and overall mood. Share any
-          inspiration images below, then describe your dream look in as much detail as you like.
-          We&apos;ll work together to refine the design until it&apos;s exactly right.
+          Let&apos;s work together to create an original costume concept. In the description,
+          make sure you include as many details as possible to ensure I understand your vision.
+          Think shapes, colors, embroidery themes, mood, costumes you already like, complexion
+          of the dancer. Open to unlimited changes and tweaks throughout the process.
         </p>
       </div>
 
@@ -178,6 +189,7 @@ export default function NewCostumeDesignPage() {
             }}
             label="Inspiration Images"
             helperText="Uploading inspiration images is highly recommended — costumes, colors, embroidery styles, or anything that captures your vision."
+            privacyNote
           />
 
           <Field
@@ -240,6 +252,20 @@ export default function NewCostumeDesignPage() {
             </Link>
             .
           </p>
+
+          {/* Estimate — right above Submit Order (Riley, July 2026) */}
+          <div className="rounded-xl border border-gold-200 bg-gold-50/60 p-4 space-y-1">
+            <p className="text-sm font-medium text-stone-700">
+              Estimated cost:{' '}
+              <span className="font-heading text-2xl font-bold text-olive-800">
+                {formatUsd(ESTIMATED_COST)}
+              </span>
+            </p>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              Taxes and fees may apply. After you place your order, you&rsquo;ll receive an
+              invoice via your preferred contact method.
+            </p>
+          </div>
 
           {warnNoImages ? (
             <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">

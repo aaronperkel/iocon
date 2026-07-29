@@ -1,11 +1,11 @@
 import Link from 'next/link'
 
 // ---------------------------------------------------------------------------
-// Commission Terms — plain-English terms for custom commissions.
-//
-// Placeholders to fill in before launch: [LAST_UPDATED], [DELIVERY_TIMEFRAME].
-// Linked from the footer (components/Footer.tsx) and from the agreement line
-// above the submit button on both order forms.
+// Commission Terms — plain-English terms for custom commissions. The copy is
+// Riley's (July 2026 launch pass — .png delivery, 24-hour delivery window,
+// the website-uses-AI disclosure). Linked from the footer
+// (components/Footer.tsx) and from the agreement line above the submit
+// button on both order forms. Bump the "Last updated" date on edits.
 // ---------------------------------------------------------------------------
 
 export const metadata = {
@@ -32,11 +32,10 @@ export default function TermsPage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-10">
         <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Commission Terms</h1>
-        <p className="text-stone-500 text-sm">Last updated: [LAST_UPDATED]</p>
+        <p className="text-stone-500 text-sm">Last updated: July 28, 2026</p>
         <p className="text-stone-600 text-sm leading-relaxed mt-4 max-w-2xl">
           Thanks for supporting a small, one-artist business! These terms are here to keep
-          things clear and fair for both of us — written in plain English on purpose. If
-          anything is unclear, just{' '}
+          things clear and fair for both of us. If anything is unclear, just{' '}
           <Link
             href="/#contact"
             className="text-gold-700 font-medium underline underline-offset-2 hover:text-gold-600 transition-colors"
@@ -51,8 +50,8 @@ export default function TermsPage() {
         <p>
           Íocón Graphics creates custom digital artwork — Irish dance costume drawings, icons,
           logos, and graphics. Every piece is drawn to order. Finished work is delivered
-          electronically as image files; nothing physical ships unless a print product is
-          explicitly offered in the shop.
+          electronically as image files in .png format; nothing physical ships unless a print
+          product is explicitly offered in the shop.
         </p>
       </Section>
 
@@ -86,16 +85,16 @@ export default function TermsPage() {
           Major changes in scope (for example, switching to a different costume, adding
           dancers, or starting over on a new concept) or revisions requested after you&rsquo;ve
           approved the design may cost extra. If that happens, I&rsquo;ll always tell you the
-          cost before doing the work — no surprise charges, ever.
+          cost before doing the work. I will never surprise you with charges.
         </p>
       </Section>
 
       <Section title="Approval &amp; delivery">
         <p>
           When the artwork is ready, you&rsquo;ll get a look at it for final approval. Once you
-          approve, I&rsquo;ll deliver the final files electronically, typically within
-          [DELIVERY_TIMEFRAME]. Timeframes are estimates rather than guarantees — every piece is
-          drawn by hand, and orders are worked through in queue order.
+          approve, I&rsquo;ll deliver the final files electronically, typically within 24
+          hours. Timeframes are estimates rather than guarantees — every piece is drawn by
+          hand, and orders are worked through in queue order.
         </p>
       </Section>
 
@@ -148,6 +147,11 @@ export default function TermsPage() {
           AI systems. In the same spirit, delivered artwork may not be used by you or anyone
           else for AI training or AI datasets.
         </p>
+        <p>
+          You may have noticed that elements of this website were created using AI. I am not a
+          software engineer! I employ AI help for the creation of this website — but never for
+          the creation of my artwork.
+        </p>
       </Section>
 
       <Section title="Your reference materials">
@@ -193,7 +197,7 @@ export default function TermsPage() {
           >
             contact form
           </Link>{' '}
-          — happy to talk it through.
+          — I&rsquo;m always happy to talk it through. Thank you!
         </p>
       </Section>
     </div>

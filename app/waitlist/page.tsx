@@ -1,3 +1,4 @@
+import SeasonCountdowns from '@/components/SeasonCountdowns'
 import { getOpenOrderCount, getOrders, ORDER_STATUS_LABELS, ORDER_TYPE_LABELS } from '@/lib/orders'
 
 // Force dynamic so this page always reflects the live order queue instead of
@@ -18,6 +19,11 @@ const STATUS_COLORS: Record<string, string> = {
 // off. Legacy completed rows without a completed_at timestamp are hidden too.
 const COMPLETED_VISIBLE_MS = 14 * 24 * 60 * 60 * 1000
 
+// Riley's July 2026 launch pass: each open order adds ~5 days of wait. The
+// season countdowns live in components/SeasonCountdowns.tsx (client — they
+// tick every second).
+const DAYS_PER_ORDER = 5
+
 export default async function WaitlistPage() {
   const cutoff = Date.now() - COMPLETED_VISIBLE_MS
   const orders = (await getOrders()).filter(
@@ -29,14 +35,19 @@ export default async function WaitlistPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2">Waitlist</h1>
-      <p className="text-stone-500 text-sm mb-2">
-        The live order queue, oldest first. Finished pieces stay listed for two weeks.
-      </p>
-      <p className="text-stone-700 text-sm font-medium mb-10">
+      {/* Season countdowns sit above the heading so the waitlist itself —
+          heading, current wait, queue — reads as one uninterrupted block. */}
+      <div className="mb-10">
+        <SeasonCountdowns />
+      </div>
+
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Waitlist</h1>
+      <p className="text-stone-700 text-sm font-medium mb-6">
         Current wait:{' '}
-        <span className="font-heading text-2xl text-olive-800">{openCount}</span>{' '}
-        open order{openCount !== 1 ? 's' : ''}
+        <span className="font-heading text-2xl text-olive-800">
+          {openCount * DAYS_PER_ORDER}
+        </span>{' '}
+        days
       </p>
 
       {orders.length === 0 ? (

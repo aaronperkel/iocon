@@ -19,10 +19,7 @@ export default async function ReviewPage({
 
   return (
     <div className="max-w-lg mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2">Leave a Review</h1>
-      <p className="text-stone-500 text-sm mb-8">
-        Ordered from Íocón before? Rate your experience and tell others how it went.
-      </p>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-8">Leave a Review</h1>
       <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
         <ReviewForm initialRating={initialRating} />
       </div>

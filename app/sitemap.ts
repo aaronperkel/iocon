@@ -13,7 +13,6 @@ const ROUTES = [
   '/shop/solo-icon/existing-costume',
   '/shop/group-icons',
   '/shop/through-the-years',
-  '/shop/walking-duo',
   '/review',
   '/terms',
   '/privacy',

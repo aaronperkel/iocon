@@ -3,11 +3,13 @@ import CrownMark from '@/components/CrownMark'
 
 // ---------------------------------------------------------------------------
 // Site-map footer (Aaron, July 2026 — replaced the single-line footer, which
-// had grown too crowded): brand + tagline on the left, Explore / Support link
-// columns, and a © bar underneath. The Instagram link is deliberately plain
-// text rather than the icon. The brand line uses font-heading — Uncial
-// (font-display) stays reserved for the nav and hero wordmarks — and says
-// "Íocón Graphics" like the © line, not the bare wordmark.
+// had grown too crowded): brand on the left, Explore / Support link columns,
+// and a © bar underneath. The Instagram link is deliberately plain text
+// rather than the icon. The brand is the bare wordmark in Uncial
+// (font-display) next to the crown — Riley's logo lockup, same as the nav
+// (her July 2026 launch pass dropped the tagline and the "no fadas" SEO line;
+// the unaccented "Iocon" spelling now lives in the home About copy and the
+// root meta description instead — keep it there).
 // ---------------------------------------------------------------------------
 
 const EXPLORE_LINKS = [
@@ -22,6 +24,9 @@ const SUPPORT_LINKS = [
   { label: 'Leave a Review', href: '/review' },
   { label: 'Commission Terms', href: '/terms' },
   { label: 'Privacy Policy', href: '/privacy' },
+  // Convenience for Riley/Aaron (July 2026) — middleware bounces signed-out
+  // visitors to /admin/login, so this is safe to expose.
+  { label: 'Admin Login', href: '/admin' },
 ]
 
 const LINK_CLS = 'text-sm text-stone-500 hover:text-gold-700 transition-colors'
@@ -54,19 +59,8 @@ export default function Footer() {
             <div className="flex items-center gap-2.5">
               <CrownMark className="w-6 text-gold flex-shrink-0" />
               {/* Do NOT add uppercase/capitalize here — preserves Í */}
-              <span className="font-heading text-lg font-bold text-olive-800">
-                Íocón Graphics
-              </span>
+              <span className="font-display text-xl text-olive-600">Íocón</span>
             </div>
-            <p className="mt-3 text-sm text-stone-500 leading-relaxed max-w-xs">
-              Hand made graphics for the Irish Dance world.
-            </p>
-            {/* SEO: the unaccented spelling must exist as visible on-page text
-                sitewide — Google otherwise reads "iocon" as a typo of "icon"
-                and never matches the site for accent-less searches. */}
-            <p className="mt-1.5 text-xs text-stone-400">
-              No fadas on your keyboard? Plain &ldquo;Iocon Graphics&rdquo; works too.
-            </p>
             <a
               href="https://www.instagram.com/iocongraphics/"
               target="_blank"

@@ -4,17 +4,20 @@ export const metadata = { title: 'Solo Icon — Íocón Graphics' }
 
 // Solo Icon is a fork: draw an existing costume (Flow B) or design a
 // brand-new one (Flow A). Existing costume is listed first (Riley, 2026-07);
-// both blurbs are her copy.
+// both blurbs are her copy. Prices are her July 2026 launch pricing — keep in
+// sync with lib/pricing.ts (existing $25, new from scratch +$10).
 const OPTIONS = [
   {
     id: 'existing-costume',
     label: 'Draw My Existing Costume',
+    price: 'Starting from $25',
     description: 'An icon created from images of a costume you already own.',
     href: '/shop/solo-icon/existing-costume',
   },
   {
     id: 'new-costume',
     label: 'Design a New Costume from Scratch',
+    price: 'Starting from $35',
     description:
       'An original costume concept that we work together to create. Can be used to support the design process with dressmakers.',
     href: '/shop/solo-icon/new-costume',
@@ -44,6 +47,7 @@ export default function SoloIconPage() {
             <span className="font-heading text-xl font-bold text-olive-800 group-hover:text-gold-700 transition-colors leading-tight">
               {opt.label}
             </span>
+            <span className="text-xs font-semibold text-olive-800">{opt.price}</span>
             <span className="text-stone-500 text-sm leading-relaxed">{opt.description}</span>
             <span className="mt-auto text-gold-600 text-xs font-medium group-hover:underline">
               Select →

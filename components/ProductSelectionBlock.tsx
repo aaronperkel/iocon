@@ -38,7 +38,11 @@ export function ProductSelectionBlock({ value, onChange, error }: Props) {
               }`}
             >
               <p className="font-medium text-sm text-stone-800">
-                {PRODUCT_FORMAT_LABELS[product]}
+                {PRODUCT_FORMAT_LABELS[product]}{' '}
+                {/* Riley (July 2026): digital download adds no fee — say "+$0" */}
+                {product === 'digital-download' && (
+                  <span className="font-semibold text-olive-800">+$0</span>
+                )}
               </p>
               <p className="text-xs text-stone-500 mt-1 leading-relaxed">
                 {PRODUCT_DESCRIPTIONS[product]}

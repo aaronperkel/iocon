@@ -2,9 +2,9 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
-import { GALLERY_SUBJECT_LABELS, type GalleryImage } from '@/lib/gallery'
+import { PUBLIC_GALLERY_SUBJECTS, type GalleryImage } from '@/lib/gallery'
 import { addGalleryImage, getGalleryImages } from '@/lib/gallery-store'
-import { PRODUCT_FORMAT_LABELS } from '@/lib/products'
+import { AVAILABLE_PRODUCTS } from '@/lib/products'
 
 // Admin-only (middleware.ts gates all of /api/admin): Riley's gallery
 // management. GET lists the real (admin-added) entries; POST uploads an image
@@ -55,12 +55,14 @@ export async function POST(req: NextRequest) {
   if (!caption || caption.length > 191) {
     return NextResponse.json({ error: 'Please add a caption (up to 191 characters).' }, { status: 400 })
   }
+  // New entries may only use subjects/products currently offered — retired
+  // ones (walking-duo, print, sticker) stay renderable but not taggable.
   const subject = String(form.get('subject') ?? '')
-  if (!(subject in GALLERY_SUBJECT_LABELS)) {
+  if (!(PUBLIC_GALLERY_SUBJECTS as string[]).includes(subject)) {
     return NextResponse.json({ error: 'Please pick a valid subject.' }, { status: 400 })
   }
   const product = String(form.get('product') ?? '')
-  if (!(product in PRODUCT_FORMAT_LABELS)) {
+  if (!(AVAILABLE_PRODUCTS as string[]).includes(product)) {
     return NextResponse.json({ error: 'Please pick a valid product type.' }, { status: 400 })
   }
   const date = String(form.get('date') ?? '')

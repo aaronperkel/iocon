@@ -7,7 +7,7 @@ export default function GroupIconsPage() {
     <CostumeOrderForm
       orderType="group-icons"
       title="Group Icons"
-      intro="Icons of multiple dancers side by side. Each dancer gets their own section below — add as many as you need, and fill in each dancer's costume details and photos."
+      intro="Each icon in this drawing will have a section within this order form. Fill out the form as you would like to see the dancers from left to right."
       sectionNoun="dancer"
       minSections={2}
     />

@@ -15,7 +15,7 @@ export type GallerySubject =
   | 'solo-icon'
   | 'group-icons'
   | 'through-the-years'
-  | 'walking-duo'
+  | 'walking-duo' // retired (Riley, July 2026 — not developed enough to offer); kept so old DB rows still label
   | 'bulk-drawings'
   | 'logo'
   | 'custom-graphic'
@@ -29,6 +29,18 @@ export const GALLERY_SUBJECT_LABELS: Record<GallerySubject, string> = {
   logo: 'Logo',
   'custom-graphic': 'Custom Graphic',
 }
+
+// What the public gallery filters and the admin pickers offer — everything
+// except retired subjects. The full label map above still resolves legacy
+// entries tagged with a retired subject.
+export const PUBLIC_GALLERY_SUBJECTS: GallerySubject[] = [
+  'solo-icon',
+  'group-icons',
+  'through-the-years',
+  'bulk-drawings',
+  'logo',
+  'custom-graphic',
+]
 
 export interface GalleryImage {
   id: string
@@ -53,7 +65,6 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   { id: 'g1', caption: 'Solo Feis Dress', product: 'digital-download', subject: 'solo-icon' },
   { id: 'g2', caption: 'School Crest Logo', product: 'digital-download', subject: 'logo' },
   { id: 'g3', caption: 'Championship Gown', product: 'digital-download', subject: 'solo-icon' },
-  { id: 'g4', caption: 'Walking Duo Study', product: 'digital-download', subject: 'walking-duo' },
   {
     id: 'g5',
     caption: 'Through the Years — First Feis to Now',

@@ -46,7 +46,7 @@ export async function sendLoginCodeEmail(to: string, code: string): Promise<void
   <p style="margin:0 0 12px;">Your sign-in code is:</p>
   <p style="font-family:'Times New Roman',Times,serif;font-size:32px;font-weight:bold;letter-spacing:6px;margin:0 0 16px;">${code}</p>
   <p style="margin:0;">It expires in 10 minutes. If you didn&#39;t try to sign in to the Íocón admin page, you can ignore this email.</p>
-  <p style="margin:24px 0 0;color:#777;font-size:13px;">Íocón · Hand made graphics for the Irish Dance world · iocongraphics.com</p>
+  <p style="margin:24px 0 0;color:#777;font-size:13px;">Íocón · Hand made graphics for Irish dancers · iocongraphics.com</p>
 </div>`,
   })
 }

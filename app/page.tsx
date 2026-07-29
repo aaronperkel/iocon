@@ -55,7 +55,7 @@ export default async function HomePage() {
           Íocón
         </h1>
         <p className="text-olive-800 text-lg max-w-sm mx-auto leading-relaxed">
-          Hand made graphics for the Irish Dance world
+          Hand made graphics for Irish dancers
         </p>
         <a
           href="/shop"
@@ -67,26 +67,21 @@ export default async function HomePage() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 space-y-20">
 
-        {/* About Me */}
+        {/* About — Riley's copy (July 2026 launch pass). She spells the brand
+            plain "Iocon" here; keep it that way — with the footer's "no fadas"
+            line gone, these mentions (plus the root meta description) are what
+            lets Google match unaccented "iocon graphics" searches. */}
         <section>
           <h2 className="font-heading text-4xl font-bold text-olive-800 mb-6">
-            About Me
+            About
           </h2>
           <div className="space-y-4 text-stone-600 leading-relaxed">
             <p>
-              I&apos;m Riley and I&apos;ve been an Irish dancer in the Mid-Atlantic region for 10
-              years. During the pandemic, I started creating free drawings for dancers using only
-              my iPhone and pointer finger under my previous Instagram name, @irish.dance.costumes.
-              The years of support since then, and the growth of generative AI, have motivated me
-              to increase my efforts and presence in the Irish dance community.
-            </p>
-            <p>
-              Íocón was developed to be a multi-purpose small business for Irish dance art,
-              graphics, design, and gifts. The name comes from the Irish word for Icon — written
-              without its fadas, plain Iocon — inspired by the strong, basic, and upright form
-              that my original dancer drawings take. The
-              graphics that I offer are highly customizable and I always welcome collaboration
-              until the design is just right. You can follow along on Instagram at{' '}
+              I&apos;m Riley, an Irish dancer of over a decade and the artist behind Iocon, a
+              creative resource for the Irish dance community. It all started during the pandemic
+              with simple costume drawings using only my finger and iPhone. (You can check these
+              original drawings out by scrolling alllllll the way down to the end of my Instagram
+              account{' '}
               <a
                 href="https://www.instagram.com/iocongraphics/"
                 target="_blank"
@@ -95,7 +90,26 @@ export default async function HomePage() {
               >
                 @iocongraphics
               </a>
-              .
+              .)
+            </p>
+            <p>
+              As support for the Instagram account grew, and I slowly improved my art, I became
+              more motivated to increase my presence and portfolio. The main source of my
+              motivation will always be the enjoyment of making art.
+            </p>
+            <p>
+              Iocon comes from the Irish word for Icon. I was inspired by the strong, upright,
+              and simple look that those original 2020 drawings took the form of.
+            </p>
+            <p>
+              Iocon is all about customization. Although there&apos;s a distinct style, trying
+              something new is never discouraged. Your ideas allow me to continue adding new
+              products and drawing subjects to the site.
+            </p>
+            <p>
+              Making art on this platform has always been a constant through major life events
+              like college, my Irish dance career, and working. Thank you all for your continued
+              support!
             </p>
           </div>
         </section>

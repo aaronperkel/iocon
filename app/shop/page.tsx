@@ -17,9 +17,10 @@ export const dynamic = 'force-dynamic'
 //   - Solo Icon                → /shop/solo-icon (fork: new design vs. existing costume)
 //   - Group Icons              → /shop/group-icons        (multi-dancer form)
 //   - Through the Years        → /shop/through-the-years  (multi-age form)
-//   - Walking Duo              → /shop/walking-duo        (two-dancer form)
 //   - Bulk Drawings / Logo / Graphic → in-place contact modal (no order form —
 //     starts with a conversation; the email is tagged with the inquiry name)
+// Walking Duo was retired pre-launch (Riley, July 2026 — "I haven't developed
+// the walking duo enough yet to offer it"); its route now redirects to /shop.
 //
 // Each subject is a flippable tile (components/SubjectCard.tsx): front shows
 // the artwork + title, the back shows Riley's blurb and a carousel of gallery
@@ -31,9 +32,9 @@ interface Subject extends ShopSubjectCard {
   gallerySubject: GallerySubject // feeds the back-of-tile example carousel
 }
 
-// Tile backs show no price line until Riley settles real starting prices —
-// set `price: 'Starting from $NN'` on an entry to bring it back. Meanwhile
-// she prices each commission on the Stripe invoice she sends after the order.
+// Starting prices are Riley's launch pricing (July 2026) and show on the
+// tile fronts; they must agree with lib/pricing.ts, which the order forms
+// use to compute their live estimate.
 const SUBJECTS: Subject[] = [
   {
     id: 'solo-icon',
@@ -41,6 +42,7 @@ const SUBJECTS: Subject[] = [
     href: '/shop/solo-icon',
     icon: 'dancer',
     gallerySubject: 'solo-icon',
+    price: 'Starting from $25',
     blurb:
       'Where it all began! A single dancer with the original Íocón look. A detailed drawing of an existing costume or a new costume design.',
   },
@@ -50,6 +52,7 @@ const SUBJECTS: Subject[] = [
     href: '/shop/group-icons',
     icon: 'dancers',
     gallerySubject: 'group-icons',
+    price: 'Starting from $35',
     blurb:
       'Multiple dancers together in one drawing. Great for siblings, teams, and friends. See the “Through the Years” option for one dancer (young to old).',
   },
@@ -61,17 +64,9 @@ const SUBJECTS: Subject[] = [
     image: '/shop/through-the-years.png',
     imageFit: 'contain', // the age progression must show all dancers — never crop
     gallerySubject: 'through-the-years',
+    price: 'Starting from $35',
     blurb:
       'An excellent way to remember a dance career or dress design evolutions. Meant for one dancer to show their growth through the years. See “Group Icons” for a group drawing intended for friends, teammates, or siblings.',
-  },
-  {
-    id: 'walking-duo',
-    title: 'Walking Duo',
-    href: '/shop/walking-duo',
-    icon: 'dancers',
-    gallerySubject: 'walking-duo',
-    blurb:
-      'A new, more organic template for two dancers. The drawing depicts dancers holding hands, walking away from the viewer, with the back of the costume drawn in detail. Ideal for dance besties, siblings, or teammates. Male dancers can also be used in the template by request.',
   },
   {
     id: 'bulk-drawings',
@@ -79,6 +74,7 @@ const SUBJECTS: Subject[] = [
     icon: 'dancers',
     image: '/shop/bulk-drawings.jpeg',
     gallerySubject: 'bulk-drawings',
+    price: 'Starting from $50',
     blurb:
       'Contact me to discuss drawings for a large group (more than 5 drawings). Intended for individual send-off gifts or posts for a group.',
     inquirySubject: 'Bulk Ordering Inquiry',
@@ -88,6 +84,7 @@ const SUBJECTS: Subject[] = [
     title: 'Logo',
     icon: 'logo',
     gallerySubject: 'logo',
+    price: 'Starting from $20',
     blurb:
       'A custom logo, symbol, or graphic. Great for brands, merchandise, schools, organizations, or competitions.',
     inquirySubject: 'Logo Inquiry',
@@ -97,6 +94,7 @@ const SUBJECTS: Subject[] = [
     title: 'Graphic',
     icon: 'image',
     gallerySubject: 'custom-graphic',
+    price: 'Starting from $20',
     blurb:
       'Custom graphics for social media posts, posters, statistics, good luck messages, mock-ups, and much more! Very customizable and flexible.',
     inquirySubject: 'Graphic Inquiry',
@@ -141,11 +139,7 @@ export default async function ShopPage() {
   const galleryImages = await getPublicGalleryImages()
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-3">Shop</h1>
-      <p className="text-stone-600 text-sm leading-relaxed mb-8 max-w-2xl">
-        Every order starts with the art. Pick a subject, fill out one short form to share the
-        details, and choose your product format at the end.
-      </p>
+      <h1 className="font-heading text-4xl font-bold text-olive-800 mb-8">Shop</h1>
 
       {/* How it works */}
       <ol className="grid sm:grid-cols-3 gap-4 mb-12">

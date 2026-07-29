@@ -12,6 +12,14 @@ import {
   type ContactErrors,
 } from '@/components/ContactInfoBlock'
 import type { OrderType } from '@/lib/order-types'
+import {
+  ADD_LOGO_PRICE,
+  ADD_TEXT_PRICE,
+  DANCER_EXTRA_PRICE,
+  MULTI_FIGURE_TYPES,
+  estimateOrderCost,
+  formatUsd,
+} from '@/lib/pricing'
 import { PRODUCT_FORMAT_LABELS, type ProductFormat } from '@/lib/products'
 import { uploadOrderImages } from '@/lib/upload-images'
 
@@ -101,7 +109,8 @@ const LEG_SHADE_OPTIONS: { value: LegShade; label: string }[] = [
   { value: 'black-pants', label: 'Black pants' },
 ]
 
-const EXTRA_OPTIONS = ['Sash', 'Belt', 'Prize held in hand']
+// Combined per Riley (July 2026): Sash/Belt is one extra, each extra +$5.
+const EXTRA_OPTIONS = ['Sash/Belt', 'Prize held in hand']
 
 const BACKGROUND_OPTIONS: { value: Background; label: string }[] = [
   { value: 'white', label: 'White' },
@@ -168,12 +177,13 @@ export default function CostumeOrderForm({
   const [submitError, setSubmitError] = useState('')
   const [warnNoImages, setWarnNoImages] = useState(false)
 
-  const nounLabel = sectionNoun === 'age' ? 'age' : 'dancer'
+  // Group Icons and Through the Years title their repeating sections "Icon N"
+  // (Riley, July 2026) — the dancer name / age lives inside the section.
+  const iconHeadings = MULTI_FIGURE_TYPES.includes(orderType)
+  const nounLabel = iconHeadings ? 'icon' : sectionNoun === 'age' ? 'age' : 'dancer'
 
   function sectionTitle(section: DancerSection, i: number): string {
-    if (sectionNoun === 'age') {
-      return section.age ? `Age ${section.age}` : `Age ${i + 1}`
-    }
+    if (iconHeadings) return `Icon ${i + 1}`
     if (section.name) return section.name
     return form.sections.length === 1 ? 'Dancer' : `Dancer ${i + 1}`
   }
@@ -232,6 +242,16 @@ export default function CostumeOrderForm({
     !fixedCount && (maxSections === undefined || form.sections.length < maxSections)
   const canRemove = !fixedCount && form.sections.length > minSections
 
+  // Live price estimate (lib/pricing.ts) — shown above the submit button and
+  // recorded in the order details so Riley can cross-check her invoice.
+  const estimatedCost = estimateOrderCost({
+    orderType,
+    sectionCount: form.sections.length,
+    extrasCount: form.sections.reduce((n, s) => n + s.extras.length, 0),
+    addText: form.layout.addText === 'yes',
+    addLogo: form.layout.addLogo === 'yes',
+  })
+
   // ---- Validation ----
 
   function validate(): FormErrors {
@@ -270,6 +290,10 @@ export default function CostumeOrderForm({
 
     form.sections.forEach((s, i) => {
       lines.push(`\n--- ${sectionTitle(s, i)} ---`)
+      // "Icon N" headings don't carry the name/age, so record it in the block.
+      if (iconHeadings && sectionNoun === 'age' && s.age)
+        lines.push(`Approximate age: ${s.age}`)
+      if (iconHeadings && sectionNoun === 'dancer' && s.name) lines.push(`Name: ${s.name}`)
       lines.push(`Shoe: ${s.shoe || 'not specified'}`)
       lines.push(
         `Leg shade: ${
@@ -299,6 +323,7 @@ export default function CostumeOrderForm({
     if (layout.comments) lines.push(`Layout comments: ${layout.comments}`)
 
     if (form.product) lines.push(`\nProduct: ${PRODUCT_FORMAT_LABELS[form.product]}`)
+    lines.push(`Estimated cost: ${formatUsd(estimatedCost)} (before taxes/fees)`)
 
     return lines.join('\n').trim()
   }
@@ -364,10 +389,15 @@ export default function CostumeOrderForm({
     return (
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-16 text-center">
         <p className="font-heading text-3xl text-olive-800 mb-3">Order received!</p>
-        <p className="text-stone-500 text-sm mb-8">
+        <p className="text-stone-500 text-sm mb-4">
           Your {title.toLowerCase()} request has been added to the waitlist. I will reach out to
           discuss details.
         </p>
+        {form.contact.contactMethod === 'email' && (
+          <p className="text-sm text-gold-800 bg-gold-50 border border-gold-200 rounded-lg px-4 py-2.5 mb-8">
+            Order updates will come by email — make sure you check your junk folder!
+          </p>
+        )}
         <Link
           href="/waitlist"
           className="inline-block bg-gold hover:bg-gold-400 text-gold-950 text-sm font-medium px-6 py-2.5 rounded-lg transition-colors"
@@ -439,7 +469,11 @@ export default function CostumeOrderForm({
               {/* Dancer details */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {sectionNoun === 'age' ? (
-                  <Field label="Approximate age" required error={errors.sections?.[i]?.name}>
+                  <Field
+                    label="Approximate age of dancer"
+                    required
+                    error={errors.sections?.[i]?.name}
+                  >
                     <input
                       type="text"
                       value={section.age}
@@ -519,7 +553,7 @@ export default function CostumeOrderForm({
                           : 'bg-white text-stone-600 border-stone-300 hover:border-gold-400'
                       }`}
                     >
-                      {extra}
+                      {extra} (+{formatUsd(DANCER_EXTRA_PRICE)})
                     </button>
                   ))}
                 </div>
@@ -534,6 +568,7 @@ export default function CostumeOrderForm({
                 }}
                 label="Upload Dancer Images"
                 helperText={DANCER_IMAGES_HELPER}
+                privacyNote
               />
 
               {/* Comments */}
@@ -568,7 +603,7 @@ export default function CostumeOrderForm({
             </div>
 
             <YesNoField
-              label="Add text?"
+              label={`Add text? (+${formatUsd(ADD_TEXT_PRICE)})`}
               value={form.layout.addText}
               onChange={(v) => updateLayout({ addText: v })}
             />
@@ -607,7 +642,7 @@ export default function CostumeOrderForm({
             </div>
 
             <YesNoField
-              label="Add a logo?"
+              label={`Add a logo? (+${formatUsd(ADD_LOGO_PRICE)})`}
               value={form.layout.addLogo}
               onChange={(v) => updateLayout({ addLogo: v })}
             />
@@ -623,6 +658,7 @@ export default function CostumeOrderForm({
               onChange={(images) => updateLayout({ images })}
               label="Upload Layout Images"
               helperText={LAYOUT_IMAGES_HELPER}
+              privacyNote
             />
 
             <Field label="Layout Comments">
@@ -677,6 +713,20 @@ export default function CostumeOrderForm({
             </Link>
             .
           </p>
+
+          {/* Live estimate — right above Submit Order (Riley, July 2026) */}
+          <div className="rounded-xl border border-gold-200 bg-gold-50/60 p-4 space-y-1">
+            <p className="text-sm font-medium text-stone-700">
+              Estimated cost:{' '}
+              <span className="font-heading text-2xl font-bold text-olive-800">
+                {formatUsd(estimatedCost)}
+              </span>
+            </p>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              Taxes and fees may apply. After you place your order, you&rsquo;ll receive an
+              invoice via your preferred contact method.
+            </p>
+          </div>
 
           {warnNoImages ? (
             <div className="rounded-xl border border-gold-300 bg-gold-50 p-4 space-y-3">

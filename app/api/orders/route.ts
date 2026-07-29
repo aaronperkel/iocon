@@ -10,12 +10,12 @@ import { AVAILABLE_PRODUCTS, type ProductFormat } from '@/lib/products'
 import { sendNewOrderNotification, sendOrderPlacedEmail } from '@/lib/email'
 import { rateLimit } from '@/lib/auth'
 
+// walking-duo is deliberately absent — retired July 2026, no new orders.
 const VALID_TYPES: OrderType[] = [
   'solo-icon',
   'solo-icon-new',
   'group-icons',
   'through-the-years',
-  'walking-duo',
 ]
 const VALID_METHODS: ContactMethod[] = ['text', 'email', 'whatsapp', 'instagram']
 

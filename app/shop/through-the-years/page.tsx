@@ -7,7 +7,7 @@ export default function ThroughTheYearsPage() {
     <CostumeOrderForm
       orderType="through-the-years"
       title="Through the Years"
-      intro="One dancer drawn across the ages. Add a section for each age you want included — each with its own costume details and photos from that era."
+      intro="Each icon in this drawing will have a section within this order form. Fill out the form as you would like to see the dancers from left to right."
       sectionNoun="age"
       minSections={2}
     />

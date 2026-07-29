@@ -39,9 +39,9 @@ export const metadata: Metadata = {
   // be the public domain rather than VERCEL_URL.
   metadataBase: new URL(SITE_URL),
   applicationName: 'Íocón Graphics',
-  title: 'Íocón Graphics — Hand made graphics for the Irish Dance world',
+  title: 'Íocón Graphics — Hand made graphics for Irish dancers',
   description:
-    'Íocón Graphics (also written Iocon Graphics) creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for the Irish Dance world.',
+    'Íocón Graphics (also written Iocon Graphics) creates custom Irish dance costume drawings, digital icons, logos, and graphics — hand made for Irish dancers.',
   // './' resolves against the current route, so every page self-canonicalizes
   // (and drops query strings — gallery filter views canonicalize to /gallery).
   alternates: {
