@@ -15,8 +15,10 @@ import type { OrderType } from '@/lib/order-types'
 import {
   ADD_LOGO_PRICE,
   ADD_TEXT_PRICE,
+  ADDED_FIGURE_PRICE,
   DANCER_EXTRA_PRICE,
   MULTI_FIGURE_TYPES,
+  ORDER_BASE_PRICES,
   estimateOrderCost,
   formatUsd,
 } from '@/lib/pricing'
@@ -423,7 +425,14 @@ export default function CostumeOrderForm({
       </nav>
 
       <h1 className="font-heading text-4xl font-bold text-olive-800 mb-2 mt-4">{title}</h1>
-      <p className="text-stone-500 text-sm mb-10">{intro}</p>
+      <p className={`text-stone-500 text-sm ${iconHeadings ? 'mb-2' : 'mb-10'}`}>{intro}</p>
+      {iconHeadings && (
+        <p className="text-stone-500 text-sm mb-10">
+          The {formatUsd(ORDER_BASE_PRICES[orderType] + (minSections - 1) * ADDED_FIGURE_PRICE)}{' '}
+          base drawing includes {minSections} icons; each additional icon adds{' '}
+          {formatUsd(ADDED_FIGURE_PRICE)}.
+        </p>
+      )}
 
       <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSubmit} noValidate className="space-y-10">
@@ -590,6 +599,7 @@ export default function CostumeOrderForm({
               className="w-full rounded-xl border-2 border-dashed border-stone-300 hover:border-gold-400 hover:bg-gold-50/50 py-3 text-sm font-medium text-stone-500 hover:text-gold-700 transition"
             >
               + Add another {nounLabel}
+              {iconHeadings && ` (+${formatUsd(ADDED_FIGURE_PRICE)})`}
             </button>
           )}
 
